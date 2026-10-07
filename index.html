@@ -10,7 +10,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-deep:#07080C;
+  --bg-deep:#06080D;
   --bg-card:rgba(18,22,31,0.75);
   --bg-card-border:rgba(255,255,255,0.12);
   --text-primary:#FFFFFF;
@@ -47,11 +47,11 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 #fs-btn:hover{color:#FFAA00;border-color:#FF7700;box-shadow:0 0 16px rgba(255,119,0,0.35);}
 
 /* ═════════════════════════════════════════════════════════════
-   TACTICAL HANGAR DASHBOARD (DARK THEME)
+   TACTICAL HANGAR DASHBOARD (DARK THEME, NO GRID/GRAPH LINES)
    ═════════════════════════════════════════════════════════════ */
 #ts{
   position:absolute;inset:0;z-index:35;display:flex;flex-direction:column;
-  background:radial-gradient(ellipse 90% 80% at 50% 32%, #111520 0%, #090C12 55%, #05060A 100%);
+  background:radial-gradient(ellipse 90% 80% at 50% 32%, #111520 0%, #080A10 55%, #040508 100%);
   color:var(--text-primary);overflow-y:auto;overflow-x:hidden;
   transition:opacity .25s ease,visibility .25s;
 }
@@ -260,7 +260,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 }
 
 /* ═════════════════════════════════════════════════════════════
-   OVERDRIVE LEVEL-UP MODAL (COLOR CODED)
+   OVERDRIVE LEVEL-UP MODAL
    ═════════════════════════════════════════════════════════════ */
 #lu{
   position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
@@ -403,7 +403,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
           <div class="sys-icon">⚡</div>
           <div class="sys-meta">
             <div class="sys-name">TWIN PULSE RAILGUNS</div>
-            <div class="sys-desc">Wing kinetic cannons · Steady paced fire & auto-lock</div>
+            <div class="sys-desc">Gauntlet-mounted cannons · Steady fire & auto-lock</div>
           </div>
         </div>
 
@@ -418,8 +418,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
         <div class="sys-card">
           <div class="sys-icon">▶▶</div>
           <div class="sys-meta">
-            <div class="sys-name">VECTOR DUAL THRUSTERS</div>
-            <div class="sys-desc">Responsive lateral banking · Smooth aerial drift</div>
+            <div class="sys-name">BACKPACK JUMP THRUSTERS</div>
+            <div class="sys-desc">High-output twin verniers · Combat roll banking</div>
           </div>
         </div>
 
@@ -547,7 +547,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 'use strict';
 
 // ═════════════════════════════════════════════════════════════
-// HERO TOP-DOWN MECHA RENDERING (INSPECTION PLATFORM VIEW)
+// HERO TOP-DOWN HUMANOID ROBOT MECHA (INSPECTION PLATFORM VIEW)
 // ═════════════════════════════════════════════════════════════
 const heroCvs = document.getElementById('hero-canvas');
 const heroCtx = heroCvs ? heroCvs.getContext('2d') : null;
@@ -563,205 +563,173 @@ window.addEventListener('mousemove', e => {
 function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.clearRect(0, 0, w, h);
   const cx = w * 0.5, cy = h * 0.48;
-  const s = Math.min(w, h) * 0.42;
+  const s = Math.min(w, h) * 0.38;
 
-  // 1. Tactical Launch Pad & Range Telemetry
+  // 1. Launch Platform Base (Clean circular pedestal, NO graph/grid lines)
   ctx.save();
   ctx.translate(cx, cy);
-  // Outer dashed telemetry circle
-  ctx.strokeStyle = 'rgba(255, 170, 0, 0.22)';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([8, 8]);
-  ctx.beginPath(); ctx.arc(0, 0, s * 1.15, 0, Math.PI * 2); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Rotating degree reticle
-  ctx.save();
-  ctx.rotate(time * 0.15);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  for(let a = 0; a < Math.PI * 2; a += Math.PI / 4){
-    ctx.moveTo(Math.cos(a) * s * 1.05, Math.sin(a) * s * 1.05);
-    ctx.lineTo(Math.cos(a) * s * 1.25, Math.sin(a) * s * 1.25);
-  }
-  ctx.stroke();
-  ctx.restore();
-
-  // Inner launch ring
-  ctx.strokeStyle = 'rgba(255, 170, 0, 0.12)';
+  ctx.strokeStyle = 'rgba(255, 170, 0, 0.35)';
   ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(0, 0, s * 1.22, 0, Math.PI * 2); ctx.stroke();
+
+  ctx.strokeStyle = 'rgba(255, 170, 0, 0.12)';
   ctx.beginPath(); ctx.arc(0, 0, s * 0.85, 0, Math.PI * 2); ctx.stroke();
 
-  // Crosshairs
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(-s * 1.3, 0); ctx.lineTo(s * 1.3, 0);
-  ctx.moveTo(0, -s * 1.3); ctx.lineTo(0, s * 1.3);
-  ctx.stroke();
+  // Subtle rotating telemetry arcs
+  ctx.save();
+  ctx.rotate(time * 0.12);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([12, 18]);
+  ctx.beginPath(); ctx.arc(0, 0, s * 1.35, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
   ctx.restore();
 
-  // 2. Render Top-Down Mecha Body (With Interactive Roll Bank)
+  // 2. Humanoid Armored Mecha Body (Top-Down View)
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(tilt);
 
-  // Rear Thruster Exhaust Flares
+  // A. Backpack Booster Exhaust Plumes (Pulsing Flames)
   const pulse = 0.85 + 0.15 * Math.sin(time * 18);
-  const exL = s * 0.45 * pulse;
-  const flCol = ctx.createLinearGradient(0, s * 0.55, 0, s * 0.55 + exL);
+  const exL = s * 0.44 * pulse;
+  const flCol = ctx.createLinearGradient(0, s * 0.45, 0, s * 0.45 + exL);
   flCol.addColorStop(0, '#FFFFFF');
   flCol.addColorStop(0.2, '#FFAA00');
   flCol.addColorStop(0.7, '#FF4400');
   flCol.addColorStop(1, 'transparent');
-
   ctx.fillStyle = flCol;
   ctx.shadowColor = '#FF6600';
   ctx.shadowBlur = 24;
-  // Left engine exhaust
+  // Left booster flare
   ctx.beginPath();
-  ctx.moveTo(-s * 0.28, s * 0.52);
-  ctx.lineTo(-s * 0.18, s * 0.52);
-  ctx.lineTo(-s * 0.23, s * 0.52 + exL);
+  ctx.moveTo(-s * 0.26, s * 0.42); ctx.lineTo(-s * 0.14, s * 0.42); ctx.lineTo(-s * 0.20, s * 0.42 + exL);
   ctx.closePath(); ctx.fill();
-  // Right engine exhaust
+  // Right booster flare
   ctx.beginPath();
-  ctx.moveTo(s * 0.18, s * 0.52);
-  ctx.lineTo(s * 0.28, s * 0.52);
-  ctx.lineTo(s * 0.23, s * 0.52 + exL);
+  ctx.moveTo(s * 0.14, s * 0.42); ctx.lineTo(s * 0.26, s * 0.42); ctx.lineTo(s * 0.20, s * 0.42 + exL);
   ctx.closePath(); ctx.fill();
   ctx.shadowBlur = 0;
 
-  // 3. Matte Carbon Fiber Under-Chassis & Engine Nacelles
+  // B. Trailing Armored Legs & Skirt Armor (Zero-g flight stance)
   ctx.fillStyle = '#11141D';
-  ctx.beginPath();
-  ctx.moveTo(0, -s * 0.65);
-  ctx.lineTo(s * 0.18, -s * 0.2);
-  ctx.lineTo(s * 0.42, s * 0.45);
-  ctx.lineTo(s * 0.15, s * 0.55);
-  ctx.lineTo(0, s * 0.48);
-  ctx.lineTo(-s * 0.15, s * 0.55);
-  ctx.lineTo(-s * 0.42, s * 0.45);
-  ctx.lineTo(-s * 0.18, -s * 0.2);
-  ctx.closePath();
-  ctx.fill();
-
-  // 4. Twin Forward Heavy Pulse Railgun Barrels (Mounted on Flanks)
-  ctx.fillStyle = '#181C26';
-  ctx.fillRect(-s * 0.32, -s * 0.85, s * 0.08, s * 0.95);
-  ctx.fillRect(s * 0.24, -s * 0.85, s * 0.08, s * 0.95);
-
-  // Muzzle coils and tips
-  ctx.fillStyle = '#FFAA00';
-  ctx.shadowColor = '#FF7700';
-  ctx.shadowBlur = 12;
-  ctx.fillRect(-s * 0.33, -s * 0.88, s * 0.10, s * 0.06);
-  ctx.fillRect(-s * 0.33, -s * 0.65, s * 0.10, s * 0.03);
-  ctx.fillRect(-s * 0.33, -s * 0.45, s * 0.10, s * 0.03);
-  ctx.fillRect(s * 0.23, -s * 0.88, s * 0.10, s * 0.06);
-  ctx.fillRect(s * 0.23, -s * 0.65, s * 0.10, s * 0.03);
-  ctx.fillRect(s * 0.23, -s * 0.45, s * 0.10, s * 0.03);
-  ctx.shadowBlur = 0;
-
-  // 5. Ceramic White Swept Delta Wings
-  ctx.shadowColor = 'rgba(0,0,0,0.5)';
-  ctx.shadowBlur = 18;
-
-  // Left Wing Plate
-  const lWingGrad = ctx.createLinearGradient(-s * 0.75, 0, 0, 0);
-  lWingGrad.addColorStop(0, '#CBD2DE');
-  lWingGrad.addColorStop(0.6, '#E8EDF5');
-  lWingGrad.addColorStop(1, '#FFFFFF');
-  ctx.fillStyle = lWingGrad;
-
-  ctx.beginPath();
-  ctx.moveTo(-s * 0.08, -s * 0.35);
-  ctx.lineTo(-s * 0.82, s * 0.28);
-  ctx.lineTo(-s * 0.72, s * 0.42);
-  ctx.lineTo(-s * 0.38, s * 0.38);
-  ctx.lineTo(-s * 0.28, s * 0.52);
-  ctx.lineTo(-s * 0.08, s * 0.42);
-  ctx.closePath();
-  ctx.fill();
-
-  // Right Wing Plate
-  const rWingGrad = ctx.createLinearGradient(s * 0.75, 0, 0, 0);
-  rWingGrad.addColorStop(0, '#CBD2DE');
-  rWingGrad.addColorStop(0.6, '#E8EDF5');
-  rWingGrad.addColorStop(1, '#FFFFFF');
-  ctx.fillStyle = rWingGrad;
-
-  ctx.beginPath();
-  ctx.moveTo(s * 0.08, -s * 0.35);
-  ctx.lineTo(s * 0.82, s * 0.28);
-  ctx.lineTo(s * 0.72, s * 0.42);
-  ctx.lineTo(s * 0.38, s * 0.38);
-  ctx.lineTo(s * 0.28, s * 0.52);
-  ctx.lineTo(s * 0.08, s * 0.42);
-  ctx.closePath();
-  ctx.fill();
-  ctx.shadowBlur = 0;
-
-  // Wing Panel Bevel Lines
-  ctx.strokeStyle = '#12151E';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(-s * 0.48, s * 0.05); ctx.lineTo(-s * 0.28, s * 0.35);
-  ctx.moveTo(s * 0.48, s * 0.05); ctx.lineTo(s * 0.28, s * 0.35);
-  ctx.stroke();
-
-  // 6. Central Ceramic Fuselage & Cockpit Spine
-  const bodyGrad = ctx.createLinearGradient(-s * 0.2, 0, s * 0.2, 0);
-  bodyGrad.addColorStop(0, '#D6DCE6');
-  bodyGrad.addColorStop(0.5, '#FFFFFF');
-  bodyGrad.addColorStop(1, '#D6DCE6');
-  ctx.fillStyle = bodyGrad;
-
-  ctx.beginPath();
-  ctx.moveTo(0, -s * 0.78);
-  ctx.lineTo(s * 0.16, -s * 0.35);
-  ctx.lineTo(s * 0.18, s * 0.25);
-  ctx.lineTo(s * 0.08, s * 0.46);
-  ctx.lineTo(-s * 0.08, s * 0.46);
-  ctx.lineTo(-s * 0.18, s * 0.25);
-  ctx.lineTo(-s * 0.16, -s * 0.35);
-  ctx.closePath();
-  ctx.fill();
-
-  // Center Longitudinal Seam
-  ctx.strokeStyle = '#141720';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, -s * 0.76); ctx.lineTo(0, -s * 0.18);
-  ctx.stroke();
-
-  // 7. Glowing Amber Ocular Visor / Cockpit Canopy
-  ctx.fillStyle = '#090B10';
-  ctx.beginPath();
-  ctx.moveTo(0, -s * 0.32);
-  ctx.lineTo(s * 0.11, -s * 0.12);
-  ctx.lineTo(s * 0.07, s * 0.08);
-  ctx.lineTo(-s * 0.07, s * 0.08);
-  ctx.lineTo(-s * 0.11, -s * 0.12);
-  ctx.closePath();
-  ctx.fill();
-
-  // Twin Visor Slits
-  ctx.shadowColor = '#FF6600';
-  ctx.shadowBlur = 14;
-  ctx.fillStyle = '#FFAA00';
-  ctx.beginPath();
-  ctx.ellipse(-s * 0.045, -s * 0.12, s * 0.035, s * 0.015, -0.3, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(s * 0.045, -s * 0.12, s * 0.035, s * 0.015, 0.3, 0, Math.PI * 2);
-  ctx.fill();
-
+  // Waist frame & hip skirt
+  ctx.fillRect(-s * 0.24, s * 0.18, s * 0.48, s * 0.18);
+  // Left armored leg
+  ctx.fillStyle = '#CBD2DE';
+  ctx.fillRect(-s * 0.26, s * 0.25, s * 0.18, s * 0.38);
   ctx.fillStyle = '#FFFFFF';
-  ctx.shadowBlur = 0;
-  ctx.fillRect(-s * 0.05, -s * 0.13, s * 0.018, s * 0.01);
-  ctx.fillRect(s * 0.032, -s * 0.13, s * 0.018, s * 0.01);
+  ctx.fillRect(-s * 0.24, s * 0.28, s * 0.14, s * 0.25);
+  // Right armored leg
+  ctx.fillStyle = '#CBD2DE';
+  ctx.fillRect(s * 0.08, s * 0.25, s * 0.18, s * 0.38);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(s * 0.10, s * 0.28, s * 0.14, s * 0.25);
+
+  // C. Heavy Backpack Booster Unit (Mounted behind spine)
+  ctx.fillStyle = '#161A24';
+  ctx.fillRect(-s * 0.30, s * 0.05, s * 0.60, s * 0.32);
+  // Twin rocket nozzle housings
+  ctx.fillStyle = '#222836';
+  ctx.fillRect(-s * 0.28, s * 0.32, s * 0.16, s * 0.12);
+  ctx.fillRect(s * 0.12, s * 0.32, s * 0.16, s * 0.12);
+
+  // D. Broad Armored Shoulder Pauldrons (Left & Right - Chunky Robot Shoulders)
+  // Left Shoulder Pauldron Block
+  ctx.fillStyle = '#181C26';
+  ctx.fillRect(-s * 0.58, -s * 0.18, s * 0.26, s * 0.40);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(-s * 0.56, -s * 0.16, s * 0.22, s * 0.36);
+  ctx.fillStyle = '#E2E7F0';
+  ctx.fillRect(-s * 0.54, -s * 0.12, s * 0.18, s * 0.28);
+  ctx.strokeStyle = '#141720'; ctx.lineWidth = 1.8;
+  ctx.strokeRect(-s * 0.56, -s * 0.16, s * 0.22, s * 0.36);
+
+  // Right Shoulder Pauldron Block
+  ctx.fillStyle = '#181C26';
+  ctx.fillRect(s * 0.32, -s * 0.18, s * 0.26, s * 0.40);
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(s * 0.34, -s * 0.16, s * 0.22, s * 0.36);
+  ctx.fillStyle = '#E2E7F0';
+  ctx.fillRect(s * 0.36, -s * 0.12, s * 0.18, s * 0.28);
+  ctx.strokeRect(s * 0.34, -s * 0.16, s * 0.22, s * 0.36);
+
+  // E. Robotic Arms & Forward Weapon Gauntlets
+  // Left arm & cannon
+  ctx.fillStyle = '#181C26';
+  ctx.fillRect(-s * 0.52, -s * 0.48, s * 0.14, s * 0.35); // Forearm
+  ctx.fillStyle = '#12151E';
+  ctx.fillRect(-s * 0.48, -s * 0.90, s * 0.08, s * 0.65); // Railgun barrel
+  ctx.fillStyle = '#FFAA00'; // Amber coils
+  ctx.fillRect(-s * 0.49, -s * 0.92, s * 0.10, s * 0.06);
+  ctx.fillRect(-s * 0.49, -s * 0.72, s * 0.10, s * 0.04);
+
+  // Right arm & cannon
+  ctx.fillStyle = '#181C26';
+  ctx.fillRect(s * 0.38, -s * 0.48, s * 0.14, s * 0.35); // Forearm
+  ctx.fillStyle = '#12151E';
+  ctx.fillRect(s * 0.40, -s * 0.90, s * 0.08, s * 0.65); // Railgun barrel
+  ctx.fillStyle = '#FFAA00'; // Amber coils
+  ctx.fillRect(s * 0.39, -s * 0.92, s * 0.10, s * 0.06);
+  ctx.fillRect(s * 0.39, -s * 0.72, s * 0.10, s * 0.04);
+
+  // F. Central Chest Chassis & Cockpit Armor
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.24, -s * 0.12);
+  ctx.lineTo(s * 0.24, -s * 0.12);
+  ctx.lineTo(s * 0.20, s * 0.22);
+  ctx.lineTo(-s * 0.20, s * 0.22);
+  ctx.closePath(); ctx.fill();
+
+  // Chest Vents & Panel Seams
+  ctx.fillStyle = '#141720';
+  ctx.fillRect(-s * 0.18, -s * 0.06, s * 0.10, s * 0.04);
+  ctx.fillRect(s * 0.08, -s * 0.06, s * 0.10, s * 0.04);
+  ctx.fillRect(-s * 0.18, s * 0.02, s * 0.10, s * 0.04);
+  ctx.fillRect(s * 0.08, s * 0.02, s * 0.10, s * 0.04);
+  ctx.strokeStyle = '#141720'; ctx.lineWidth = 1.8;
+  ctx.beginPath(); ctx.moveTo(0, -s * 0.12); ctx.lineTo(0, s * 0.20); ctx.stroke();
+
+  // G. Robotic Helmet & Antenna Crest (Centered between Shoulders)
+  ctx.fillStyle = '#0E1118';
+  ctx.fillRect(-s * 0.14, -s * 0.32, s * 0.28, s * 0.22);
+
+  // Helmet Dome
+  ctx.fillStyle = '#FFFFFF';
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.36);
+  ctx.lineTo(s * 0.12, -s * 0.24);
+  ctx.lineTo(s * 0.10, -s * 0.10);
+  ctx.lineTo(-s * 0.10, -s * 0.10);
+  ctx.lineTo(-s * 0.12, -s * 0.24);
+  ctx.closePath(); ctx.fill();
+
+  // Helmet side antenna fins
+  ctx.fillStyle = '#CBD2DE';
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.12, -s * 0.22); ctx.lineTo(-s * 0.22, -s * 0.36); ctx.lineTo(-s * 0.10, -s * 0.28);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(s * 0.12, -s * 0.22); ctx.lineTo(s * 0.22, -s * 0.36); ctx.lineTo(s * 0.10, -s * 0.28);
+  ctx.closePath(); ctx.fill();
+
+  // Visor Socket & Glowing Amber Ocular Visor
+  ctx.fillStyle = '#080A0F';
+  ctx.fillRect(-s * 0.09, -s * 0.26, s * 0.18, s * 0.09);
+
+  ctx.fillStyle = '#FFAA00';
+  ctx.shadowColor = '#FF6600'; ctx.shadowBlur = 12;
+  ctx.beginPath();
+  ctx.ellipse(-s * 0.045, -s * 0.22, s * 0.03, s * 0.018, -0.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse(s * 0.045, -s * 0.22, s * 0.03, s * 0.018, 0.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#FFFFFF'; ctx.shadowBlur = 0;
+  ctx.fillRect(-s * 0.05, -s * 0.23, s * 0.018, s * 0.01);
+  ctx.fillRect(s * 0.032, -s * 0.23, s * 0.018, s * 0.01);
 
   ctx.restore();
 }
@@ -807,7 +775,7 @@ const C = document.getElementById('c'), X = C.getContext('2d');
 let W = window.innerWidth, H = window.innerHeight;
 C.width = W; C.height = H;
 let PY = H - Math.max(65, Math.min(85, H * 0.12));
-const PW = 48, PH = 54, BSPD = 660;
+const PW = 52, PH = 58, BSPD = 660;
 
 const $ts = document.getElementById('ts');
 const $lu = document.getElementById('lu');
@@ -932,7 +900,6 @@ function startWave(wNum){
   waveIntermission = 0;
   activeBoss = null;
 
-  // Wave definitions
   if(wNum === 1){
     waveTotalEnemies = 8;
     waveBannerText = 'WAVE 1';
@@ -961,7 +928,7 @@ function startWave(wNum){
 
   waveEnemiesToSpawn = waveTotalEnemies;
   waveSpawnTimer = 1.0;
-  waveBannerAlpha = 1.8; // Visible for ~2.5s
+  waveBannerAlpha = 1.8;
 }
 
 function initGame(){
@@ -1074,7 +1041,6 @@ function pickCard(i){
 // GALAXY DEFENSE TD ENEMY SPAWN ENGINE
 // ═════════════════════════════════════════════════════════════
 function getWaveSpawnRate(){
-  // Starts with gentle spacing in wave 1, tightening in later waves
   if(currentWave === 1) return 2.4;
   if(currentWave === 2) return 1.9;
   if(currentWave === 3) return 1.6;
@@ -1093,7 +1059,6 @@ function getWaveEnemyPool(){
 function spawnWaveEnemy(){
   if(waveEnemiesToSpawn <= 0) return;
 
-  // Boss wave check: spawn the boss on first spawn of wave 5, 10, etc.
   if(currentWave % 5 === 0 && !activeBoss){
     spawnBoss();
     waveEnemiesToSpawn--;
@@ -1129,31 +1094,26 @@ function mkEnemy(type, x, y){
   };
 
   if(type === 'scout'){
-    // Standard slow drone vanguard (Takes 4 deliberate hits)
     Object.assign(e, {
       w: 28, h: 22, vy: 38 + Math.min(30, currentWave * 2), vx: 0,
       hp: 4, mhp: 4, sc: 15, xpv: 5, wPhase: Math.random() * Math.PI * 2
     });
   } else if(type === 'crasher'){
-    // Creeps slowly, then SPRINTS when reaching mid screen!
     Object.assign(e, {
       w: 26, h: 26, vy: 34, vx: 0, sprinting: false,
       hp: 3, mhp: 3, sc: 25, xpv: 8, wPhase: Math.random() * Math.PI * 2
     });
   } else if(type === 'splitter'){
-    // Splinters into 2 micro-drones upon death
     Object.assign(e, {
       w: 32, h: 28, vy: 40 + Math.min(25, currentWave * 1.5), vx: (Math.random() - .5) * 15,
       hp: 6, mhp: 6, sc: 30, xpv: 10
     });
   } else if(type === 'carapace'){
-    // Heavy Armored Tank with damage reduction
     Object.assign(e, {
       w: 44, h: 36, vy: 26, vx: 0,
       hp: 16, mhp: 16, sc: 50, xpv: 18
     });
   } else if(type === 'shielder'){
-    // Projects energy shield bubble to adjacent allies
     Object.assign(e, {
       w: 34, h: 30, vy: 32, vx: (Math.random() - .5) * 20,
       hp: 10, mhp: 10, sc: 40, xpv: 14, shieldRadius: 90
@@ -1164,10 +1124,8 @@ function mkEnemy(type, x, y){
 }
 
 function dmgE(e, d, isThermal = false){
-  // If shielded by an active shielder drone, reduce damage by 50%
   let finalD = d;
   if(e.shieldTether && e.type !== 'shielder') finalD *= 0.5;
-  // Armored Carapace takes less kinetic damage unless melted by thermal beam
   if(e.type === 'carapace' && !isThermal) finalD *= 0.75;
 
   e.hp -= finalD;
@@ -1184,16 +1142,13 @@ function killE(e){
 
   if(e.type === 'boss') activeBoss = null;
 
-  // Direct automatic XP
   gainXP(e.xpv);
 
-  // Explosions & floating feedback
   const burstCol = e.type === 'crasher' ? '#FF3344' : (e.type === 'shielder' ? '#00E5FF' : '#FF7700');
   burst(e.x, e.y, burstCol, 14, 150, 4);
   burst(e.x, e.y, '#FFAA00', 8, 80, 2.5);
   fltxt(e.x, e.y, `+${e.sc}  ▲+${e.xpv}XP`, '#FFAA00');
 
-  // Splitter logic
   if(e.type === 'splitter'){
     for(let i = 0; i < 2; i++){
       enemies.push({
@@ -1246,7 +1201,6 @@ function isPlayerControlling(){
 function getAimTarget(fromX, fromY, exclude){
   const pool = enemies.filter(e => !e.dead && e !== exclude && e.y < PY + 20);
   if(!pool.length) return null;
-  // Prioritize sprinting crashers and low enemies close to perimeter!
   pool.sort((a, b) => {
     const aScore = a.sprinting ? -1000 : (PY - a.y);
     const bScore = b.sprinting ? -1000 : (PY - b.y);
@@ -1264,18 +1218,19 @@ function fireBullets(){
   const isAcc = (upg.accelerator || 0) > 0;
   const manual = isPlayerControlling();
 
+  // Twin railguns mounted at x = -20 and x = 20
   if(manual){
-    for(const ox of [-14, 14]){
+    for(const ox of [-20, 20]){
       bullets.push({
         x: player.x + ox, y: PY - PH / 2, vx: 0, vy: -BSPD,
         bounces: ric, dead: false, lastHit: null, isRic, isAcc
       });
     }
   } else {
-    const t1 = getAimTarget(player.x - 14, PY - PH / 2, null);
-    const t2 = getAimTarget(player.x + 14, PY - PH / 2, t1) || t1;
+    const t1 = getAimTarget(player.x - 20, PY - PH / 2, null);
+    const t2 = getAimTarget(player.x + 20, PY - PH / 2, t1) || t1;
     const tgts = [t1, t2];
-    [-14, 14].forEach((ox, i) => {
+    [-20, 20].forEach((ox, i) => {
       const sx = player.x + ox, sy = PY - PH / 2, t = tgts[i];
       let vx = 0, vy = -BSPD;
       if(t){
@@ -1369,10 +1324,8 @@ function loop(ts){
       waveSpawnTimer = getWaveSpawnRate();
     }
   } else if(enemies.length === 0 && !activeBoss){
-    // All enemies in wave defeated!
     waveIntermission += dt;
     if(waveIntermission >= 2.5){
-      // Start next wave!
       score += currentWave * 100;
       fltxt(W / 2, H * 0.4, `WAVE ${currentWave} CLEARED! +${currentWave * 100}`, '#FFAA00');
       startWave(currentWave + 1);
@@ -1436,7 +1389,7 @@ function loop(ts){
       if(e.dead) continue;
       const er = Math.max(e.w, e.h) / 2;
       if(Math.abs(e.x - player.x) < fw / 2 + er){
-        dmgE(e, dps * dt, true); // true = thermal damage (melts carapaces)
+        dmgE(e, dps * dt, true);
       }
     }
   }
@@ -1501,7 +1454,6 @@ function loop(ts){
     if(b.dead) continue;
     b.x += b.vx * dt; b.y += b.vy * dt;
 
-    // Ricochet off side walls
     if(b.bounces > 0 && (b.x < 4 || b.x > W - 4)){
       b.vx = -b.vx; b.bounces--;
     }
@@ -1509,14 +1461,12 @@ function loop(ts){
       b.dead = true; continue;
     }
 
-    // Bullet vs Enemies
     for(const e of enemies){
       if(e.dead) continue;
       if(Math.abs(b.x - e.x) < e.w / 2 + 3 && Math.abs(b.y - e.y) < e.h / 2 + 3){
         const bounceDmgBonus = b.isRic ? 0.2 * (bounces(upg.ricochet || 0) - b.bounces) : 0;
         dmgE(e, 1 + bounceDmgBonus);
 
-        // ⚡ Tesla Matrix Chain Shock
         if(upg.tesla) triggerTesla(e, e.x, e.y);
 
         b.lastHit = e;
@@ -1531,8 +1481,7 @@ function loop(ts){
   }
   bullets = bullets.filter(b => !b.dead);
 
-  // 9. Update Enemy Behaviors & Shield Tethers
-  // First, calculate active shielders
+  // 9. Update Enemy Behaviors
   const shielders = enemies.filter(e => !e.dead && e.type === 'shielder');
   for(const e of enemies){
     e.shieldTether = false;
@@ -1543,26 +1492,22 @@ function loop(ts){
     }
   }
 
-  // Update enemies movement & behaviors
   for(const e of enemies){
     if(e.dead) continue;
 
-    // Cryo Slow Effect
     let spdMult = 1.0;
     if(e.slowTimer > 0){
       e.slowTimer -= dt;
-      spdMult = 0.4; // 60% slow down!
+      spdMult = 0.4;
     }
 
     if(e.type === 'crasher'){
-      // Sprint when crossing 38% screen height
       if(!e.sprinting && e.y > H * 0.38){
         e.sprinting = true;
         e.vy = 160;
         burst(e.x, e.y, '#FF3344', 8, 80, 2);
       }
     } else if(e.type === 'boss'){
-      // Boss hovers and strafes side to side
       if(e.y < H * 0.18){
         e.y += e.vy * spdMult * dt;
       } else {
@@ -1571,7 +1516,6 @@ function loop(ts){
       }
       e.shootT -= dt;
       if(e.shootT <= 0){
-        // Boss fires plasma burst
         e.shootT = 2.4;
         burst(e.x, e.y + e.h / 2, '#FF3300', 8, 70, 3);
       }
@@ -1584,14 +1528,13 @@ function loop(ts){
 
     if(e.flash > 0) e.flash--;
 
-    // Direct collision with player
     if(!e.dead && Math.abs(e.x - player.x) < (e.w + PW) / 2 - 5 && Math.abs(e.y - PY) < (e.h + PH) / 2 - 5){
       hitPlayer(); e.dead = true;
     }
 
-    // BREACH OF FORTRESS DEFENSE PERIMETER!
+    // BREACH OF FORTRESS DEFENSE PERIMETER
     if(!e.dead && e.y > PY + PH / 2 + 6){
-      hitPlayer(); // Breaching perimeter deals barrier damage!
+      hitPlayer();
       burst(e.x, PY + PH / 2 + 6, '#FF0055', 14, 160, 4);
       fltxt(e.x, PY + PH / 2 + 6, 'PERIMETER BREACH!', '#FF3344');
       e.dead = true;
@@ -1621,7 +1564,7 @@ function loop(ts){
 }
 
 // ═════════════════════════════════════════════════════════════
-// RENDERING & VISUAL DESIGN
+// RENDERING & VISUAL DESIGN (NO GRAPH/GRID LINES)
 // ═════════════════════════════════════════════════════════════
 function drawAll(){
   drawPerimeterLine();
@@ -1638,7 +1581,6 @@ function drawAll(){
   drawWaveBanner();
 }
 
-// Glowing Fortress Defense Line
 function drawPerimeterLine(){
   const y = PY + PH / 2 + 6;
   X.save();
@@ -1673,14 +1615,12 @@ function drawEnemies(){
     X.translate(e.x, e.y);
     const fl = e.flash > 0;
 
-    // Shield Tether Aura
     if(e.shieldTether && e.type !== 'shielder'){
       X.strokeStyle = 'rgba(0, 229, 255, 0.6)';
       X.lineWidth = 1.5;
       X.beginPath(); X.arc(0, 0, Math.max(e.w, e.h) * 0.65, 0, Math.PI * 2); X.stroke();
     }
 
-    // Frozen Slow Aura
     if(e.slowTimer > 0){
       X.strokeStyle = 'rgba(103, 232, 249, 0.8)';
       X.lineWidth = 2;
@@ -1688,7 +1628,6 @@ function drawEnemies(){
     }
 
     if(e.type === 'scout'){
-      // 1. Scout Crawler (Gray & Amber)
       X.fillStyle = fl ? '#fff' : '#141822';
       X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
       X.fillStyle = fl ? '#fff' : '#8F98A8';
@@ -1700,7 +1639,6 @@ function drawEnemies(){
         X.shadowBlur = 0;
       }
     } else if(e.type === 'crasher'){
-      // 2. Sprint Crasher (Crimson & Fiery Orange)
       X.fillStyle = fl ? '#fff' : '#2A0B10';
       X.beginPath();
       X.moveTo(0, e.h / 2); X.lineTo(e.w / 2, -e.h / 2); X.lineTo(-e.w / 2, -e.h / 2);
@@ -1714,17 +1652,14 @@ function drawEnemies(){
         X.shadowBlur = 0;
       }
     } else if(e.type === 'shielder'){
-      // 3. Shield Drone (Cyan Bubble Barrier)
       X.fillStyle = fl ? '#fff' : '#0B1422';
       X.beginPath(); X.ellipse(0, 0, e.w / 2, e.h / 2, 0, 0, Math.PI * 2); X.fill();
       X.fillStyle = '#00E5FF';
       X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
-      // Cyan Energy Bubble
       X.strokeStyle = '#00E5FF'; X.lineWidth = 2; X.shadowColor = '#00E5FF'; X.shadowBlur = 14;
       X.beginPath(); X.arc(0, 0, e.w / 2 + 6, 0, Math.PI * 2); X.stroke();
       X.shadowBlur = 0;
     } else if(e.type === 'carapace'){
-      // 4. Armored Carapace (Heavy Tungsten & Ceramic)
       X.fillStyle = fl ? '#fff' : '#181E2B';
       X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
       X.fillStyle = fl ? '#fff' : '#E2E8F0';
@@ -1733,7 +1668,6 @@ function drawEnemies(){
       X.fillStyle = '#FF4400';
       X.fillRect(-e.w / 4, -4, e.w / 2, 8);
     } else if(e.type === 'splitter' || e.type === 'micro'){
-      // 5. Brood Splitter (Emerald Spikes)
       X.fillStyle = fl ? '#fff' : '#0D1E16';
       X.beginPath();
       X.moveTo(0, -e.h / 2); X.lineTo(e.w / 2, 0); X.lineTo(0, e.h / 2); X.lineTo(-e.w / 2, 0);
@@ -1741,20 +1675,17 @@ function drawEnemies(){
       X.fillStyle = '#10B981';
       X.beginPath(); X.arc(0, 0, e.type === 'micro' ? 2 : 3.5, 0, Math.PI * 2); X.fill();
     } else if(e.type === 'boss'){
-      // 6. Titan Behemoth Boss
       X.fillStyle = fl ? '#fff' : '#141824';
       X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
       X.fillStyle = '#E2E8F0';
       X.fillRect(-e.w / 2 - 8, -e.h / 2, 8, e.h * 0.8);
       X.fillRect(e.w / 2, -e.h / 2, 8, e.h * 0.8);
-      // Twin plasma muzzles
       X.fillStyle = '#FF3300'; X.shadowColor = '#FF3300'; X.shadowBlur = 12;
       X.fillRect(-e.w * 0.35, e.h / 2 - 4, 8, 8);
       X.fillRect(e.w * 0.35 - 8, e.h / 2 - 4, 8, 8);
       X.shadowBlur = 0;
     }
 
-    // Health Bar for tougher units
     if(e.mhp > 4 && !fl && e.type !== 'boss'){
       const bw = e.w + 4, rat = Math.max(0, e.hp / e.mhp);
       X.fillStyle = '#0C0E14'; X.fillRect(-bw / 2, e.h / 2 + 3, bw, 3.5);
@@ -1788,21 +1719,16 @@ function drawLockReticle(){
   X.shadowBlur = 0;
 }
 
+// CLEAN DEEP SPACE BACKGROUND (NO GRAPH / GRID LINES)
 function drawBG(){
   const g = X.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#06070B');
-  g.addColorStop(.5, '#0A0D13');
-  g.addColorStop(1, '#11141C');
+  g.addColorStop(0, '#05070B');
+  g.addColorStop(.5, '#090C12');
+  g.addColorStop(1, '#0F121A');
   X.fillStyle = g;
   X.fillRect(0, 0, W, H);
 
-  // Subtle tactical simulation grid
-  X.strokeStyle = 'rgba(255,255,255,0.025)';
-  X.lineWidth = 1;
-  const gStep = 70;
-  for(let x = (W / 2) % gStep; x < W; x += gStep){ X.beginPath(); X.moveTo(x, 0); X.lineTo(x, H); X.stroke(); }
-  for(let y = 0; y < H; y += gStep){ X.beginPath(); X.moveTo(0, y); X.lineTo(W, y); X.stroke(); }
-
+  // Multi-depth Starfield
   const t = Date.now() * .001;
   for(const s of stars){
     X.globalAlpha = s.a * (0.5 + 0.5 * Math.sin(t * .8 + s.tw));
@@ -1811,6 +1737,7 @@ function drawBG(){
   }
   X.globalAlpha = 1;
 
+  // Drifting Amber Embers
   for(const e of embers){
     X.globalAlpha = e.life * .75;
     X.shadowBlur = 8; X.shadowColor = e.col; X.fillStyle = e.col;
@@ -1821,12 +1748,11 @@ function drawBG(){
 
   const bg = X.createLinearGradient(0, PY - 12, 0, H);
   bg.addColorStop(0, 'transparent');
-  bg.addColorStop(1, '#0B0E15');
+  bg.addColorStop(1, '#090C12');
   X.fillStyle = bg;
   X.fillRect(0, PY - 12, W, H - (PY - 12));
 }
 
-// 🔥 INFERNO THERMAL BEAM (MAGMA RED-ORANGE)
 function drawFlare(){
   if(!upg.inferno) return;
   const fw = flareW(upg.inferno), cx = player.x, t = flarePhase;
@@ -1846,7 +1772,6 @@ function drawFlare(){
   X.shadowBlur = 0; X.globalAlpha = 1;
 }
 
-// BULLETS (COLOR CODED BY ACTIVE UPGRADES)
 function drawBullets(){
   for(const b of bullets){
     if(b.dead) continue;
@@ -1863,7 +1788,6 @@ function drawBullets(){
   X.globalAlpha = 1;
 }
 
-// 🚀 HIVE SWARM MISSILES (CYBER VIOLET)
 function drawMissiles(){
   for(const m of missiles){
     if(m.dead) continue;
@@ -1881,7 +1805,6 @@ function drawMissiles(){
   }
 }
 
-// ⚡ TESLA BOLTS & PARTICLES
 function drawParts(){
   for(const p of parts){
     if(p.type === 'bolt'){
@@ -1898,7 +1821,9 @@ function drawParts(){
   X.globalAlpha = 1;
 }
 
-// PLAYER TOP-DOWN MECHA
+// ═════════════════════════════════════════════════════════════
+// IN-COMBAT TOP-DOWN HUMANOID ROBOT MECHA (MATCHING INSPECTION)
+// ═════════════════════════════════════════════════════════════
 function drawPlayer(){
   for(const p of player.thrust){
     X.globalAlpha = Math.max(0, p.life * .8); X.fillStyle = p.col; X.shadowBlur = 10; X.shadowColor = p.col;
@@ -1918,96 +1843,123 @@ function drawPlayer(){
     X.restore(); return;
   }
 
-  // 1. Under-Chassis & Engine Mounts
+  // A. Trailing Legs & Skirt Armor (Humanoid Flight Posture)
   X.fillStyle = '#11141D';
-  X.beginPath();
-  X.moveTo(0, -PH * 0.45);
-  X.lineTo(PW * 0.25, -PH * 0.15);
-  X.lineTo(PW * 0.48, PH * 0.38);
-  X.lineTo(PW * 0.22, PH * 0.48);
-  X.lineTo(0, PH * 0.42);
-  X.lineTo(-PW * 0.22, PH * 0.48);
-  X.lineTo(-PW * 0.48, PH * 0.38);
-  X.lineTo(-PW * 0.25, -PH * 0.15);
-  X.closePath();
-  X.fill();
+  X.fillRect(-12, 8, 24, 10);
+  // Left leg
+  X.fillStyle = '#CBD2DE';
+  X.fillRect(-14, 12, 9, 18);
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(-13, 14, 7, 12);
+  // Right leg
+  X.fillStyle = '#CBD2DE';
+  X.fillRect(5, 12, 9, 18);
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(6, 14, 7, 12);
 
-  // 2. Twin Pulse Railgun Barrels
+  // B. Backpack Thruster Unit (Mounted Behind Torso)
+  X.fillStyle = '#161A24';
+  X.fillRect(-16, 2, 32, 16);
+  // Rocket nozzles
+  X.fillStyle = '#222836';
+  X.fillRect(-15, 16, 8, 7);
+  X.fillRect(7, 16, 8, 7);
+
+  // C. Broad Armored Shoulder Pauldrons (Left & Right - Chunky Robot Shoulders)
+  // Left Shoulder
   X.fillStyle = '#181C26';
-  X.fillRect(-17, -PH * 0.58, 6, 26);
-  X.fillRect(11, -PH * 0.58, 6, 26);
+  X.fillRect(-27, -8, 14, 20);
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(-26, -7, 12, 18);
+  X.fillStyle = '#E2E7F0';
+  X.fillRect(-25, -5, 10, 14);
+  X.strokeStyle = '#141720'; X.lineWidth = 1.2;
+  X.strokeRect(-26, -7, 12, 18);
 
-  // Muzzle coils (Gold if Accelerator upgraded)
+  // Right Shoulder
+  X.fillStyle = '#181C26';
+  X.fillRect(13, -8, 14, 20);
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(14, -7, 12, 18);
+  X.fillStyle = '#E2E7F0';
+  X.fillRect(15, -5, 10, 14);
+  X.strokeRect(14, -7, 12, 18);
+
+  // D. Robotic Arms & Weapon Gauntlets with Twin Railguns
+  // Left arm & cannon
+  X.fillStyle = '#181C26';
+  X.fillRect(-24, -22, 7, 16);
+  X.fillStyle = '#12151E';
+  X.fillRect(-22, -36, 4, 28);
   X.fillStyle = (upg.accelerator || 0) > 0 ? '#FACC15' : '#FFAA00';
-  X.shadowColor = X.fillStyle; X.shadowBlur = 8;
-  X.fillRect(-18, -PH * 0.62, 8, 3.5);
-  X.fillRect(10, -PH * 0.62, 8, 3.5);
-  X.shadowBlur = 0;
+  X.fillRect(-23, -37, 6, 3);
 
-  // 3. Ceramic White Delta Wings
-  X.shadowColor = 'rgba(0,0,0,0.5)';
-  X.shadowBlur = 10;
-  X.fillStyle = '#E6ECF5';
-  // Left wing
-  X.beginPath();
-  X.moveTo(-6, -PH * 0.25);
-  X.lineTo(-PW * 0.5, PH * 0.24);
-  X.lineTo(-PW * 0.42, PH * 0.42);
-  X.lineTo(-PW * 0.2, PH * 0.36);
-  X.lineTo(-6, PH * 0.32);
-  X.closePath(); X.fill();
-  // Right wing
-  X.beginPath();
-  X.moveTo(6, -PH * 0.25);
-  X.lineTo(PW * 0.5, PH * 0.24);
-  X.lineTo(PW * 0.42, PH * 0.42);
-  X.lineTo(PW * 0.2, PH * 0.36);
-  X.lineTo(6, PH * 0.32);
-  X.closePath(); X.fill();
-  X.shadowBlur = 0;
+  // Right arm & cannon
+  X.fillStyle = '#181C26';
+  X.fillRect(17, -22, 7, 16);
+  X.fillStyle = '#12151E';
+  X.fillRect(18, -36, 4, 28);
+  X.fillStyle = (upg.accelerator || 0) > 0 ? '#FACC15' : '#FFAA00';
+  X.fillRect(17, -37, 6, 3);
 
-  // 4. Central Fuselage & Armor Spine
+  // E. Central Chest Chassis & Cockpit Armor
   X.fillStyle = '#FFFFFF';
   X.beginPath();
-  X.moveTo(0, -PH * 0.52);
-  X.lineTo(9, -PH * 0.22);
-  X.lineTo(10, PH * 0.22);
-  X.lineTo(0, PH * 0.4);
-  X.lineTo(-10, PH * 0.22);
-  X.lineTo(-9, -PH * 0.22);
+  X.moveTo(-11, -6);
+  X.lineTo(11, -6);
+  X.lineTo(9, 11);
+  X.lineTo(-9, 11);
   X.closePath(); X.fill();
 
-  X.strokeStyle = '#141720';
-  X.lineWidth = 1.4;
-  X.beginPath(); X.moveTo(0, -PH * 0.5); X.lineTo(0, -PH * 0.12); X.stroke();
+  // Chest vents & seam line
+  X.fillStyle = '#141720';
+  X.fillRect(-8, -3, 5, 2.5);
+  X.fillRect(3, -3, 5, 2.5);
+  X.fillRect(-8, 1, 5, 2.5);
+  X.fillRect(3, 1, 5, 2.5);
+  X.strokeStyle = '#141720'; X.lineWidth = 1.2;
+  X.beginPath(); X.moveTo(0, -6); X.lineTo(0, 10); X.stroke();
 
-  // 5. Cockpit Visor Canopy
-  X.fillStyle = '#0B0D12';
+  // F. Robotic Helmet (Nestled between Shoulders)
+  X.fillStyle = '#0E1118';
+  X.fillRect(-7, -16, 14, 11);
+
+  // Helmet Dome
+  X.fillStyle = '#FFFFFF';
   X.beginPath();
-  X.moveTo(0, -PH * 0.2);
-  X.lineTo(6, -PH * 0.06);
-  X.lineTo(4, PH * 0.08);
-  X.lineTo(-4, PH * 0.08);
-  X.lineTo(-6, -PH * 0.06);
+  X.moveTo(0, -18);
+  X.lineTo(6, -12);
+  X.lineTo(5, -5);
+  X.lineTo(-5, -5);
+  X.lineTo(-6, -12);
   X.closePath(); X.fill();
 
-  // Glowing Visor
-  X.shadowColor = '#FF6600'; X.shadowBlur = 10;
+  // Antenna fins
+  X.fillStyle = '#CBD2DE';
+  X.beginPath();
+  X.moveTo(-6, -11); X.lineTo(-11, -17); X.lineTo(-5, -14);
+  X.closePath(); X.fill();
+  X.beginPath();
+  X.moveTo(6, -11); X.lineTo(11, -17); X.lineTo(5, -14);
+  X.closePath(); X.fill();
+
+  // Glowing Amber Ocular Visor
+  X.fillStyle = '#080A0F';
+  X.fillRect(-4.5, -13, 9, 4.5);
   X.fillStyle = '#FFAA00';
-  X.beginPath();
-  X.ellipse(0, -PH * 0.06, 4.5, 2.2, 0, 0, Math.PI * 2);
-  X.fill();
+  X.shadowColor = '#FF7700'; X.shadowBlur = 8;
+  X.fillRect(-3.5, -12, 7, 2.5);
   X.fillStyle = '#FFFFFF'; X.shadowBlur = 0;
-  X.beginPath(); X.arc(-1, -PH * 0.06 - 0.5, 1, 0, Math.PI * 2); X.fill();
+  X.fillRect(-1.5, -12, 2, 1);
 
-  // 6. 🚀 Hive Missile Shoulder Pods
+  // G. Missile Pods (if upgrade owned)
   if(upg.missiles){
     X.fillStyle = '#141720';
-    X.fillRect(-PW / 2 - 8, -PH * 0.1, 8, 16);
-    X.fillRect(PW / 2, -PH * 0.1, 8, 16);
-    X.fillStyle = '#C084FC'; X.shadowBlur = 8; X.shadowColor = '#A855F7';
-    X.fillRect(-PW / 2 - 6, -PH * 0.08, 4, 3);
-    X.fillRect(PW / 2 + 2, -PH * 0.08, 4, 3);
+    X.fillRect(-30, -12, 8, 14);
+    X.fillRect(22, -12, 8, 14);
+    X.fillStyle = '#C084FC'; X.shadowBlur = 6; X.shadowColor = '#A855F7';
+    X.fillRect(-28, -10, 4, 3);
+    X.fillRect(24, -10, 4, 3);
     X.shadowBlur = 0;
   }
 
@@ -2036,7 +1988,6 @@ function drawHUD(){
   X.font = (W < 460 ? '9px' : '10.5px') + ' "Share Tech Mono",monospace'; X.fillStyle = '#FFAA00';
   X.fillText('SCORE: ' + score.toLocaleString(), 14, 40);
 
-  // Remaining wave enemies or intermission indicator
   X.fillStyle = '#9EA5B0'; X.textAlign = 'right';
   X.fillText('TIME: ' + fmtT(elapsed), W - 14, 22);
   const remaining = waveEnemiesToSpawn + enemies.length;
@@ -2048,7 +1999,7 @@ function drawHUD(){
   }
   X.textAlign = 'left';
 
-  // Shield Cells (Fortress Barrier)
+  // Shield Cells
   const shMax = player.shMax, pip = W < 460 ? 11 : 16, gap = W < 460 ? 3 : 5;
   const totalW = shMax * (pip + gap) - gap, sx = W / 2 - totalW / 2;
   for(let i = 0; i < shMax; i++){
@@ -2063,7 +2014,7 @@ function drawHUD(){
   X.font = '8px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.5)';
   X.textAlign = 'center'; X.fillText('FORTRESS BARRIER SHIELD', W / 2, 15); X.textAlign = 'left';
 
-  // Boss Health Bar (if active)
+  // Boss Health Bar
   if(activeBoss && !activeBoss.dead){
     const bw = Math.min(360, W * 0.7), bx = W / 2 - bw / 2, by = 60;
     const rat = Math.max(0, activeBoss.hp / activeBoss.mhp);
@@ -2092,7 +2043,7 @@ function drawHUD(){
   X.fillText('OVERDRIVE LVL ' + odLevel + ' · ' + Math.floor(xrat * 100) + '%', W - 4, by - 3);
   X.textAlign = 'left';
 
-  // Active Upgrade Glyphs (Vibrant Individual Colors)
+  // Active Upgrade Glyphs
   const owned = Object.entries(upg || {}).filter(([k, v]) => v > 0);
   if(owned.length){
     let ux = 10; X.font = '10px "Share Tech Mono",monospace';
@@ -2106,7 +2057,6 @@ function drawHUD(){
   }
 }
 
-// Wave Announcement Banner Animation
 function drawWaveBanner(){
   if(waveBannerAlpha <= 0) return;
   X.save();
