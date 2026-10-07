@@ -1259,7 +1259,7 @@ function spawnWaveEnemy(){
 }
 
 function spawnBoss(){
-  const hp = 120 + (currentWave - 5) * 60;
+  const hp = 180 + (currentWave - 5) * 80;
   const b = {
     type: 'boss', x: W / 2, y: -90, vy: 35, vx: 30,
     w: 86, h: 64, hp, mhp: hp, sc: 500, xpv: 75,
@@ -1278,27 +1278,27 @@ function mkEnemy(type, x, y){
   if(type === 'scout'){
     Object.assign(e, {
       w: 28, h: 22, vy: 38 + Math.min(30, currentWave * 2), vx: 0,
-      hp: 4, mhp: 4, sc: 15, xpv: 5, wPhase: Math.random() * Math.PI * 2
+      hp: 6, mhp: 6, sc: 15, xpv: 5, wPhase: Math.random() * Math.PI * 2
     });
   } else if(type === 'crasher'){
     Object.assign(e, {
       w: 26, h: 26, vy: 34, vx: 0, sprinting: false,
-      hp: 3, mhp: 3, sc: 25, xpv: 8, wPhase: Math.random() * Math.PI * 2
+      hp: 5, mhp: 5, sc: 25, xpv: 8, wPhase: Math.random() * Math.PI * 2
     });
   } else if(type === 'splitter'){
     Object.assign(e, {
       w: 32, h: 28, vy: 40 + Math.min(25, currentWave * 1.5), vx: (Math.random() - .5) * 15,
-      hp: 6, mhp: 6, sc: 30, xpv: 10
+      hp: 9, mhp: 9, sc: 30, xpv: 10
     });
   } else if(type === 'carapace'){
     Object.assign(e, {
       w: 44, h: 36, vy: 26, vx: 0,
-      hp: 16, mhp: 16, sc: 50, xpv: 18
+      hp: 22, mhp: 22, sc: 50, xpv: 18
     });
   } else if(type === 'shielder'){
     Object.assign(e, {
       w: 34, h: 30, vy: 32, vx: (Math.random() - .5) * 20,
-      hp: 10, mhp: 10, sc: 40, xpv: 14, shieldRadius: 90
+      hp: 14, mhp: 14, sc: 40, xpv: 14, shieldRadius: 90
     });
   }
 
@@ -1306,6 +1306,7 @@ function mkEnemy(type, x, y){
 }
 
 function dmgE(e, d, opts = {}){
+  if(e.y < 0) return;
   let finalD = d;
 
   // Autonomous weapon amplification
@@ -1391,7 +1392,7 @@ function killE(e){
       enemies.push({
         type: 'micro', x: e.x + (i ? 14 : -14), y: e.y,
         vy: 75, vx: i ? 35 : -35, w: 18, h: 14,
-        hp: 2, mhp: 2, sc: 10, xpv: 4, dead: false, flash: 0,
+        hp: 3, mhp: 3, sc: 10, xpv: 4, dead: false, flash: 0,
         slowTimer: 0, stunTimer: 0, shieldTether: false
       });
     }
@@ -1445,7 +1446,7 @@ function isPlayerControlling(){
 }
 
 function getAimTarget(fromX, fromY, exclude){
-  const pool = enemies.filter(e => !e.dead && e !== exclude && e.y < PY + 20);
+  const pool = enemies.filter(e => !e.dead && e !== exclude && e.y >= 20 && e.y < PY + 20);
   if(!pool.length) return null;
   pool.sort((a, b) => {
     const aScore = a.sprinting ? -1000 : (PY - a.y);
@@ -1517,7 +1518,7 @@ function applyVoltHit(target, fromX, fromY){
     target.stunTimer = stunDur;
     fltxt(target.x, target.y - 12, 'STUNNED!', '#00E5FF');
   }
-  dmgE(target, 3.2, { isAutonomous: true });
+  dmgE(target, 1.8, { isAutonomous: true });
   parts.push({ type: 'bolt', x1: fromX, y1: fromY, x2: target.x, y2: target.y, life: 1, dk: .32, col: '#00E5FF' });
 }
 
@@ -1584,12 +1585,12 @@ function updatePrism(dt){
   prismSwept += dt * 2.6;
   const sweep = upg.prism >= 3 ? Math.sin(prismSwept) * 35 : 0;
   const bx = player.x + sweep, bw = 16 + (upg.prism || 0) * 4;
-  const dps = 14 * (1.35 ** (upg.prism || 0));
+  const dps = 7.0 * (1.35 ** (upg.prism || 0));
 
   for(const e of enemies){
     if(e.dead) continue;
     const er = Math.max(e.w, e.h) / 2;
-    if(Math.abs(e.x - bx) < bw / 2 + er){
+    if(e.y >= 0 && Math.abs(e.x - bx) < bw / 2 + er){
       dmgE(e, dps * dt, { isThermal: true, isAutonomous: true });
 
       // Conduit Beam Pulse Synergy: conducts lightning along beam contact
@@ -1643,7 +1644,7 @@ function updateInferno(dt){
   const speed = 4.2 + (upg.inferno - 1) * 0.8;
   wheelAngle += speed * dt;
 
-  const dps = 18 * (1.3 ** (upg.inferno - 1));
+  const dps = 9.0 * (1.3 ** (upg.inferno - 1));
   for(let i = 0; i < count; i++){
     const a = wheelAngle + i * (Math.PI * 2 / count);
     const wx = player.x + Math.cos(a) * rad;
@@ -1720,7 +1721,7 @@ function updateSingularities(dt){
       singularities.push({
         x: sx, y: sy, rad, life: 2.8, maxLife: 2.8,
         pull: 170, tether: upg.singularity >= 2,
-        coreDmg: 28 * (1.3 ** (upg.singularity - 1)),
+        coreDmg: 15 * (1.3 ** (upg.singularity - 1)),
         resVuln: upg.singularity >= 4,
         empNet: !!activeSynergies.empnet
       });
@@ -1886,11 +1887,11 @@ function loop(ts){
   for(const dp of droneProjectiles){
     if(dp.dead) continue;
     dp.x += dp.vx * dt; dp.y += dp.vy * dt;
-    if(dp.x < -20 || dp.x > W + 20 || dp.y < -20 || dp.y > H + 20){ dp.dead = true; continue; }
+    if(dp.y <= 0 || dp.x < -20 || dp.x > W + 20 || dp.y > H + 20){ dp.dead = true; continue; }
     for(const e of enemies){
       if(e.dead) continue;
       if(Math.hypot(dp.x - e.x, dp.y - e.y) < Math.max(e.w, e.h) / 2 + 5){
-        dmgE(e, 2.5, { isAutonomous: true });
+        dmgE(e, 1.2, { isAutonomous: true });
         if(dp.isSting) e.slowTimer = 1.0 * (1 + (upg.hull_disrupt || 0) * 0.5);
         if(dp.isKnockback && e.type !== 'boss') e.y -= 12;
         dp.dead = true; break;
@@ -1908,7 +1909,7 @@ function loop(ts){
     if(m.dead) continue;
     m.life -= dt;
     if(m.life <= 0){ m.dead = true; continue; }
-    const pool = enemies.filter(e => !e.dead);
+    const pool = enemies.filter(e => !e.dead && e.y >= 20);
     if(pool.length){
       pool.sort((a, b) => Math.hypot(a.x - m.x, a.y - m.y) - Math.hypot(b.x - m.x, b.y - m.y));
       m.target = pool[0];
@@ -1928,7 +1929,7 @@ function loop(ts){
       if(e.dead) continue;
       const er = Math.max(e.w, e.h) / 2;
       if(Math.hypot(m.x - e.x, m.y - e.y) < er + 8){
-        dmgE(e, 5.5, { isArmorPiercing: m.isArmorPiercing, isAutonomous: true });
+        dmgE(e, 3.0, { isArmorPiercing: m.isArmorPiercing, isAutonomous: true });
         burst(m.x, m.y, '#C084FC', 14, 140, 3.5);
 
         // Graviton Detonation synergy: creates mini vacuum
@@ -1937,7 +1938,7 @@ function loop(ts){
           for(const near of enemies){
             if(!near.dead && Math.hypot(near.x - m.x, near.y - m.y) < 75){
               near.x += (m.x - near.x) * 0.4; near.y += (m.y - near.y) * 0.4;
-              dmgE(near, 3, { isAutonomous: true });
+              dmgE(near, 1.8, { isAutonomous: true });
             }
           }
         }
@@ -1971,12 +1972,12 @@ function loop(ts){
   for(const sp of scatterPellets){
     if(sp.dead) continue;
     sp.x += sp.vx * dt; sp.y += sp.vy * dt;
-    if(sp.x < -20 || sp.x > W + 20 || sp.y < -20 || sp.y > H + 20){ sp.dead = true; continue; }
+    if(sp.y <= 0 || sp.x < -20 || sp.x > W + 20 || sp.y > H + 20){ sp.dead = true; continue; }
     for(const e of enemies){
       if(e.dead) continue;
       const er = Math.max(e.w, e.h) / 2;
       if(Math.hypot(sp.x - e.x, sp.y - e.y) < er + 6){
-        dmgE(e, 3.2, { canCrit: true, isAutonomous: sp.isAutonomous });
+        dmgE(e, 1.8, { canCrit: true, isAutonomous: sp.isAutonomous });
         burst(sp.x, sp.y, sp.col || '#F59E0B', 5, 60, 2);
         if(sp.pierces > 0){ sp.pierces--; }
         else { sp.dead = true; break; }
@@ -2004,14 +2005,14 @@ function loop(ts){
     if(b.dead) continue;
     b.x += b.vx * dt; b.y += b.vy * dt;
 
-    if(b.y < -20 || b.y > H + 20 || b.x < -20 || b.x > W + 20){
+    if(b.y <= 0 || b.y > H + 20 || b.x < -20 || b.x > W + 20){
       b.dead = true; continue;
     }
 
     for(const e of enemies){
       if(e.dead) continue;
       if(Math.abs(b.x - e.x) < e.w / 2 + 3 && Math.abs(b.y - e.y) < e.h / 2 + 3){
-        dmgE(e, 1.2, { canCrit: b.canCrit, isPrimary: b.isPrimary });
+        dmgE(e, 0.6, { canCrit: b.canCrit, isPrimary: b.isPrimary });
         b.dead = true;
         break;
       }
