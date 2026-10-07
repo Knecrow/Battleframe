@@ -757,8 +757,8 @@ const UDefs = [
   },
   {
     id: 'prism', category: 'CORE WEAPON', name: 'PRISM BEAM PROJECTOR', glyph: '💎', gc: '#F43F5E', glow: '#E11D48',
-    desc: l => `High-energy continuous thermal laser lance\nWidth: ${14 + l * 4}px · Refraction splinters foes`,
-    next: l => `Beam DPS ×1.32 · Sweeping arc & core burn`,
+    desc: l => `High-energy periodic thermal pulse lance\nFires 0.8s laser blast every ${(2.8 * (.92 ** l)).toFixed(1)}s · Refracts`,
+    next: l => `Pulse DPS ×1.35 · Sweeping arc & core burn`,
     tier: l => ['PRISM LANCE', 'WAVE AMPLIFIER', 'SOLAR OMEGA'][Math.min(2, Math.floor(l / 2))]
   },
   {
@@ -1035,7 +1035,7 @@ let activeBoss = null;
 const bounces = l => 1 + Math.floor(l * .75);
 
 let droneAngle = 0, droneT = 0, droneSortieT = 0;
-let prismSwept = 0, prismPatches = [];
+let prismSwept = 0, prismPatches = [], prismTimer = 0, prismActiveTimer = 0;
 let voltT = 0;
 let wheelAngle = 0, wheelFlakT = 0;
 let scatterT = 0, scatterPellets = [];
@@ -1104,7 +1104,7 @@ function initGame(){
   score = 0; elapsed = 0; kills = 0; odLevel = 0; upg = {}; xp = 0; xpMax = 40;
   bulletT = 0; missileT = 0; cryoT = 0; regenT2 = 0; flarePhase = 0;
   droneAngle = 0; droneT = 0; droneSortieT = 0;
-  prismSwept = 0; prismPatches = [];
+  prismSwept = 0; prismPatches = []; prismTimer = 0; prismActiveTimer = 0;
   voltT = 0; wheelAngle = 0; wheelFlakT = 0;
   scatterT = 0; scatterPellets = [];
   singularityT = 0; singularities = [];
@@ -1579,39 +1579,61 @@ function updateDrones(dt){
   }
 }
 
-// 4. 💎 PRISM BEAM PROJECTOR: Continuous Focused Lance & Refractions
+// 4. 💎 PRISM BEAM PROJECTOR: Periodic Pulse Lance & Refractions
 function updatePrism(dt){
   if(!upg.prism) return;
-  prismSwept += dt * 2.6;
-  const sweep = upg.prism >= 3 ? Math.sin(prismSwept) * 35 : 0;
-  const bx = player.x + sweep, bw = 16 + (upg.prism || 0) * 4;
-  const dps = 7.0 * (1.35 ** (upg.prism || 0));
 
-  for(const e of enemies){
-    if(e.dead) continue;
-    const er = Math.max(e.w, e.h) / 2;
-    if(e.y >= 0 && Math.abs(e.x - bx) < bw / 2 + er){
-      dmgE(e, dps * dt, { isThermal: true, isAutonomous: true });
+  if(prismActiveTimer > 0){
+    // BEAM IS FIRING (0.8s duration)
+    prismActiveTimer -= dt;
+    prismSwept += dt * 3.2;
+    const sweep = upg.prism >= 3 ? Math.sin(prismSwept) * 35 : 0;
+    const bx = player.x + sweep, bw = 16 + (upg.prism || 0) * 4;
+    const dps = 18.0 * (1.35 ** (upg.prism || 0));
 
-      // Conduit Beam Pulse Synergy: conducts lightning along beam contact
-      if(activeSynergies.conduit && Math.random() < 0.22){
-        triggerTesla(e, e.x, e.y);
-      }
+    for(const e of enemies){
+      if(e.dead) continue;
+      const er = Math.max(e.w, e.h) / 2;
+      if(e.y >= 0 && Math.abs(e.x - bx) < bw / 2 + er){
+        dmgE(e, dps * dt, { isThermal: true, isAutonomous: true });
 
-      // Refractive Splinter: secondary rays to adjacent foes
-      if(upg.prism >= 2 && Math.random() < 0.18){
-        const pool = enemies.filter(o => !o.dead && o !== e && Math.hypot(o.x - e.x, o.y - e.y) < 130);
-        if(pool.length){
-          const sp = pool[0];
-          dmgE(sp, dps * dt * 0.6, { isThermal: true, isAutonomous: true });
-          parts.push({ type: 'bolt', x1: e.x, y1: e.y, x2: sp.x, y2: sp.y, life: 1, dk: .35, col: '#F43F5E' });
+        // Conduit Beam Pulse Synergy: conducts lightning along beam contact
+        if(activeSynergies.conduit && Math.random() < 0.28){
+          triggerTesla(e, e.x, e.y);
+        }
+
+        // Refractive Splinter: secondary rays to adjacent foes
+        if(upg.prism >= 2 && Math.random() < 0.22){
+          const pool = enemies.filter(o => !o.dead && o !== e && o.y >= 0 && Math.hypot(o.x - e.x, o.y - e.y) < 130);
+          if(pool.length){
+            const sp = pool[0];
+            dmgE(sp, dps * dt * 0.65, { isThermal: true, isAutonomous: true });
+            parts.push({ type: 'bolt', x1: e.x, y1: e.y, x2: sp.x, y2: sp.y, life: 1, dk: .35, col: '#F43F5E' });
+          }
+        }
+
+        // Incendiary Core Burn: creates burning ground patch
+        if(upg.prism >= 5 && Math.random() < 0.06){
+          firePatches.push({ x: e.x, y: e.y, r: 24, life: 2.2, dps: 20 });
         }
       }
+    }
 
-      // Incendiary Core Burn: creates burning ground patch
-      if(upg.prism >= 5 && Math.random() < 0.04){
-        firePatches.push({ x: e.x, y: e.y, r: 24, life: 2.2, dps: 20 });
-      }
+    // Energy emitter flare particles
+    if(Math.random() < 0.5){
+      parts.push({
+        x: bx + (Math.random() - .5) * bw, y: PY - PH / 2,
+        vx: (Math.random() - .5) * 50, vy: -Math.random() * 80 - 40,
+        r: 2.8, life: 1, dk: 0.09, col: '#F43F5E', type: 'dot'
+      });
+    }
+  } else {
+    // BEAM IS CHARGING / IN COOLDOWN
+    prismTimer -= dt;
+    if(prismTimer <= 0){
+      prismActiveTimer = 0.8; // Unleash pulse blast for 0.8s
+      prismTimer = 2.8 * (0.92 ** (upg.prism - 1)); // Next cycle cooldown
+      burst(player.x, PY - PH / 2, '#F43F5E', 12, 110, 3);
     }
   }
 }
@@ -2313,18 +2335,36 @@ function drawPrism(){
   const sweep = upg.prism >= 3 ? Math.sin(prismSwept) * 35 : 0;
   const bx = player.x + sweep, bw = 16 + (upg.prism || 0) * 4;
 
-  const bg = X.createLinearGradient(0, PY, 0, 0);
-  bg.addColorStop(0, 'rgba(244,63,94,0.95)');
-  bg.addColorStop(0.4, 'rgba(244,63,94,0.6)');
-  bg.addColorStop(1, 'rgba(244,63,94,0.08)');
-  X.shadowBlur = 32; X.shadowColor = '#F43F5E';
-  X.fillStyle = bg;
-  X.fillRect(bx - bw / 2, 0, bw, PY);
+  // 1. Pre-fire targeting tracer line while charging (0.35s before firing)
+  if(prismActiveTimer <= 0 && prismTimer <= 0.35 && prismTimer > 0){
+    X.save();
+    X.strokeStyle = 'rgba(244, 63, 94, 0.45)';
+    X.lineWidth = 1.5;
+    X.setLineDash([8, 4]);
+    X.beginPath(); X.moveTo(bx, PY - PH / 2); X.lineTo(bx, 0); X.stroke();
+    X.restore();
+    return;
+  }
 
-  // Core laser beam
-  X.fillStyle = '#FFFFFF';
-  X.fillRect(bx - bw * 0.2, 0, bw * 0.4, PY);
-  X.shadowBlur = 0;
+  // 2. Active Pulse Beam
+  if(prismActiveTimer > 0){
+    const alpha = Math.min(1, prismActiveTimer / 0.15);
+    const bg = X.createLinearGradient(0, PY, 0, 0);
+    bg.addColorStop(0, 'rgba(244,63,94,0.95)');
+    bg.addColorStop(0.4, 'rgba(244,63,94,0.65)');
+    bg.addColorStop(1, 'rgba(244,63,94,0.1)');
+
+    X.save();
+    X.globalAlpha = alpha;
+    X.shadowBlur = 35; X.shadowColor = '#F43F5E';
+    X.fillStyle = bg;
+    X.fillRect(bx - bw / 2, 0, bw, PY);
+
+    // Core white laser column
+    X.fillStyle = '#FFFFFF';
+    X.fillRect(bx - bw * 0.22, 0, bw * 0.44, PY);
+    X.restore();
+  }
 }
 
 function drawDrones(){

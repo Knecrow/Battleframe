@@ -35,7 +35,7 @@ You can assemble all 7 weapon systems simultaneously during a single run:
 1. **🛸 Drone Swarm Hive** (`#38BDF8` Sky Cyan):
    - Orbiting autonomous combat drones that seek and engage swarms with Arc-Sting shock darts, kinetic splitters, knockback bursts, and Level 5 **Recovery Sortie Protocols** to repair shields.
 2. **💎 Prism Beam Projector** (`#F43F5E` Hot Magenta):
-   - Continuous high-energy thermal laser lance with refractive secondary rays, sweeping wave arcs, focused single-target melting, and incendiary scorched ground patches.
+   - High-energy periodic pulse lance charging a pre-fire tracer before unleashing a devastating 0.8s laser blast every ~2.8s, featuring refractive secondary rays, sweeping wave arcs, and incendiary scorched ground patches.
 3. **🚀 Skyfire Missile Battery** (`#C084FC` Cyber Violet):
    - Shoulder-mounted pods firing homing missiles with salvo saturation, heavy armor piercing, napalm residue, and submunition cluster bomblets.
 4. **⚡ Volt Arcing Coil** (`#00E5FF` Electric Cyan):
