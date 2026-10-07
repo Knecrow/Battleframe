@@ -17,6 +17,13 @@
   --text-muted:#8F98A8;
   --accent-amber:#FFAA00;
   --accent-orange:#FF6600;
+  --accent-cyan:#00E5FF;
+  --accent-purple:#C084FC;
+  --accent-ice:#67E8F9;
+  --accent-red:#FF3300;
+  --accent-green:#10B981;
+  --accent-gold:#FACC15;
+  --accent-blue:#3B82F6;
   --ceramic-white:#F0F4FA;
   --carbon-dark:#0D1017;
 }
@@ -40,7 +47,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 #fs-btn:hover{color:#FFAA00;border-color:#FF7700;box-shadow:0 0 16px rgba(255,119,0,0.35);}
 
 /* ═════════════════════════════════════════════════════════════
-   TACTICAL HANGAR DASHBOARD (DARK THEME MATCHING COMBAT)
+   TACTICAL HANGAR DASHBOARD (DARK THEME)
    ═════════════════════════════════════════════════════════════ */
 #ts{
   position:absolute;inset:0;z-index:35;display:flex;flex-direction:column;
@@ -106,7 +113,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   max-width:1440px;margin:0 auto;width:100%;align-items:center;
 }
 
-/* Left Column: Systems & Avionics Readouts */
+/* Left Column: Systems Readouts */
 .hangar-left{
   display:flex;flex-direction:column;gap:12px;z-index:5;
   height:100%;justify-content:center;max-height:640px;
@@ -149,7 +156,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 }
 .hangar-instructions span{color:#FFAA00;font-weight:700;}
 
-/* Center Column: Top-Down Mecha on Tactical Platform */
+/* Center Column: Top-Down Mecha on Platform */
 .hangar-center{
   position:relative;height:100%;display:flex;
   align-items:center;justify-content:center;z-index:2;
@@ -163,7 +170,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   filter:drop-shadow(0 14px 28px rgba(0,0,0,0.6));
 }
 
-/* Right Column: Telemetry Specs & Tactical Start Button */
+/* Right Column: Telemetry & Start */
 .hangar-right{
   display:flex;flex-direction:column;gap:18px;z-index:5;
   height:100%;justify-content:center;max-height:640px;padding-left:14px;
@@ -253,7 +260,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 }
 
 /* ═════════════════════════════════════════════════════════════
-   OVERDRIVE LEVEL-UP MODAL
+   OVERDRIVE LEVEL-UP MODAL (COLOR CODED)
    ═════════════════════════════════════════════════════════════ */
 #lu{
   position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
@@ -270,7 +277,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 #lu-s{font-size:clamp(10px, 2vw, 12px);color:#8F98A8;letter-spacing:4px;margin-bottom:28px;text-align:center;}
 #cr{display:flex;gap:clamp(10px, 2vw, 18px);max-width:96vw;justify-content:center;flex-wrap:wrap;}
 .card{
-  width:clamp(120px, 28vw, 160px);min-height:205px;
+  width:clamp(120px, 28vw, 160px);min-height:215px;
   background:linear-gradient(160deg, #161B26 0%, #0E121A 100%);
   color:#FFFFFF;border-radius:6px;padding:14px 10px 12px;
   cursor:pointer;pointer-events:all;position:relative;overflow:hidden;
@@ -279,21 +286,21 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   box-shadow:0 12px 36px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.16);
 }
 .card:hover{
-  transform:translateY(-6px);border-color:#FFAA00;
-  box-shadow:0 16px 40px rgba(255,119,0,0.35);
+  transform:translateY(-6px);
+  box-shadow:0 16px 40px rgba(0,0,0,0.8);
 }
 .chk{position:absolute;top:7px;right:9px;font-size:10px;font-weight:800;color:rgba(255,255,255,0.4);letter-spacing:1px;}
 .cgl{
   width:46px;height:46px;background:#0A0D14;border:1px solid rgba(255,255,255,0.15);
   border-radius:6px;display:flex;align-items:center;justify-content:center;
-  font-size:24px;margin-bottom:10px;line-height:1;color:#FFAA00;
+  font-size:24px;margin-bottom:10px;line-height:1;
   box-shadow:inset 0 0 10px rgba(0,0,0,0.6);
 }
 .cnm{
   font-family:'Orbitron',monospace;font-size:9.5px;font-weight:800;
   color:#FFFFFF;letter-spacing:1px;text-align:center;margin-bottom:4px;line-height:1.2;
 }
-.clv{font-size:9.5px;color:#FFAA00;text-align:center;margin-bottom:6px;letter-spacing:1px;font-weight:800;}
+.clv{font-size:9.5px;text-align:center;margin-bottom:6px;letter-spacing:1px;font-weight:800;}
 .cds{font-size:9.5px;color:#9EA5B0;text-align:center;line-height:1.45;flex:1;}
 .cnx{
   font-size:8.5px;color:#E2E6EC;font-weight:700;text-align:center;line-height:1.35;
@@ -350,14 +357,14 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 </head>
 <body>
 <div id="gw">
-  <!-- Combat Background Canvas -->
+  <!-- Combat Canvas -->
   <canvas id="c"></canvas>
 
   <!-- Fullscreen Toggle -->
   <button id="fs-btn" type="button">[ ⛶ FULLSCREEN ]</button>
 
   <!-- ═════════════════════════════════════════════════════════════
-       TACTICAL HANGAR DASHBOARD (MATCHING GAME THEME)
+       TACTICAL HANGAR DASHBOARD
        ═════════════════════════════════════════════════════════════ -->
   <div id="ts">
     <!-- Top Telemetry Bar -->
@@ -388,7 +395,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
     <!-- 3-Column Body -->
     <div class="hangar-body">
-      <!-- Left Column: Unit Loadout / Systems Diagnostic -->
+      <!-- Left Column: Loadout -->
       <aside class="hangar-left">
         <div class="panel-section-tag">MECHA SYSTEMS // CLASS S</div>
         
@@ -396,15 +403,15 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
           <div class="sys-icon">⚡</div>
           <div class="sys-meta">
             <div class="sys-name">TWIN PULSE RAILGUNS</div>
-            <div class="sys-desc">Wing-mounted kinetic cannons · Straight fire & auto-lock</div>
+            <div class="sys-desc">Wing kinetic cannons · Steady paced fire & auto-lock</div>
           </div>
         </div>
 
         <div class="sys-card">
           <div class="sys-icon">◈</div>
           <div class="sys-meta">
-            <div class="sys-name">KINETIC AEGIS BARRIER</div>
-            <div class="sys-desc">Ceramic composite shielding · Passive regenerative cells</div>
+            <div class="sys-name">FORTRESS BARRIER PERIMETER</div>
+            <div class="sys-desc">Shield defense line · Prevents alien swarm breaches</div>
           </div>
         </div>
 
@@ -412,33 +419,33 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
           <div class="sys-icon">▶▶</div>
           <div class="sys-meta">
             <div class="sys-name">VECTOR DUAL THRUSTERS</div>
-            <div class="sys-desc">Supersonic aerial drift · Dynamic combat roll banking</div>
+            <div class="sys-desc">Responsive lateral banking · Smooth aerial drift</div>
           </div>
         </div>
 
         <div class="sys-card">
           <div class="sys-icon">◎</div>
           <div class="sys-meta">
-            <div class="sys-name">TACTICAL SENSOR SUITE</div>
-            <div class="sys-desc">Glowing amber ocular array · Autonomous targeting computer</div>
+            <div class="sys-name">GALAXY DEFENSE SENSORS</div>
+            <div class="sys-desc">Wave radar tracking · Prioritizes high-threat runners</div>
           </div>
         </div>
 
         <div class="hangar-instructions">
           <span>NAVIGATION:</span> A / D, ARROWS, or TOUCH / DRAG<br>
           <span>BALLISTICS:</span> MOVING = STRAIGHT | IDLE = AUTO-AIM<br>
-          <span>PACING:</span> CALIBRATED SLOW START (RAMPS UP GRADUALLY)
+          <span>DEFENSE:</span> PREVENT ENEMIES FROM BREACHING PERIMETER
         </div>
       </aside>
 
-      <!-- Center Column: Top-Down Mecha on Tactical Platform -->
+      <!-- Center Column: Top-Down Mecha on Platform -->
       <main class="hangar-center">
         <div class="hero-canvas-wrap">
           <canvas id="hero-canvas" width="600" height="600"></canvas>
         </div>
       </main>
 
-      <!-- Right Column: Telemetry Specs & Tactical Launch Button -->
+      <!-- Right Column: Specs & Launch -->
       <aside class="hangar-right">
         <div class="level-header">
           <div class="level-box">
@@ -487,23 +494,14 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
         <div class="skills-section">
           <div class="skills-title">SKILLS</div>
           <div class="skills-row">
-            <div class="skill-box" title="Kinetic Armor Plating">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
-              </svg>
+            <div class="skill-box" title="Tesla Matrix Arc" style="color:var(--accent-cyan)">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
             </div>
-            <div class="skill-box" title="Solar Overdrive Thruster">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/>
-              </svg>
+            <div class="skill-box" title="Inferno Thermal Beam" style="color:var(--accent-red)">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
             </div>
-            <div class="skill-box" title="Twin Magnetic Pulse Pod">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <rect x="3" y="3" width="8" height="8" rx="1.5"/>
-                <rect x="13" y="13" width="8" height="8" rx="1.5"/>
-                <circle cx="17" cy="7" r="3.5"/>
-                <circle cx="7" cy="17" r="3.5"/>
-              </svg>
+            <div class="skill-box" title="Hive Swarm Missiles" style="color:var(--accent-purple)">
+              <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="7" cy="17" r="3.5"/></svg>
             </div>
           </div>
         </div>
@@ -523,19 +521,20 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
     </div>
   </div>
 
-  <!-- Level-Up Overdrive Selection Modal -->
+  <!-- Level-Up Modal -->
   <div id="lu">
-    <div id="lu-t">⚡ OVERDRIVE MODULE ⚡</div>
-    <div id="lu-s">TACTICAL SYSTEM UPGRADE AVAILABLE</div>
+    <div id="lu-t">⚡ MODULE UPGRADE ⚡</div>
+    <div id="lu-s">SELECT TACTICAL COMBAT MODULE</div>
     <div id="cr"></div>
   </div>
 
   <!-- Unit Destroyed Modal -->
   <div id="go">
-    <div class="got">UNIT DESTROYED</div>
+    <div class="got">PERIMETER OVERRUN</div>
+    <div class="gos">WAVE REACHED &nbsp;·&nbsp; <span id="gwv">1</span></div>
     <div class="gos">SURVIVAL TIME &nbsp;·&nbsp; <span id="gt">0s</span></div>
     <div class="gos">FINAL SCORE &nbsp;·&nbsp; <span id="gs">0</span></div>
-    <div class="gos">KILLS &nbsp;·&nbsp; <span id="gk">0</span></div>
+    <div class="gos">ALIENS PURGED &nbsp;·&nbsp; <span id="gk">0</span></div>
     <div class="gos">OVERDRIVE LEVEL &nbsp;·&nbsp; <span id="gl">0</span></div>
     <div class="go-actions">
       <button class="go-btn restart-btn" id="gr" type="button">[ RESTART (R) ]</button>
@@ -637,7 +636,6 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   // 3. Matte Carbon Fiber Under-Chassis & Engine Nacelles
   ctx.fillStyle = '#11141D';
   ctx.beginPath();
-  // Central frame & rear nacelles
   ctx.moveTo(0, -s * 0.65);
   ctx.lineTo(s * 0.18, -s * 0.2);
   ctx.lineTo(s * 0.42, s * 0.45);
@@ -651,26 +649,22 @@ function drawHeroMecha(ctx, w, h, tilt, time){
 
   // 4. Twin Forward Heavy Pulse Railgun Barrels (Mounted on Flanks)
   ctx.fillStyle = '#181C26';
-  // Left barrel
   ctx.fillRect(-s * 0.32, -s * 0.85, s * 0.08, s * 0.95);
-  // Right barrel
   ctx.fillRect(s * 0.24, -s * 0.85, s * 0.08, s * 0.95);
 
   // Muzzle coils and tips
   ctx.fillStyle = '#FFAA00';
   ctx.shadowColor = '#FF7700';
   ctx.shadowBlur = 12;
-  // Left coils
   ctx.fillRect(-s * 0.33, -s * 0.88, s * 0.10, s * 0.06);
   ctx.fillRect(-s * 0.33, -s * 0.65, s * 0.10, s * 0.03);
   ctx.fillRect(-s * 0.33, -s * 0.45, s * 0.10, s * 0.03);
-  // Right coils
   ctx.fillRect(s * 0.23, -s * 0.88, s * 0.10, s * 0.06);
   ctx.fillRect(s * 0.23, -s * 0.65, s * 0.10, s * 0.03);
   ctx.fillRect(s * 0.23, -s * 0.45, s * 0.10, s * 0.03);
   ctx.shadowBlur = 0;
 
-  // 5. Ceramic White Swept Delta Wings (Aerodynamic Armor Plating)
+  // 5. Ceramic White Swept Delta Wings
   ctx.shadowColor = 'rgba(0,0,0,0.5)';
   ctx.shadowBlur = 18;
 
@@ -735,15 +729,14 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.closePath();
   ctx.fill();
 
-  // Center Longitudinal Panel Line
+  // Center Longitudinal Seam
   ctx.strokeStyle = '#141720';
   ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(0, -s * 0.76);
-  ctx.lineTo(0, -s * 0.18);
+  ctx.moveTo(0, -s * 0.76); ctx.lineTo(0, -s * 0.18);
   ctx.stroke();
 
-  // 7. Glowing Amber Ocular Visor / Cockpit Canopy (Signature Look)
+  // 7. Glowing Amber Ocular Visor / Cockpit Canopy
   ctx.fillStyle = '#090B10';
   ctx.beginPath();
   ctx.moveTo(0, -s * 0.32);
@@ -754,20 +747,17 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.closePath();
   ctx.fill();
 
-  // Twin Glowing Amber Visor Slits
+  // Twin Visor Slits
   ctx.shadowColor = '#FF6600';
   ctx.shadowBlur = 14;
   ctx.fillStyle = '#FFAA00';
-  // Left visor slit
   ctx.beginPath();
   ctx.ellipse(-s * 0.045, -s * 0.12, s * 0.035, s * 0.015, -0.3, 0, Math.PI * 2);
   ctx.fill();
-  // Right visor slit
   ctx.beginPath();
   ctx.ellipse(s * 0.045, -s * 0.12, s * 0.035, s * 0.015, 0.3, 0, Math.PI * 2);
   ctx.fill();
 
-  // Specular core reflection
   ctx.fillStyle = '#FFFFFF';
   ctx.shadowBlur = 0;
   ctx.fillRect(-s * 0.05, -s * 0.13, s * 0.018, s * 0.01);
@@ -777,13 +767,47 @@ function drawHeroMecha(ctx, w, h, tilt, time){
 }
 
 // ═════════════════════════════════════════════════════════════
-// COMBAT ENGINE & BALANCED PACING
+// GALAXY DEFENSE TD UPGRADE DEFINITIONS (DISTINCT VIBRANT COLORS)
+// ═════════════════════════════════════════════════════════════
+const UDefs = [
+  { id:'tesla', name:'TESLA MATRIX', glyph:'⚡', gc:'#00E5FF', glow:'#00E5FF',
+    desc:l=>`High-voltage lightning arcs across swarms\nChains: ${1+l} · Shocks clusters`,
+    next:l=>`Chains: ${2+l} · Chain damage +20%`,
+    tier:l=>['SPARK','TESLA TOWER','SKYGUARD'][Math.min(2,Math.floor(l/3))] },
+  { id:'missiles', name:'HIVE SWARM PODS', glyph:'🚀', gc:'#C084FC', glow:'#A855F7',
+    desc:l=>`Homing shoulder micro-missiles\nCount: ${2+l} · CD: ${(3.2*.92**l).toFixed(2)}s · AoE Blast`,
+    next:l=>`Count: ${3+l} · CD: ${(3.2*.92**(l+1)).toFixed(2)}s`,
+    tier:l=>['SALVO','SWARM BAY','HIVE APOCALYPSE'][Math.min(2,Math.floor(l/3))] },
+  { id:'cryo', name:'CRYO DISRUPTION PULSE', glyph:'❄', gc:'#67E8F9', glow:'#38BDF8',
+    desc:l=>`Cryogenic EMP ring slows enemy march\nSlow: 60% for ${(2.2+l*.4).toFixed(1)}s · CD: ${(4.5*.93**l).toFixed(1)}s`,
+    next:l=>`Duration +0.4s · CD -7%`,
+    tier:l=>['FROST','DISRUPTION FIELD','PERMAFROST'][Math.min(2,Math.floor(l/3))] },
+  { id:'inferno', name:'INFERNO THERMAL BEAM', glyph:'🔥', gc:'#FF3300', glow:'#FF5500',
+    desc:l=>`Piercing thermal laser line\nMelts armored carapaces · Width: ${(18*(1+.18*l)).toFixed(0)}px`,
+    next:l=>`Width: ${(18*(1+.18*(l+1))).toFixed(0)}px · DPS×${(1.3**(l+1)).toFixed(2)}`,
+    tier:l=>['SEAR','SOLAR NOVA','EXTINCTION BEAM'][Math.min(2,Math.floor(l/3))] },
+  { id:'ricochet', name:'SHRAPNEL RICOCHET', glyph:'☣', gc:'#10B981', glow:'#059669',
+    desc:l=>`Kinetic slugs bounce off walls & hulls\nBounces: ${1+Math.floor(l*.75)} · Splinters`,
+    next:l=>`Bounces: ${1+Math.floor((l+1)*.75)} · +${(l+1)*20}% dmg/bounce`,
+    tier:l=>['FLAK','KINETIC SPLINTER','HULL SHREDDER'][Math.min(2,Math.floor(l/3))] },
+  { id:'accelerator', name:'PULSE ACCELERATOR', glyph:'🎯', gc:'#FACC15', glow:'#EAB308',
+    desc:l=>`Rotary railgun fire rate overclock\nCD: ${(.28*.88**l*1000).toFixed(0)}ms`,
+    next:l=>`CD: ${(.28*.88**(l+1)*1000).toFixed(0)}ms`,
+    tier:l=>['OVERCLOCK','GATLING PULSE','HYPERDRIVE'][Math.min(2,Math.floor(l/3))] },
+  { id:'aegis', name:'KINETIC AEGIS', glyph:'🛡', gc:'#3B82F6', glow:'#2563EB',
+    desc:l=>`Fortifies perimeter defense barrier\nShields: ${3+l} · Regen: ${Math.max(2,8-l*1.2).toFixed(1)}s`,
+    next:l=>`Shields: ${4+l} · Regen: ${Math.max(2,8-(l+1)*1.2).toFixed(1)}s`,
+    tier:l=>['BARRIER','FORTRESS MATRIX','CITADEL AEGIS'][Math.min(2,Math.floor(l/3))] }
+];
+
+// ═════════════════════════════════════════════════════════════
+// GAME ENGINE & WAVE SYSTEM
 // ═════════════════════════════════════════════════════════════
 const C = document.getElementById('c'), X = C.getContext('2d');
 let W = window.innerWidth, H = window.innerHeight;
 C.width = W; C.height = H;
 let PY = H - Math.max(65, Math.min(85, H * 0.12));
-const PW = 48, PH = 54, BSPD = 680;
+const PW = 48, PH = 54, BSPD = 660;
 
 const $ts = document.getElementById('ts');
 const $lu = document.getElementById('lu');
@@ -793,6 +817,7 @@ const $gt = document.getElementById('gt');
 const $gs = document.getElementById('gs');
 const $gk = document.getElementById('gk');
 const $gl = document.getElementById('gl');
+const $gwv = document.getElementById('gwv');
 const $fs = document.getElementById('fs-btn');
 
 function toggleFS(){
@@ -815,7 +840,7 @@ function resize(){
 }
 window.addEventListener('resize', resize);
 
-// Touch Controls
+// Input
 let touchX = null;
 window.addEventListener('touchstart', e => {
   if(e.touches.length > 0) touchX = e.touches[0].clientX;
@@ -826,7 +851,6 @@ window.addEventListener('touchmove', e => {
 window.addEventListener('touchend', () => { touchX = null; });
 window.addEventListener('touchcancel', () => { touchX = null; });
 
-// Keyboard Controls
 const KEY = {};
 window.addEventListener('keydown', e => {
   KEY[e.code] = true;
@@ -847,37 +871,9 @@ window.addEventListener('keyup', e => { KEY[e.code] = false; });
 document.getElementById('tb').onclick = () => GS === 'title' && startGame();
 document.getElementById('gr').onclick = () => GS === 'over' && restart();
 document.getElementById('gh').onclick = () => GS === 'over' && returnToHangar();
-document.getElementById('back-tag-btn').onclick = () => { /* Visual feedback */ };
+document.getElementById('back-tag-btn').onclick = () => {};
 
-// Upgrade Definitions
-const UDefs = [
-  { id:'ricochet', name:'KINETIC RICOCHET', glyph:'↻', gc:'#FFFFFF',
-    desc:l=>`Projectiles bounce off walls & enemies\nBounces: ${1+Math.floor(l*.75)}`,
-    next:l=>`Bounces: ${1+Math.floor((l+1)*.75)} · +${(l+1)*15}% dmg/bounce`,
-    tier:l=>['STANDARD','ADVANCED','OVERDRIVE'][Math.min(2,Math.floor(l/3))] },
-  { id:'solarflare', name:'SOLAR FLARE BEAM', glyph:'☀', gc:'#FF7700',
-    desc:l=>`Thermal pierce beam\nWidth: ${(20*(1+.15*l)).toFixed(0)}px · Burns`,
-    next:l=>`Width: ${(20*(1+.15*(l+1))).toFixed(0)}px · DPS×${(1.3**(l+1)).toFixed(2)}`,
-    tier:l=>['THERMAL','INFERNO','SOLAR NOVA'][Math.min(2,Math.floor(l/3))] },
-  { id:'missiles', name:'SWARM MISSILES', glyph:'⚡', gc:'#FFAA00',
-    desc:l=>`Homing shoulder pods\nCount: ${2+l} · CD: ${(3*.92**l).toFixed(2)}s`,
-    next:l=>`Count: ${3+l} · CD: ${(3*.92**(l+1)).toFixed(2)}s`,
-    tier:l=>['SALVO','BARRAGE','APOCALYPSE'][Math.min(2,Math.floor(l/3))] },
-  { id:'lightning', name:'CHAIN LIGHTNING', glyph:'⚡', gc:'#FFE57F',
-    desc:l=>`Laser arcs electric bolts\nChains: ${l+1}`,
-    next:l=>`Chains: ${l+2} · Range +10%`,
-    tier:l=>['SPARK','STORM','THUNDERGOD'][Math.min(2,Math.floor(l/3))] },
-  { id:'accelerator', name:'PULSE ACCELERATOR', glyph:'▶▶', gc:'#FFFFFF',
-    desc:l=>`Primary fire rate boost\nCD: ${(.14*.91**l*1000).toFixed(0)}ms`,
-    next:l=>`CD: ${(.14*.91**(l+1)*1000).toFixed(0)}ms`,
-    tier:l=>['BURST','RAPID','HYPERSTRIKE'][Math.min(2,Math.floor(l/3))] },
-  { id:'aegis', name:'KINETIC AEGIS', glyph:'◈', gc:'#E2E8F0',
-    desc:l=>`Extra shields + passive regen\nShields: ${3+l} · Regen: ${Math.max(2,8-l*.5).toFixed(1)}s`,
-    next:l=>`Shields: ${4+l} · Regen: ${Math.max(2,8-(l+1)*.5).toFixed(1)}s`,
-    tier:l=>['BARRIER','BULWARK','FORTRESS'][Math.min(2,Math.floor(l/3))] }
-];
-
-// Game State
+// State
 let GS = 'title';
 function onEsc(){
   if(GS === 'play') GS = 'pause';
@@ -885,18 +881,31 @@ function onEsc(){
 }
 
 let score, elapsed, kills, odLevel, upg, xp, xpMax;
-let player, bullets, enemies, meteors, missiles, parts, ftexts;
-let spawnT = 0, bulletT = 0, missileT = 0, regenT2 = 0, flarePhase = 0;
+let player, bullets, enemies, missiles, parts, ftexts, cryoRings;
+let bulletT = 0, missileT = 0, cryoT = 0, regenT2 = 0, flarePhase = 0;
 let stars = [], embers = [];
 let currentCards = [];
 
-// Formulae
-const fireCD = l => .14 * (.91 ** l);
-const flareW = l => 20 * (1 + .15 * l);
-const flareDPS = l => 8 * (1.3 ** l);
+// Wave State Variables
+let currentWave = 1;
+let waveEnemiesToSpawn = 0;
+let waveTotalEnemies = 0;
+let waveSpawnTimer = 0;
+let waveIntermission = 0;
+let waveBannerText = '';
+let waveBannerSub = '';
+let waveBannerAlpha = 0;
+let activeBoss = null;
+
+// Helpers
+const fireCD = l => .28 * (.88 ** l); // Calibrated starting fire rate (~3.5/s)
+const flareW = l => 18 * (1 + .18 * l);
+const flareDPS = l => 12 * (1.3 ** l);
 const mCount = l => 2 + l;
-const mCD = l => 3 * (.92 ** l);
-const regenTime = l => Math.max(2, 8 - l * .5);
+const mCD = l => 3.2 * (.92 ** l);
+const cryoCD = l => 4.5 * (.93 ** l);
+const cryoDur = l => 2.2 + l * .4;
+const regenTime = l => Math.max(2, 8 - l * 1.2);
 const bounces = l => 1 + Math.floor(l * .75);
 const fmtT = s => { const m = Math.floor(s / 60); return m ? `${m}m ${Math.floor(s % 60)}s` : `${Math.floor(s)}s`; };
 
@@ -918,11 +927,47 @@ function initBG(){
   embers = Array.from({ length: emberCount }, mkEmber);
 }
 
+function startWave(wNum){
+  currentWave = wNum;
+  waveIntermission = 0;
+  activeBoss = null;
+
+  // Wave definitions
+  if(wNum === 1){
+    waveTotalEnemies = 8;
+    waveBannerText = 'WAVE 1';
+    waveBannerSub = 'RECON VANGUARD · SLOW APPROACH';
+  } else if(wNum === 2){
+    waveTotalEnemies = 14;
+    waveBannerText = 'WAVE 2';
+    waveBannerSub = 'SPRINT CRASHERS INCOMING · WATCH PERIMETER';
+  } else if(wNum === 3){
+    waveTotalEnemies = 18;
+    waveBannerText = 'WAVE 3';
+    waveBannerSub = 'BROOD SWARM · SPLITTER INSECTOIDS';
+  } else if(wNum === 4){
+    waveTotalEnemies = 22;
+    waveBannerText = 'WAVE 4';
+    waveBannerSub = 'ARMORED CARAPACE & SHIELD DRONES';
+  } else if(wNum === 5){
+    waveTotalEnemies = 15;
+    waveBannerText = 'WAVE 5';
+    waveBannerSub = '⚠ BOSS ENCOUNTER: TITAN BEHEMOTH ⚠';
+  } else {
+    waveTotalEnemies = 20 + (wNum - 5) * 4;
+    waveBannerText = `WAVE ${wNum}`;
+    waveBannerSub = (wNum % 5 === 0) ? '⚠ ELITE BEHEMOTH DREADNOUGHT DETECTED ⚠' : 'FORTRESS SIEGE · HEAVY ESCALATION';
+  }
+
+  waveEnemiesToSpawn = waveTotalEnemies;
+  waveSpawnTimer = 1.0;
+  waveBannerAlpha = 1.8; // Visible for ~2.5s
+}
+
 function initGame(){
   score = 0; elapsed = 0; kills = 0; odLevel = 0; upg = {}; xp = 0; xpMax = 40;
-  spawnT = 1.0; // Start with gentle delay
-  bulletT = 0; missileT = 0; regenT2 = 0; flarePhase = 0;
-  bullets = []; enemies = []; meteors = []; missiles = []; parts = []; ftexts = [];
+  bulletT = 0; missileT = 0; cryoT = 0; regenT2 = 0; flarePhase = 0;
+  bullets = []; enemies = []; missiles = []; parts = []; ftexts = []; cryoRings = [];
 
   player = {
     x: W / 2, vx: 0, tilt: 0,
@@ -930,6 +975,7 @@ function initGame(){
     inv: 0, flash: 0, thrust: []
   };
   initBG();
+  startWave(1);
 }
 
 function startGame(){
@@ -953,6 +999,7 @@ function returnToHangar(){
 
 function gameOver(){
   GS = 'over';
+  $gwv.textContent = currentWave;
   $gt.textContent = fmtT(elapsed);
   $gs.textContent = score.toLocaleString();
   $gk.textContent = kills;
@@ -961,7 +1008,7 @@ function gameOver(){
 }
 
 // ═════════════════════════════════════════════════════════════
-// DIRECT AUTOMATIC XP (ZERO ORBS DROPPED) & ROBUST LEVEL-UP
+// DIRECT AUTOMATIC XP & LEVEL-UP
 // ═════════════════════════════════════════════════════════════
 function gainXP(v){
   xp += v;
@@ -986,11 +1033,12 @@ function triggerLU(){
     const l = upg[def.id] || 0;
     const d = document.createElement('div');
     d.className = 'card';
+    d.style.borderColor = def.gc;
     d.innerHTML = `
       <div class="chk">[${i + 1}]</div>
-      <div class="cgl">${def.glyph}</div>
+      <div class="cgl" style="color:${def.gc};filter:drop-shadow(0 0 8px ${def.glow})">${def.glyph}</div>
       <div class="cnm">${def.name}</div>
-      <div class="clv">LVL ${l} → ${l + 1} · ${def.tier(l)}</div>
+      <div class="clv" style="color:${def.gc}">LVL ${l} → ${l + 1} · ${def.tier(l)}</div>
       <div class="cds">${def.desc(l).replace(/\n/g, '<br>')}</div>
       <div class="cnx">▲ NEXT: ${def.next(l).replace(/\n/g, '<br>')}</div>
     `;
@@ -1012,7 +1060,6 @@ function pickCard(i){
 
   $lu.classList.remove('on');
 
-  // Process queued excess XP cleanly
   if(xp >= xpMax){
     xp -= xpMax;
     odLevel++;
@@ -1024,97 +1071,136 @@ function pickCard(i){
 }
 
 // ═════════════════════════════════════════════════════════════
-// PACING ENGINE: SLOW STARTING INTENSITY GRADUALLY SCALING
+// GALAXY DEFENSE TD ENEMY SPAWN ENGINE
 // ═════════════════════════════════════════════════════════════
-function spawnInterval(){
-  // Starts comfortably slow (3.4s) and gradually ramps up
-  return Math.max(0.45, 3.4 * Math.exp(-0.007 * elapsed));
+function getWaveSpawnRate(){
+  // Starts with gentle spacing in wave 1, tightening in later waves
+  if(currentWave === 1) return 2.4;
+  if(currentWave === 2) return 1.9;
+  if(currentWave === 3) return 1.6;
+  return Math.max(0.65, 1.4 - currentWave * 0.05);
 }
 
-function enemySpd(){
-  // Starts calm and readable at 45 px/s, scaling gradually
-  return 45 + Math.min(170, elapsed * 0.72);
+function getWaveEnemyPool(){
+  if(currentWave === 1) return ['scout'];
+  if(currentWave === 2) return ['scout', 'scout', 'crasher'];
+  if(currentWave === 3) return ['scout', 'crasher', 'splitter', 'splitter'];
+  if(currentWave === 4) return ['scout', 'crasher', 'splitter', 'carapace', 'shielder'];
+  if(currentWave % 5 === 0) return ['scout', 'crasher', 'shielder', 'carapace'];
+  return ['scout', 'crasher', 'splitter', 'carapace', 'shielder'];
 }
 
-function spawnPool(){
-  const t = elapsed;
-  if(t < 25) return ['meteor'];
-  if(t < 55) return ['meteor', 'meteor', 'drone'];
-  if(t < 95) return ['meteor', 'drone', 'asteroid'];
-  return ['drone', 'asteroid', 'heavy', 'heavy'];
-}
+function spawnWaveEnemy(){
+  if(waveEnemiesToSpawn <= 0) return;
 
-function spawnWave(){
+  // Boss wave check: spawn the boss on first spawn of wave 5, 10, etc.
+  if(currentWave % 5 === 0 && !activeBoss){
+    spawnBoss();
+    waveEnemiesToSpawn--;
+    return;
+  }
+
+  const pool = getWaveEnemyPool();
+  const type = pool[Math.floor(Math.random() * pool.length)];
   const laneW = Math.max(70, Math.min(100, W / 8));
   const numLanes = Math.max(4, Math.floor(W / laneW));
+  const lane = Math.floor(Math.random() * numLanes);
+  const x = Math.max(30, Math.min(W - 30, lane * laneW + laneW * 0.5 + (Math.random() - .5) * 20));
 
-  // Early game: 1 single target at a time so player is never overwhelmed
-  let maxCnt = 1;
-  if(elapsed > 30) maxCnt = 2;
-  if(elapsed > 60) maxCnt = Math.min(numLanes - 1, Math.max(1, Math.floor((W / 260) * (0.8 + elapsed / 90))));
-
-  const cnt = Math.min(numLanes - 1, Math.max(1, Math.floor(Math.random() * maxCnt) + 1));
-  const pool = spawnPool(), spd = enemySpd();
-  const lanes = Array.from({ length: numLanes }, (_, i) => i).sort(() => Math.random() - .5).slice(0, cnt);
-  for(const lane of lanes){
-    const type = pool[Math.floor(Math.random() * pool.length)];
-    const lx = lane * laneW + laneW * .2 + Math.random() * laneW * .6;
-    mkEnemy(type, Math.max(25, Math.min(W - 25, lx)), -44, spd);
-  }
+  mkEnemy(type, x, -44);
+  waveEnemiesToSpawn--;
 }
 
-function mkEnemy(type, x, y, spd){
-  const b = { x, y, vy: spd, vx: 0, dead: false, flash: 0, type };
-  if(type === 'meteor' || type === 'asteroid'){
-    const isSplit = type === 'asteroid';
-    Object.assign(b, {
-      r: isSplit ? 26 + Math.random() * 8 : 18 + Math.random() * 10,
-      hp: isSplit ? 6 : 2, mhp: isSplit ? 6 : 2,
-      sc: isSplit ? 30 : 10, xpv: isSplit ? 12 : 4,
-      rot: Math.random() * Math.PI * 2, rotSpd: (Math.random() - .5) * 1.5,
-      vx: (Math.random() - .5) * (isSplit ? 18 : 28),
-      sides: 7 + Math.floor(Math.random() * 4), seed: Math.random() * 200, splits: isSplit
-    });
-    meteors.push(b);
-  } else {
-    const hv = type === 'heavy';
-    Object.assign(b, {
-      w: hv ? 40 : 28, h: hv ? 34 : 22, hp: hv ? 14 : 3, mhp: hv ? 14 : 3,
-      sc: hv ? 65 : 20, xpv: hv ? 25 : 8, wPhase: Math.random() * Math.PI * 2, wAmp: hv ? 12 : 24
-    });
-    enemies.push(b);
-  }
+function spawnBoss(){
+  const hp = 120 + (currentWave - 5) * 60;
+  const b = {
+    type: 'boss', x: W / 2, y: -90, vy: 35, vx: 30,
+    w: 86, h: 64, hp, mhp: hp, sc: 500, xpv: 75,
+    dead: false, flash: 0, shootT: 2.5, slowTimer: 0,
+    wPhase: 0, shieldTether: false
+  };
+  enemies.push(b);
+  activeBoss = b;
 }
 
-function dmgE(e, d){
-  e.hp -= d;
+function mkEnemy(type, x, y){
+  const e = {
+    type, x, y, dead: false, flash: 0, slowTimer: 0, shieldTether: false
+  };
+
+  if(type === 'scout'){
+    // Standard slow drone vanguard (Takes 4 deliberate hits)
+    Object.assign(e, {
+      w: 28, h: 22, vy: 38 + Math.min(30, currentWave * 2), vx: 0,
+      hp: 4, mhp: 4, sc: 15, xpv: 5, wPhase: Math.random() * Math.PI * 2
+    });
+  } else if(type === 'crasher'){
+    // Creeps slowly, then SPRINTS when reaching mid screen!
+    Object.assign(e, {
+      w: 26, h: 26, vy: 34, vx: 0, sprinting: false,
+      hp: 3, mhp: 3, sc: 25, xpv: 8, wPhase: Math.random() * Math.PI * 2
+    });
+  } else if(type === 'splitter'){
+    // Splinters into 2 micro-drones upon death
+    Object.assign(e, {
+      w: 32, h: 28, vy: 40 + Math.min(25, currentWave * 1.5), vx: (Math.random() - .5) * 15,
+      hp: 6, mhp: 6, sc: 30, xpv: 10
+    });
+  } else if(type === 'carapace'){
+    // Heavy Armored Tank with damage reduction
+    Object.assign(e, {
+      w: 44, h: 36, vy: 26, vx: 0,
+      hp: 16, mhp: 16, sc: 50, xpv: 18
+    });
+  } else if(type === 'shielder'){
+    // Projects energy shield bubble to adjacent allies
+    Object.assign(e, {
+      w: 34, h: 30, vy: 32, vx: (Math.random() - .5) * 20,
+      hp: 10, mhp: 10, sc: 40, xpv: 14, shieldRadius: 90
+    });
+  }
+
+  enemies.push(e);
+}
+
+function dmgE(e, d, isThermal = false){
+  // If shielded by an active shielder drone, reduce damage by 50%
+  let finalD = d;
+  if(e.shieldTether && e.type !== 'shielder') finalD *= 0.5;
+  // Armored Carapace takes less kinetic damage unless melted by thermal beam
+  if(e.type === 'carapace' && !isThermal) finalD *= 0.75;
+
+  e.hp -= finalD;
   e.flash = 3;
   if(e.hp <= 0) killE(e);
 }
 
-// AUTOMATIC DIRECT XP - NO ORBS LEFT BEHIND
+// AUTOMATIC INSTANT XP - ZERO DROPPED ORBS
 function killE(e){
   if(e.dead) return;
   e.dead = true;
   score += e.sc;
   kills++;
 
-  // Instantly award XP directly
+  if(e.type === 'boss') activeBoss = null;
+
+  // Direct automatic XP
   gainXP(e.xpv);
 
-  // Explosions & score / XP text
-  burst(e.x, e.y, '#FF6622', 14, 150, 4);
-  burst(e.x, e.y, '#FFCC00', 8, 90, 2.5);
+  // Explosions & floating feedback
+  const burstCol = e.type === 'crasher' ? '#FF3344' : (e.type === 'shielder' ? '#00E5FF' : '#FF7700');
+  burst(e.x, e.y, burstCol, 14, 150, 4);
+  burst(e.x, e.y, '#FFAA00', 8, 80, 2.5);
   fltxt(e.x, e.y, `+${e.sc}  ▲+${e.xpv}XP`, '#FFAA00');
 
-  if(e.splits){
-    const s = enemySpd(), fr = e.r * .58;
+  // Splitter logic
+  if(e.type === 'splitter'){
     for(let i = 0; i < 2; i++){
-      meteors.push({
-        x: e.x + (i ? fr : -fr), y: e.y, vy: s * .8, vx: i ? 45 : -45,
-        hp: 2, mhp: 2, sc: 14, xpv: 5, r: fr, rot: Math.random() * Math.PI * 2,
-        rotSpd: (Math.random() - .5) * 2.5, sides: 6, seed: Math.random() * 200,
-        splits: false, dead: false, flash: 0, type: 'meteor'
+      enemies.push({
+        type: 'micro', x: e.x + (i ? 14 : -14), y: e.y,
+        vy: 75, vx: i ? 35 : -35, w: 18, h: 14,
+        hp: 2, mhp: 2, sc: 10, xpv: 4, dead: false, flash: 0,
+        slowTimer: 0, shieldTether: false
       });
     }
   }
@@ -1126,7 +1212,7 @@ function hitPlayer(){
   player.flash = 10;
   player.inv = 1.8;
   regenT2 = 0;
-  burst(player.x, PY, '#FF0055', 20, 180, 4);
+  burst(player.x, PY, '#FF0055', 22, 180, 4.5);
   if(player.sh <= 0) gameOver();
 }
 
@@ -1141,7 +1227,7 @@ function burst(x, y, col, n, spd, sz){
 }
 
 function fltxt(x, y, txt, col){
-  ftexts.push({ x, y, txt, col, life: 1, vy: -50 });
+  ftexts.push({ x, y, txt, col, life: 1, vy: -45 });
 }
 
 function thrustP(){
@@ -1158,22 +1244,34 @@ function isPlayerControlling(){
 }
 
 function getAimTarget(fromX, fromY, exclude){
-  const pool = [...enemies, ...meteors].filter(e => !e.dead && e !== exclude && e.y < PY + 30);
+  const pool = enemies.filter(e => !e.dead && e !== exclude && e.y < PY + 20);
   if(!pool.length) return null;
-  pool.sort((a, b) => Math.hypot(a.x - fromX, a.y - fromY) - Math.hypot(b.x - fromX, b.y - fromY));
+  // Prioritize sprinting crashers and low enemies close to perimeter!
+  pool.sort((a, b) => {
+    const aScore = a.sprinting ? -1000 : (PY - a.y);
+    const bScore = b.sprinting ? -1000 : (PY - b.y);
+    return aScore - bScore;
+  });
   return pool[0];
 }
 
+// ═════════════════════════════════════════════════════════════
+// WEAPONS & COLOR-CODED ABILITIES
+// ═════════════════════════════════════════════════════════════
 function fireBullets(){
-  const b = upg.ricochet ? bounces(upg.ricochet) : 0, ch = upg.lightning || 0;
+  const ric = upg.ricochet ? bounces(upg.ricochet) : 0;
+  const isRic = (upg.ricochet || 0) > 0;
+  const isAcc = (upg.accelerator || 0) > 0;
   const manual = isPlayerControlling();
+
   if(manual){
-    // When moving: fire pure straight forward from twin railgun muzzles
     for(const ox of [-14, 14]){
-      bullets.push({ x: player.x + ox, y: PY - PH / 2, vx: 0, vy: -BSPD, bounces: b, chains: ch, dead: false, lastHit: null });
+      bullets.push({
+        x: player.x + ox, y: PY - PH / 2, vx: 0, vy: -BSPD,
+        bounces: ric, dead: false, lastHit: null, isRic, isAcc
+      });
     }
   } else {
-    // When idle: auto-aim directly angled at targets with straight trajectory
     const t1 = getAimTarget(player.x - 14, PY - PH / 2, null);
     const t2 = getAimTarget(player.x + 14, PY - PH / 2, t1) || t1;
     const tgts = [t1, t2];
@@ -1185,27 +1283,50 @@ function fireBullets(){
         const dist = Math.hypot(dx, dy);
         if(dist > 1){ vx = (dx / dist) * BSPD; vy = (dy / dist) * BSPD; }
       }
-      bullets.push({ x: sx, y: sy, vx, vy, bounces: b, chains: ch, dead: false, lastHit: null });
+      bullets.push({
+        x: sx, y: sy, vx, vy, bounces: ric, dead: false, lastHit: null, isRic, isAcc
+      });
     });
   }
 }
 
-function fireMissiles(){
-  const n = mCount(upg.missiles || 0);
-  for(let i = 0; i < n; i++){
-    const s = i % 2 ? 1 : -1, o = Math.floor(i / 2) * 14;
-    missiles.push({ x: player.x + s * (PW / 2 + 5 + o), y: PY, vx: s * 65, vy: -130, dead: false, target: null, life: 4.5, trail: [] });
+// ⚡ TESLA MATRIX: Electric Cyan Chain Shock
+function triggerTesla(src, ox, oy){
+  const chains = 1 + (upg.tesla || 0);
+  const rng = 135;
+  const pool = enemies.filter(e => !e.dead && e !== src);
+  const near = pool.filter(e => Math.hypot(e.x - ox, e.y - oy) < rng).sort(() => Math.random() - .5);
+  for(let c = 0; c < chains && near.length; c++){
+    const t = near.shift();
+    dmgE(t, 2);
+    parts.push({ type: 'bolt', x1: ox, y1: oy, x2: t.x, y2: t.y, life: 1, dk: .32, col: '#00E5FF' });
   }
 }
 
-function chainLightning(src, ch, ox, oy){
-  const rng = 120 * (1 + ch * .1);
-  const pool = [...enemies, ...meteors].filter(e => !e.dead && e !== src);
-  const near = pool.filter(e => Math.hypot(e.x - ox, e.y - oy) < rng).sort(() => Math.random() - .5);
-  for(let c = 0; c < ch && near.length; c++){
-    const t = near.shift();
-    dmgE(t, 2);
-    parts.push({ type: 'bolt', x1: ox, y1: oy, x2: t.x, y2: t.y, life: 1, dk: .35 });
+// 🚀 HIVE SWARM PODS: Cyber Violet Homing Missiles
+function fireHiveMissiles(){
+  const n = mCount(upg.missiles || 0);
+  for(let i = 0; i < n; i++){
+    const s = i % 2 ? 1 : -1, o = Math.floor(i / 2) * 14;
+    missiles.push({
+      x: player.x + s * (PW / 2 + 5 + o), y: PY,
+      vx: s * 70, vy: -140, dead: false, target: null, life: 4.5, trail: []
+    });
+  }
+}
+
+// ❄️ CRYO DISRUPTION PULSE: Glacial Ice Blue EMP
+function triggerCryoPulse(){
+  const maxR = 260;
+  cryoRings.push({ x: player.x, y: PY, r: 10, maxR, life: 1 });
+  const dur = cryoDur(upg.cryo || 0);
+  for(const e of enemies){
+    if(e.dead) continue;
+    if(Math.hypot(e.x - player.x, e.y - PY) < maxR){
+      e.slowTimer = dur;
+      dmgE(e, 2);
+      burst(e.x, e.y, '#67E8F9', 6, 60, 2);
+    }
   }
 }
 
@@ -1238,7 +1359,27 @@ function loop(ts){
 
   elapsed += dt;
 
-  // Player Movement & Smooth Banking Tilt
+  // 1. Wave Progression & Intermission
+  if(waveBannerAlpha > 0) waveBannerAlpha -= dt * 0.7;
+
+  if(waveEnemiesToSpawn > 0){
+    waveSpawnTimer -= dt;
+    if(waveSpawnTimer <= 0){
+      spawnWaveEnemy();
+      waveSpawnTimer = getWaveSpawnRate();
+    }
+  } else if(enemies.length === 0 && !activeBoss){
+    // All enemies in wave defeated!
+    waveIntermission += dt;
+    if(waveIntermission >= 2.5){
+      // Start next wave!
+      score += currentWave * 100;
+      fltxt(W / 2, H * 0.4, `WAVE ${currentWave} CLEARED! +${currentWave * 100}`, '#FFAA00');
+      startWave(currentWave + 1);
+    }
+  }
+
+  // 2. Player Movement & Banking
   const left = KEY.KeyA || KEY.ArrowLeft, right = KEY.KeyD || KEY.ArrowRight;
   const maxSpd = 480;
   if(left) player.vx -= 1600 * dt;
@@ -1263,46 +1404,48 @@ function loop(ts){
   if(player.inv > 0) player.inv -= dt;
   if(player.flash > 0) player.flash--;
 
-  // Shield Regeneration
+  // 3. Shield Regeneration
   if(player.sh < player.shMax){
     regenT2 += dt;
     if(regenT2 >= regenTime(upg.aegis || 0)){
       player.sh = Math.min(player.shMax, player.sh + 1);
       regenT2 = 0;
-      burst(player.x, PY - PH / 2, '#FFAA00', 8, 60, 2);
+      burst(player.x, PY - PH / 2, '#3B82F6', 8, 60, 2);
     }
   }
 
-  // Thruster Particles
+  // Engine Thrusters
   if(Math.random() < .65) thrustP();
   for(const p of player.thrust){
     p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.dk; p.r *= .96;
   }
   player.thrust = player.thrust.filter(p => p.life > 0);
 
-  // Auto Weapon Fire
+  // 4. Primary Railgun Autofire (Paced at 0.28s base)
   bulletT -= dt;
   if(bulletT <= 0){
     fireBullets();
     bulletT = fireCD(upg.accelerator || 0);
   }
 
-  // Solar Flare Beam
-  if(upg.solarflare){
+  // 5. 🔥 Inferno Thermal Beam (Continuous Piercing)
+  if(upg.inferno){
     flarePhase += dt;
-    const fw = flareW(upg.solarflare), dps = flareDPS(upg.solarflare);
-    for(const e of [...enemies, ...meteors]){
+    const fw = flareW(upg.inferno), dps = flareDPS(upg.inferno);
+    for(const e of enemies){
       if(e.dead) continue;
-      const er = e.r || Math.max(e.w, e.h) / 2;
-      if(Math.abs(e.x - player.x) < fw / 2 + er) dmgE(e, dps * dt);
+      const er = Math.max(e.w, e.h) / 2;
+      if(Math.abs(e.x - player.x) < fw / 2 + er){
+        dmgE(e, dps * dt, true); // true = thermal damage (melts carapaces)
+      }
     }
   }
 
-  // Swarm Missiles
+  // 6. 🚀 Hive Swarm Missiles
   if(upg.missiles){
     missileT -= dt;
     if(missileT <= 0){
-      fireMissiles();
+      fireHiveMissiles();
       missileT = mCD(upg.missiles);
     }
   }
@@ -1310,7 +1453,7 @@ function loop(ts){
     if(m.dead) continue;
     m.life -= dt;
     if(m.life <= 0){ m.dead = true; continue; }
-    const pool = [...enemies, ...meteors].filter(e => !e.dead);
+    const pool = enemies.filter(e => !e.dead);
     if(pool.length){
       pool.sort((a, b) => Math.hypot(a.x - m.x, a.y - m.y) - Math.hypot(b.x - m.x, b.y - m.y));
       m.target = pool[0];
@@ -1326,12 +1469,12 @@ function loop(ts){
     m.x += m.vx * dt; m.y += m.vy * dt;
 
     let mhit = false;
-    for(const e of [...enemies, ...meteors]){
+    for(const e of enemies){
       if(e.dead) continue;
-      const er = e.r || Math.max(e.w, e.h) / 2;
-      if(Math.hypot(m.x - e.x, m.y - e.y) < er + 7){
-        dmgE(e, 3);
-        burst(m.x, m.y, '#FF6622', 8, 120, 3);
+      const er = Math.max(e.w, e.h) / 2;
+      if(Math.hypot(m.x - e.x, m.y - e.y) < er + 8){
+        dmgE(e, 4);
+        burst(m.x, m.y, '#C084FC', 12, 130, 3.5);
         m.dead = true; mhit = true; break;
       }
     }
@@ -1339,80 +1482,124 @@ function loop(ts){
   }
   missiles = missiles.filter(m => !m.dead);
 
-  // Bullets
+  // 7. ❄️ Cryo Disruption Pulse
+  if(upg.cryo){
+    cryoT -= dt;
+    if(cryoT <= 0){
+      triggerCryoPulse();
+      cryoT = cryoCD(upg.cryo);
+    }
+  }
+  for(const cr of cryoRings){
+    cr.r += 320 * dt;
+    cr.life = Math.max(0, 1 - cr.r / cr.maxR);
+  }
+  cryoRings = cryoRings.filter(cr => cr.life > 0);
+
+  // 8. Bullets Update
   for(const b of bullets){
     if(b.dead) continue;
     b.x += b.vx * dt; b.y += b.vy * dt;
-    if(upg.ricochet && b.bounces > 0 && (b.x < 4 || b.x > W - 4)){
+
+    // Ricochet off side walls
+    if(b.bounces > 0 && (b.x < 4 || b.x > W - 4)){
       b.vx = -b.vx; b.bounces--;
     }
     if(b.y < -20 || b.y > H + 20 || b.x < -20 || b.x > W + 20){
       b.dead = true; continue;
     }
-    let hit = false;
+
+    // Bullet vs Enemies
     for(const e of enemies){
       if(e.dead) continue;
       if(Math.abs(b.x - e.x) < e.w / 2 + 3 && Math.abs(b.y - e.y) < e.h / 2 + 3){
-        const d = 1 * (1 + (upg.ricochet ? (((upg.ricochet) - b.bounces) * .15) : 0));
-        dmgE(e, d);
-        if(b.chains > 0) chainLightning(e, b.chains, e.x, e.y);
+        const bounceDmgBonus = b.isRic ? 0.2 * (bounces(upg.ricochet || 0) - b.bounces) : 0;
+        dmgE(e, 1 + bounceDmgBonus);
+
+        // ⚡ Tesla Matrix Chain Shock
+        if(upg.tesla) triggerTesla(e, e.x, e.y);
+
         b.lastHit = e;
-        if(b.bounces > 0){ b.vy = -Math.abs(b.vy); b.bounces--; }
-        else b.dead = true;
-        hit = true; break;
-      }
-    }
-    if(hit) continue;
-    for(const m of meteors){
-      if(m.dead) continue;
-      if(Math.hypot(b.x - m.x, b.y - m.y) < m.r + 3){
-        dmgE(m, 1);
-        if(b.chains > 0) chainLightning(m, b.chains, m.x, m.y);
-        b.lastHit = m;
-        if(b.bounces > 0){ b.vy = -Math.abs(b.vy); b.bounces--; }
-        else b.dead = true;
+        if(b.bounces > 0){
+          b.vy = -Math.abs(b.vy); b.bounces--;
+        } else {
+          b.dead = true;
+        }
         break;
       }
     }
   }
   bullets = bullets.filter(b => !b.dead);
 
-  // Spawn Waves
-  spawnT -= dt;
-  if(spawnT <= 0){ spawnWave(); spawnT = spawnInterval(); }
-
-  // Asteroids & Meteors (Slow gentle start)
-  for(const m of meteors){
-    if(m.dead) continue;
-    const toCenter = (W / 2 - m.x);
-    m.vx += (toCenter * 0.3 - m.vx * 0.6) * dt;
-    m.x += m.vx * dt; m.y += m.vy * dt; m.rot += m.rotSpd * dt;
-    if(m.flash > 0) m.flash--;
-    if(m.x < m.r){ m.x = m.r; m.vx = Math.abs(m.vx); }
-    if(m.x > W - m.r){ m.x = W - m.r; m.vx = -Math.abs(m.vx); }
-    if(!m.dead && Math.hypot(m.x - player.x, m.y - PY) < m.r + PW / 2 - 4){
-      hitPlayer(); m.dead = true; burst(m.x, m.y, '#FF6622', 14, 170, 5);
+  // 9. Update Enemy Behaviors & Shield Tethers
+  // First, calculate active shielders
+  const shielders = enemies.filter(e => !e.dead && e.type === 'shielder');
+  for(const e of enemies){
+    e.shieldTether = false;
+    for(const sh of shielders){
+      if(sh !== e && Math.hypot(e.x - sh.x, e.y - sh.y) < sh.shieldRadius){
+        e.shieldTether = true; break;
+      }
     }
-    if(m.y > H + 60) m.dead = true;
   }
-  meteors = meteors.filter(m => !m.dead);
 
-  // Enemy Ships
+  // Update enemies movement & behaviors
   for(const e of enemies){
     if(e.dead) continue;
-    e.wPhase += dt * 1.5;
-    const centerPull = (W / 2 - e.x) * 0.35;
-    e.x += (Math.sin(e.wPhase) * e.wAmp + centerPull) * dt;
-    e.y += e.vy * dt;
+
+    // Cryo Slow Effect
+    let spdMult = 1.0;
+    if(e.slowTimer > 0){
+      e.slowTimer -= dt;
+      spdMult = 0.4; // 60% slow down!
+    }
+
+    if(e.type === 'crasher'){
+      // Sprint when crossing 38% screen height
+      if(!e.sprinting && e.y > H * 0.38){
+        e.sprinting = true;
+        e.vy = 160;
+        burst(e.x, e.y, '#FF3344', 8, 80, 2);
+      }
+    } else if(e.type === 'boss'){
+      // Boss hovers and strafes side to side
+      if(e.y < H * 0.18){
+        e.y += e.vy * spdMult * dt;
+      } else {
+        e.x += e.vx * dt;
+        if(e.x < e.w / 2 + 20 || e.x > W - e.w / 2 - 20) e.vx = -e.vx;
+      }
+      e.shootT -= dt;
+      if(e.shootT <= 0){
+        // Boss fires plasma burst
+        e.shootT = 2.4;
+        burst(e.x, e.y + e.h / 2, '#FF3300', 8, 70, 3);
+      }
+    }
+
+    if(e.type !== 'boss'){
+      e.y += e.vy * spdMult * dt;
+      e.x += (e.vx || 0) * dt;
+    }
+
     if(e.flash > 0) e.flash--;
+
+    // Direct collision with player
     if(!e.dead && Math.abs(e.x - player.x) < (e.w + PW) / 2 - 5 && Math.abs(e.y - PY) < (e.h + PH) / 2 - 5){
       hitPlayer(); e.dead = true;
     }
-    if(e.y > H + 60) e.dead = true;
+
+    // BREACH OF FORTRESS DEFENSE PERIMETER!
+    if(!e.dead && e.y > PY + PH / 2 + 6){
+      hitPlayer(); // Breaching perimeter deals barrier damage!
+      burst(e.x, PY + PH / 2 + 6, '#FF0055', 14, 160, 4);
+      fltxt(e.x, PY + PH / 2 + 6, 'PERIMETER BREACH!', '#FF3344');
+      e.dead = true;
+    }
   }
   enemies = enemies.filter(e => !e.dead);
 
-  // Particle updates
+  // Particles
   for(const p of parts){
     if(p.type === 'bolt'){ p.life -= p.dk; continue; }
     p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 65 * dt; p.life -= p.dk; p.r *= .97;
@@ -1437,8 +1624,9 @@ function loop(ts){
 // RENDERING & VISUAL DESIGN
 // ═════════════════════════════════════════════════════════════
 function drawAll(){
+  drawPerimeterLine();
   drawFlare();
-  drawMeteors();
+  drawCryoRings();
   drawEnemies();
   drawLockReticle();
   drawBullets();
@@ -1447,25 +1635,154 @@ function drawAll(){
   drawPlayer();
   drawFloats();
   drawHUD();
+  drawWaveBanner();
+}
+
+// Glowing Fortress Defense Line
+function drawPerimeterLine(){
+  const y = PY + PH / 2 + 6;
+  X.save();
+  X.strokeStyle = 'rgba(255, 170, 0, 0.4)';
+  X.lineWidth = 1.5;
+  X.setLineDash([10, 6]);
+  X.beginPath(); X.moveTo(0, y); X.lineTo(W, y); X.stroke();
+  X.setLineDash([]);
+  X.font = '8px "Share Tech Mono",monospace';
+  X.fillStyle = 'rgba(255, 170, 0, 0.5)';
+  X.fillText('FORTRESS DEFENSE PERIMETER // DO NOT ALLOW BREACH', 14, y + 12);
+  X.restore();
+}
+
+function drawCryoRings(){
+  for(const cr of cryoRings){
+    X.save();
+    X.strokeStyle = '#67E8F9';
+    X.lineWidth = 2.5;
+    X.globalAlpha = cr.life * 0.7;
+    X.shadowColor = '#38BDF8';
+    X.shadowBlur = 12;
+    X.beginPath(); X.arc(cr.x, cr.y, cr.r, 0, Math.PI * 2); X.stroke();
+    X.restore();
+  }
+}
+
+function drawEnemies(){
+  for(const e of enemies){
+    if(e.dead) continue;
+    X.save();
+    X.translate(e.x, e.y);
+    const fl = e.flash > 0;
+
+    // Shield Tether Aura
+    if(e.shieldTether && e.type !== 'shielder'){
+      X.strokeStyle = 'rgba(0, 229, 255, 0.6)';
+      X.lineWidth = 1.5;
+      X.beginPath(); X.arc(0, 0, Math.max(e.w, e.h) * 0.65, 0, Math.PI * 2); X.stroke();
+    }
+
+    // Frozen Slow Aura
+    if(e.slowTimer > 0){
+      X.strokeStyle = 'rgba(103, 232, 249, 0.8)';
+      X.lineWidth = 2;
+      X.strokeRect(-e.w / 2 - 2, -e.h / 2 - 2, e.w + 4, e.h + 4);
+    }
+
+    if(e.type === 'scout'){
+      // 1. Scout Crawler (Gray & Amber)
+      X.fillStyle = fl ? '#fff' : '#141822';
+      X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
+      X.fillStyle = fl ? '#fff' : '#8F98A8';
+      X.fillRect(-e.w / 2 - 4, -e.h / 4, 4, e.h * 0.6);
+      X.fillRect(e.w / 2, -e.h / 4, 4, e.h * 0.6);
+      if(!fl){
+        X.fillStyle = '#FFAA00'; X.shadowColor = '#FF7700'; X.shadowBlur = 10;
+        X.beginPath(); X.arc(0, 0, 3, 0, Math.PI * 2); X.fill();
+        X.shadowBlur = 0;
+      }
+    } else if(e.type === 'crasher'){
+      // 2. Sprint Crasher (Crimson & Fiery Orange)
+      X.fillStyle = fl ? '#fff' : '#2A0B10';
+      X.beginPath();
+      X.moveTo(0, e.h / 2); X.lineTo(e.w / 2, -e.h / 2); X.lineTo(-e.w / 2, -e.h / 2);
+      X.closePath(); X.fill();
+      X.fillStyle = fl ? '#fff' : '#FF3344';
+      X.fillRect(-e.w / 2 + 2, -e.h / 2, e.w - 4, 5);
+      if(!fl){
+        X.fillStyle = e.sprinting ? '#FFAA00' : '#FF3344';
+        X.shadowColor = '#FF3344'; X.shadowBlur = 12;
+        X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
+        X.shadowBlur = 0;
+      }
+    } else if(e.type === 'shielder'){
+      // 3. Shield Drone (Cyan Bubble Barrier)
+      X.fillStyle = fl ? '#fff' : '#0B1422';
+      X.beginPath(); X.ellipse(0, 0, e.w / 2, e.h / 2, 0, 0, Math.PI * 2); X.fill();
+      X.fillStyle = '#00E5FF';
+      X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
+      // Cyan Energy Bubble
+      X.strokeStyle = '#00E5FF'; X.lineWidth = 2; X.shadowColor = '#00E5FF'; X.shadowBlur = 14;
+      X.beginPath(); X.arc(0, 0, e.w / 2 + 6, 0, Math.PI * 2); X.stroke();
+      X.shadowBlur = 0;
+    } else if(e.type === 'carapace'){
+      // 4. Armored Carapace (Heavy Tungsten & Ceramic)
+      X.fillStyle = fl ? '#fff' : '#181E2B';
+      X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
+      X.fillStyle = fl ? '#fff' : '#E2E8F0';
+      X.fillRect(-e.w / 2 - 6, -e.h / 2, 6, e.h);
+      X.fillRect(e.w / 2, -e.h / 2, 6, e.h);
+      X.fillStyle = '#FF4400';
+      X.fillRect(-e.w / 4, -4, e.w / 2, 8);
+    } else if(e.type === 'splitter' || e.type === 'micro'){
+      // 5. Brood Splitter (Emerald Spikes)
+      X.fillStyle = fl ? '#fff' : '#0D1E16';
+      X.beginPath();
+      X.moveTo(0, -e.h / 2); X.lineTo(e.w / 2, 0); X.lineTo(0, e.h / 2); X.lineTo(-e.w / 2, 0);
+      X.closePath(); X.fill();
+      X.fillStyle = '#10B981';
+      X.beginPath(); X.arc(0, 0, e.type === 'micro' ? 2 : 3.5, 0, Math.PI * 2); X.fill();
+    } else if(e.type === 'boss'){
+      // 6. Titan Behemoth Boss
+      X.fillStyle = fl ? '#fff' : '#141824';
+      X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
+      X.fillStyle = '#E2E8F0';
+      X.fillRect(-e.w / 2 - 8, -e.h / 2, 8, e.h * 0.8);
+      X.fillRect(e.w / 2, -e.h / 2, 8, e.h * 0.8);
+      // Twin plasma muzzles
+      X.fillStyle = '#FF3300'; X.shadowColor = '#FF3300'; X.shadowBlur = 12;
+      X.fillRect(-e.w * 0.35, e.h / 2 - 4, 8, 8);
+      X.fillRect(e.w * 0.35 - 8, e.h / 2 - 4, 8, 8);
+      X.shadowBlur = 0;
+    }
+
+    // Health Bar for tougher units
+    if(e.mhp > 4 && !fl && e.type !== 'boss'){
+      const bw = e.w + 4, rat = Math.max(0, e.hp / e.mhp);
+      X.fillStyle = '#0C0E14'; X.fillRect(-bw / 2, e.h / 2 + 3, bw, 3.5);
+      X.fillStyle = rat > 0.5 ? '#FFAA00' : '#FF3300';
+      X.fillRect(-bw / 2, e.h / 2 + 3, bw * rat, 3.5);
+    }
+
+    X.restore();
+  }
 }
 
 function drawLockReticle(){
   if(GS !== 'play' || isPlayerControlling()) return;
   const tgt = getAimTarget(player.x, PY - PH / 2, null);
   if(!tgt) return;
-  const r = (tgt.r || Math.max(tgt.w, tgt.h) / 2) + 8;
+  const r = Math.max(tgt.w, tgt.h) / 2 + 8;
   X.save();
   X.translate(tgt.x, tgt.y);
-  X.strokeStyle = '#FFAA00';
+  X.strokeStyle = tgt.sprinting ? '#FF3344' : '#FFAA00';
   X.lineWidth = 1.5;
   X.shadowBlur = 10;
-  X.shadowColor = '#FF7700';
+  X.shadowColor = X.strokeStyle;
   const s = r * 1.08, d = 6;
   X.beginPath();X.moveTo(-s+d,-s);X.lineTo(-s,-s);X.lineTo(-s,-s+d);X.stroke();
   X.beginPath();X.moveTo(s-d,-s);X.lineTo(s,-s);X.lineTo(s,-s+d);X.stroke();
   X.beginPath();X.moveTo(-s+d,s);X.lineTo(-s,s);X.lineTo(-s,s-d);X.stroke();
   X.beginPath();X.moveTo(s-d,s);X.lineTo(s,s);X.lineTo(s,s-d);X.stroke();
-  X.fillStyle = '#FFAA00';
+  X.fillStyle = X.strokeStyle;
   X.beginPath();X.arc(0, 0, 1.8, 0, Math.PI * 2);X.fill();
   X.restore();
   X.shadowBlur = 0;
@@ -1507,122 +1824,37 @@ function drawBG(){
   bg.addColorStop(1, '#0B0E15');
   X.fillStyle = bg;
   X.fillRect(0, PY - 12, W, H - (PY - 12));
-
-  X.strokeStyle = 'rgba(255,170,0,0.3)';
-  X.lineWidth = 1;
-  X.setLineDash([8, 6]);
-  X.beginPath(); X.moveTo(0, PY + PH / 2 + 5); X.lineTo(W, PY + PH / 2 + 5); X.stroke();
-  X.setLineDash([]);
 }
 
+// 🔥 INFERNO THERMAL BEAM (MAGMA RED-ORANGE)
 function drawFlare(){
-  if(!upg.solarflare) return;
-  const fw = flareW(upg.solarflare), cx = player.x, t = flarePhase;
+  if(!upg.inferno) return;
+  const fw = flareW(upg.inferno), cx = player.x, t = flarePhase;
   const bg = X.createLinearGradient(0, PY, 0, 0);
-  bg.addColorStop(0, 'rgba(255,119,0,0.92)');
-  bg.addColorStop(.4, 'rgba(255,170,0,0.55)');
-  bg.addColorStop(1, 'rgba(255,200,80,0.05)');
-  X.shadowBlur = 35; X.shadowColor = '#FF7700'; X.globalAlpha = .7 + .15 * Math.sin(t * 9);
+  bg.addColorStop(0, 'rgba(255,51,0,0.95)');
+  bg.addColorStop(.4, 'rgba(255,102,0,0.65)');
+  bg.addColorStop(1, 'rgba(255,170,0,0.08)');
+  X.shadowBlur = 35; X.shadowColor = '#FF3300'; X.globalAlpha = .75 + .15 * Math.sin(t * 9);
   X.fillStyle = bg;
   X.fillRect(cx - fw / 2, 0, fw, PY);
 
-  const cw = fw * .25, cg = X.createLinearGradient(0, PY, 0, 0);
-  cg.addColorStop(0, 'rgba(255,255,255,0.9)');
+  const cw = fw * .28, cg = X.createLinearGradient(0, PY, 0, 0);
+  cg.addColorStop(0, '#FFFFFF');
   cg.addColorStop(1, 'rgba(255,255,255,0.05)');
-  X.globalAlpha = .5; X.fillStyle = cg;
+  X.globalAlpha = .65; X.fillStyle = cg;
   X.fillRect(cx - cw / 2, 0, cw, PY);
   X.shadowBlur = 0; X.globalAlpha = 1;
 }
 
-function srng(seed){ let s = seed; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
-
-function drawMeteors(){
-  for(const m of meteors){
-    if(m.dead) continue;
-    X.save(); X.translate(m.x, m.y); X.rotate(m.rot);
-    const fl = m.flash > 0;
-    X.shadowBlur = fl ? 22 : 12;
-    X.shadowColor = fl ? '#fff' : '#FF7700';
-    X.fillStyle = fl ? '#fff' : '#0E1118';
-    const rng = srng(m.seed);
-    X.beginPath();
-    for(let i = 0; i < m.sides; i++){
-      const a = (i / m.sides) * Math.PI * 2, r = m.r * (.74 + rng() * .3);
-      i === 0 ? X.moveTo(Math.cos(a) * r, Math.sin(a) * r) : X.lineTo(Math.cos(a) * r, Math.sin(a) * r);
-    }
-    X.closePath(); X.fill(); X.shadowBlur = 0;
-    if(!fl){
-      const rng2 = srng(m.seed + 15), nc = 3 + Math.floor(rng2() * 3);
-      X.strokeStyle = '#FF7700'; X.lineWidth = 1.5; X.shadowBlur = 7; X.shadowColor = '#FF7700'; X.globalAlpha = .75;
-      for(let c = 0; c < nc; c++){
-        const a = rng2() * Math.PI * 2, l = m.r * (.28 + rng2() * .52);
-        X.beginPath(); X.moveTo(0, 0); X.lineTo(Math.cos(a) * l, Math.sin(a) * l); X.stroke();
-      }
-      X.globalAlpha = 1; X.shadowBlur = 0;
-    }
-    if(m.splits){
-      const rat = Math.max(0, m.hp / m.mhp);
-      X.strokeStyle = rat > .5 ? '#FFAA00' : '#FF3300';
-      X.lineWidth = 2; X.globalAlpha = .6;
-      X.beginPath(); X.arc(0, 0, m.r + 4, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * rat); X.stroke();
-      X.globalAlpha = 1;
-    }
-    X.restore();
-  }
-}
-
-function drawEnemies(){
-  for(const e of enemies){
-    if(e.dead) continue;
-    X.save(); X.translate(e.x, e.y);
-    const fl = e.flash > 0, ac = e.type === 'heavy' ? '#FF4400' : '#FF7700';
-    X.shadowBlur = fl ? 22 : 12; X.shadowColor = fl ? '#fff' : ac;
-    if(e.type === 'drone') drawDrone(e.w, e.h, fl, ac);
-    else drawHeavy(e.w, e.h, fl, ac);
-    X.shadowBlur = 0;
-    if(e.type === 'heavy' && !fl){
-      const bw = e.w + 4, rat = Math.max(0, e.hp / e.mhp);
-      X.fillStyle = '#0C0E14'; X.fillRect(-bw / 2, e.h / 2 + 4, bw, 4);
-      X.fillStyle = rat > .5 ? '#FFAA00' : '#FF3300'; X.fillRect(-bw / 2, e.h / 2 + 4, bw * rat, 4);
-    }
-    X.restore();
-  }
-}
-
-function drawDrone(w, h, fl, ac){
-  X.fillStyle = fl ? '#fff' : '#0D1017';
-  X.beginPath(); X.moveTo(0, -h / 2); X.lineTo(w / 2, 0); X.lineTo(w / 3, h / 2); X.lineTo(-w / 3, h / 2); X.lineTo(-w / 2, 0); X.closePath(); X.fill();
-  X.fillStyle = fl ? '#fff' : '#E2E8F0';
-  X.beginPath(); X.moveTo(-w / 2, 0); X.lineTo(-w / 2 - 8, h / 3); X.lineTo(-w / 3, h / 2); X.closePath(); X.fill();
-  X.beginPath(); X.moveTo(w / 2, 0); X.lineTo(w / 2 + 8, h / 3); X.lineTo(w / 3, h / 2); X.closePath(); X.fill();
-  if(!fl){
-    X.shadowBlur = 14; X.shadowColor = ac; X.fillStyle = ac;
-    X.beginPath(); X.ellipse(0, -h / 4, 6, 3, 0, 0, Math.PI * 2); X.fill();
-    X.fillStyle = '#fff'; X.shadowBlur = 0;
-    X.beginPath(); X.ellipse(-1, -h / 4 - .5, 2, 1.2, 0, 0, Math.PI * 2); X.fill();
-  }
-}
-
-function drawHeavy(w, h, fl, ac){
-  X.fillStyle = fl ? '#fff' : '#0A0C12'; X.fillRect(-w / 2, -h / 2, w, h);
-  X.fillStyle = fl ? '#fff' : '#E2E8F0';
-  X.fillRect(-w / 2 - 8, -h / 2, 8, h * .65);
-  X.fillRect(w / 2, -h / 2, 8, h * .65);
-  X.beginPath(); X.moveTo(-8, -h / 2); X.lineTo(0, -h / 2 - 11); X.lineTo(8, -h / 2); X.closePath(); X.fill();
-  if(!fl){
-    X.shadowBlur = 16; X.shadowColor = ac; X.fillStyle = ac;
-    X.beginPath(); X.ellipse(-8, -h / 4, 5, 3.5, 0, 0, Math.PI * 2); X.fill();
-    X.beginPath(); X.ellipse(8, -h / 4, 5, 3.5, 0, 0, Math.PI * 2); X.fill();
-    X.fillStyle = '#fff'; X.shadowBlur = 0;
-    X.beginPath(); X.arc(-8, -h / 4, 1.8, 0, Math.PI * 2); X.fill();
-    X.beginPath(); X.arc(8, -h / 4, 1.8, 0, Math.PI * 2); X.fill();
-  }
-}
-
+// BULLETS (COLOR CODED BY ACTIVE UPGRADES)
 function drawBullets(){
   for(const b of bullets){
     if(b.dead) continue;
-    X.shadowBlur = 16; X.shadowColor = '#FF7700'; X.strokeStyle = '#FFAA00'; X.lineWidth = 3.8; X.globalAlpha = .7;
+    const strokeCol = b.isRic ? '#10B981' : (b.isAcc ? '#FACC15' : '#FFAA00');
+    const glowCol = b.isRic ? '#059669' : (b.isAcc ? '#EAB308' : '#FF7700');
+
+    X.shadowBlur = 16; X.shadowColor = glowCol; X.strokeStyle = strokeCol;
+    X.lineWidth = 3.8; X.globalAlpha = .75;
     X.beginPath(); X.moveTo(b.x, b.y); X.lineTo(b.x - b.vx * .018, b.y - b.vy * .018); X.stroke();
     X.strokeStyle = '#FFFFFF'; X.lineWidth = 1.8; X.globalAlpha = 1;
     X.beginPath(); X.moveTo(b.x, b.y); X.lineTo(b.x - b.vx * .012, b.y - b.vy * .012); X.stroke();
@@ -1631,26 +1863,30 @@ function drawBullets(){
   X.globalAlpha = 1;
 }
 
+// 🚀 HIVE SWARM MISSILES (CYBER VIOLET)
 function drawMissiles(){
   for(const m of missiles){
     if(m.dead) continue;
     for(let i = 0; i < m.trail.length; i++){
-      const t = m.trail[i]; X.globalAlpha = (1 - i / m.trail.length) * .55; X.fillStyle = '#FF7700';
-      X.beginPath(); X.arc(t.x, t.y, Math.max(.5, 2.2 - i * .2), 0, Math.PI * 2); X.fill();
+      const t = m.trail[i]; X.globalAlpha = (1 - i / m.trail.length) * .6;
+      X.fillStyle = '#C084FC';
+      X.beginPath(); X.arc(t.x, t.y, Math.max(.5, 2.4 - i * .2), 0, Math.PI * 2); X.fill();
     }
-    X.globalAlpha = 1; X.shadowBlur = 12; X.shadowColor = '#FF7700'; X.fillStyle = '#FFAA00';
+    X.globalAlpha = 1; X.shadowBlur = 12; X.shadowColor = '#C084FC'; X.fillStyle = '#A855F7';
     const a = Math.atan2(m.vy, m.vx);
     X.save(); X.translate(m.x, m.y); X.rotate(a + Math.PI / 2);
-    X.fillStyle = '#E2E8F0'; X.fillRect(-2, -7, 4, 10);
-    X.fillStyle = '#FF7700'; X.fillRect(-1.5, -9, 3, 3);
+    X.fillStyle = '#F3E8FF'; X.fillRect(-2.5, -8, 5, 11);
+    X.fillStyle = '#C084FC'; X.fillRect(-2, -10, 4, 3);
     X.restore(); X.shadowBlur = 0;
   }
 }
 
+// ⚡ TESLA BOLTS & PARTICLES
 function drawParts(){
   for(const p of parts){
     if(p.type === 'bolt'){
-      X.globalAlpha = p.life * .85; X.strokeStyle = '#FFAA00'; X.shadowBlur = 12; X.shadowColor = '#FF7700'; X.lineWidth = 1.6;
+      X.globalAlpha = p.life * .9; X.strokeStyle = p.col || '#00E5FF';
+      X.shadowBlur = 14; X.shadowColor = p.col || '#00E5FF'; X.lineWidth = 1.8;
       X.beginPath(); X.moveTo(p.x1, p.y1);
       const steps = 5, dx = (p.x2 - p.x1) / steps, dy = (p.y2 - p.y1) / steps;
       for(let i = 1; i < steps; i++) X.lineTo(p.x1 + dx * i + (Math.random() - .5) * 20, p.y1 + dy * i + (Math.random() - .5) * 20);
@@ -1662,9 +1898,7 @@ function drawParts(){
   X.globalAlpha = 1;
 }
 
-// ═════════════════════════════════════════════════════════════
-// IN-COMBAT TOP-DOWN MECHA RENDERING (MATCHING HANGAR MECHA)
-// ═════════════════════════════════════════════════════════════
+// PLAYER TOP-DOWN MECHA
 function drawPlayer(){
   for(const p of player.thrust){
     X.globalAlpha = Math.max(0, p.life * .8); X.fillStyle = p.col; X.shadowBlur = 10; X.shadowColor = p.col;
@@ -1684,9 +1918,7 @@ function drawPlayer(){
     X.restore(); return;
   }
 
-  const s = PW * 0.5;
-
-  // 1. Under-Chassis & Rear Engine Mounts
+  // 1. Under-Chassis & Engine Mounts
   X.fillStyle = '#11141D';
   X.beginPath();
   X.moveTo(0, -PH * 0.45);
@@ -1700,20 +1932,19 @@ function drawPlayer(){
   X.closePath();
   X.fill();
 
-  // 2. Twin Pulse Railguns (Forward-pointing on wings)
+  // 2. Twin Pulse Railgun Barrels
   X.fillStyle = '#181C26';
-  // Left barrel
   X.fillRect(-17, -PH * 0.58, 6, 26);
-  // Right barrel
   X.fillRect(11, -PH * 0.58, 6, 26);
 
-  // Muzzle coil highlights
-  X.fillStyle = '#FFAA00'; X.shadowColor = '#FF7700'; X.shadowBlur = 8;
+  // Muzzle coils (Gold if Accelerator upgraded)
+  X.fillStyle = (upg.accelerator || 0) > 0 ? '#FACC15' : '#FFAA00';
+  X.shadowColor = X.fillStyle; X.shadowBlur = 8;
   X.fillRect(-18, -PH * 0.62, 8, 3.5);
   X.fillRect(10, -PH * 0.62, 8, 3.5);
   X.shadowBlur = 0;
 
-  // 3. Swept Ceramic White Delta Wings
+  // 3. Ceramic White Delta Wings
   X.shadowColor = 'rgba(0,0,0,0.5)';
   X.shadowBlur = 10;
   X.fillStyle = '#E6ECF5';
@@ -1725,7 +1956,6 @@ function drawPlayer(){
   X.lineTo(-PW * 0.2, PH * 0.36);
   X.lineTo(-6, PH * 0.32);
   X.closePath(); X.fill();
-
   // Right wing
   X.beginPath();
   X.moveTo(6, -PH * 0.25);
@@ -1747,12 +1977,11 @@ function drawPlayer(){
   X.lineTo(-9, -PH * 0.22);
   X.closePath(); X.fill();
 
-  // Seam line
   X.strokeStyle = '#141720';
   X.lineWidth = 1.4;
   X.beginPath(); X.moveTo(0, -PH * 0.5); X.lineTo(0, -PH * 0.12); X.stroke();
 
-  // 5. Glowing Amber Cockpit / Visor Canopy
+  // 5. Cockpit Visor Canopy
   X.fillStyle = '#0B0D12';
   X.beginPath();
   X.moveTo(0, -PH * 0.2);
@@ -1771,12 +2000,12 @@ function drawPlayer(){
   X.fillStyle = '#FFFFFF'; X.shadowBlur = 0;
   X.beginPath(); X.arc(-1, -PH * 0.06 - 0.5, 1, 0, Math.PI * 2); X.fill();
 
-  // 6. Shoulder Pods (if upgrade owned)
+  // 6. 🚀 Hive Missile Shoulder Pods
   if(upg.missiles){
     X.fillStyle = '#141720';
     X.fillRect(-PW / 2 - 8, -PH * 0.1, 8, 16);
     X.fillRect(PW / 2, -PH * 0.1, 8, 16);
-    X.fillStyle = '#FFAA00'; X.shadowBlur = 6; X.shadowColor = '#FF7700';
+    X.fillStyle = '#C084FC'; X.shadowBlur = 8; X.shadowColor = '#A855F7';
     X.fillRect(-PW / 2 - 6, -PH * 0.08, 4, 3);
     X.fillRect(PW / 2 + 2, -PH * 0.08, 4, 3);
     X.shadowBlur = 0;
@@ -1795,37 +2024,56 @@ function drawFloats(){
 }
 
 function drawHUD(){
-  X.fillStyle = 'rgba(8,10,15,0.88)'; X.fillRect(0, 0, W, 52);
+  X.fillStyle = 'rgba(8,10,15,0.92)'; X.fillRect(0, 0, W, 52);
   X.strokeStyle = 'rgba(255,255,255,0.1)'; X.lineWidth = 1; X.beginPath(); X.moveTo(0, 52); X.lineTo(W, 52); X.stroke();
 
-  // Telemetry Header
+  // Wave & Telemetry Header
   X.font = '700 ' + (W < 460 ? '12px' : '14px') + ' Orbitron,monospace'; X.fillStyle = '#FFFFFF';
   X.shadowBlur = 12; X.shadowColor = '#FF7700';
-  X.fillText('BATTLEFRAME // CLASS S', 14, 22);
+  X.fillText(`WAVE ${currentWave} // BATTLEFRAME`, 14, 22);
   X.shadowBlur = 0;
 
   X.font = (W < 460 ? '9px' : '10.5px') + ' "Share Tech Mono",monospace'; X.fillStyle = '#FFAA00';
   X.fillText('SCORE: ' + score.toLocaleString(), 14, 40);
 
+  // Remaining wave enemies or intermission indicator
   X.fillStyle = '#9EA5B0'; X.textAlign = 'right';
   X.fillText('TIME: ' + fmtT(elapsed), W - 14, 22);
-  X.fillText('KILLS: ' + kills, W - 14, 40);
+  const remaining = waveEnemiesToSpawn + enemies.length;
+  if(remaining > 0){
+    X.fillText(`ENEMIES: ${remaining} REMAINING`, W - 14, 40);
+  } else {
+    X.fillStyle = '#10B981';
+    X.fillText('WAVE CLEARED · PREPARING NEXT WAVE...', W - 14, 40);
+  }
   X.textAlign = 'left';
 
-  // Shield Cells
+  // Shield Cells (Fortress Barrier)
   const shMax = player.shMax, pip = W < 460 ? 11 : 16, gap = W < 460 ? 3 : 5;
   const totalW = shMax * (pip + gap) - gap, sx = W / 2 - totalW / 2;
   for(let i = 0; i < shMax; i++){
     const px = sx + i * (pip + gap), active = i < player.sh;
-    X.shadowBlur = active ? 10 : 0; X.shadowColor = '#FFAA00';
-    X.fillStyle = active ? '#FFAA00' : '#12151D';
-    X.strokeStyle = active ? '#FF7700' : '#252934';
+    X.shadowBlur = active ? 10 : 0; X.shadowColor = '#3B82F6';
+    X.fillStyle = active ? '#3B82F6' : '#101522';
+    X.strokeStyle = active ? '#60A5FA' : '#1D2538';
     X.lineWidth = 1;
     X.fillRect(px, 18, pip, 8); X.strokeRect(px, 18, pip, 8);
     X.shadowBlur = 0;
   }
-  X.font = '8px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.45)';
-  X.textAlign = 'center'; X.fillText('SHIELD CELL', W / 2, 15); X.textAlign = 'left';
+  X.font = '8px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.5)';
+  X.textAlign = 'center'; X.fillText('FORTRESS BARRIER SHIELD', W / 2, 15); X.textAlign = 'left';
+
+  // Boss Health Bar (if active)
+  if(activeBoss && !activeBoss.dead){
+    const bw = Math.min(360, W * 0.7), bx = W / 2 - bw / 2, by = 60;
+    const rat = Math.max(0, activeBoss.hp / activeBoss.mhp);
+    X.fillStyle = 'rgba(12,16,24,0.85)'; X.fillRect(bx, by, bw, 14);
+    X.strokeStyle = '#FF3300'; X.strokeRect(bx, by, bw, 14);
+    X.fillStyle = '#FF3300'; X.fillRect(bx, by, bw * rat, 14);
+    X.font = '9px "Orbitron",monospace'; X.fillStyle = '#FFFFFF'; X.textAlign = 'center';
+    X.fillText(`⚠ TITAN BEHEMOTH // ${Math.floor(rat * 100)}% ⚠`, W / 2, by + 10.5);
+    X.textAlign = 'left';
+  }
 
   // Bottom XP Progress Bar
   const by = H - 12, bh = 6;
@@ -1844,18 +2092,38 @@ function drawHUD(){
   X.fillText('OVERDRIVE LVL ' + odLevel + ' · ' + Math.floor(xrat * 100) + '%', W - 4, by - 3);
   X.textAlign = 'left';
 
-  // Active Upgrade Glyphs
+  // Active Upgrade Glyphs (Vibrant Individual Colors)
   const owned = Object.entries(upg || {}).filter(([k, v]) => v > 0);
   if(owned.length){
-    let ux = 10; X.font = '9px "Share Tech Mono",monospace';
+    let ux = 10; X.font = '10px "Share Tech Mono",monospace';
     for(const [id, lv] of owned){
       const def = UDefs.find(u => u.id === id);
       if(!def) continue;
-      X.fillStyle = def.gc; X.shadowBlur = 6; X.shadowColor = def.gc;
-      X.fillText(def.glyph + lv, ux, H - 17);
-      X.shadowBlur = 0; ux += 28;
+      X.fillStyle = def.gc; X.shadowBlur = 8; X.shadowColor = def.glow;
+      X.fillText(def.glyph + ' ' + lv, ux, H - 17);
+      X.shadowBlur = 0; ux += 38;
     }
   }
+}
+
+// Wave Announcement Banner Animation
+function drawWaveBanner(){
+  if(waveBannerAlpha <= 0) return;
+  X.save();
+  X.globalAlpha = Math.min(1, waveBannerAlpha);
+  X.textAlign = 'center';
+
+  X.font = '900 clamp(28px, 6vw, 48px) "Orbitron",monospace';
+  X.fillStyle = '#FFFFFF';
+  X.shadowColor = currentWave % 5 === 0 ? '#FF3300' : '#FFAA00';
+  X.shadowBlur = 24;
+  X.fillText(waveBannerText, W / 2, H * 0.35);
+
+  X.font = '600 clamp(11px, 2.5vw, 15px) "Share Tech Mono",monospace';
+  X.fillStyle = currentWave % 5 === 0 ? '#FF4400' : '#FFAA00';
+  X.shadowBlur = 10;
+  X.fillText(waveBannerSub, W / 2, H * 0.35 + 28);
+  X.restore();
 }
 
 function drawPause(){
