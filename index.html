@@ -276,6 +276,12 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 }
 #lu-s{font-size:clamp(10px, 2vw, 12px);color:#8F98A8;letter-spacing:4px;margin-bottom:28px;text-align:center;}
 #cr{display:flex;gap:clamp(10px, 2vw, 18px);max-width:96vw;justify-content:center;flex-wrap:wrap;}
+
+.card .ctg{
+  font-family:'Share Tech Mono',monospace;font-size:7.5px;font-weight:700;
+  letter-spacing:1px;padding:2px 6px;border-radius:2px;margin-bottom:6px;
+  text-transform:uppercase;border:1px solid rgba(255,255,255,0.15);
+}
 .card{
   width:clamp(120px, 28vw, 160px);min-height:215px;
   background:linear-gradient(160deg, #161B26 0%, #0E121A 100%);
@@ -737,36 +743,197 @@ function drawHeroMecha(ctx, w, h, tilt, time){
 // ═════════════════════════════════════════════════════════════
 // GALAXY DEFENSE TD UPGRADE DEFINITIONS (DISTINCT VIBRANT COLORS)
 // ═════════════════════════════════════════════════════════════
+
+// ═════════════════════════════════════════════════════════════
+// GALAXY DEFENSE TD TACTICAL UPGRADE MATRIX (20 MODULES)
+// ═════════════════════════════════════════════════════════════
 const UDefs = [
-  { id:'tesla', name:'TESLA MATRIX', glyph:'⚡', gc:'#00E5FF', glow:'#00E5FF',
-    desc:l=>`High-voltage lightning arcs across swarms\nChains: ${1+l} · Shocks clusters`,
-    next:l=>`Chains: ${2+l} · Chain damage +20%`,
-    tier:l=>['SPARK','TESLA TOWER','SKYGUARD'][Math.min(2,Math.floor(l/3))] },
-  { id:'missiles', name:'HIVE SWARM PODS', glyph:'🚀', gc:'#C084FC', glow:'#A855F7',
-    desc:l=>`Homing shoulder micro-missiles\nCount: ${2+l} · CD: ${(3.2*.92**l).toFixed(2)}s · AoE Blast`,
-    next:l=>`Count: ${3+l} · CD: ${(3.2*.92**(l+1)).toFixed(2)}s`,
-    tier:l=>['SALVO','SWARM BAY','HIVE APOCALYPSE'][Math.min(2,Math.floor(l/3))] },
-  { id:'cryo', name:'CRYO DISRUPTION PULSE', glyph:'❄', gc:'#67E8F9', glow:'#38BDF8',
-    desc:l=>`Cryogenic EMP ring slows enemy march\nSlow: 60% for ${(2.2+l*.4).toFixed(1)}s · CD: ${(4.5*.93**l).toFixed(1)}s`,
-    next:l=>`Duration +0.4s · CD -7%`,
-    tier:l=>['FROST','DISRUPTION FIELD','PERMAFROST'][Math.min(2,Math.floor(l/3))] },
-  { id:'inferno', name:'INFERNO THERMAL BEAM', glyph:'🔥', gc:'#FF3300', glow:'#FF5500',
-    desc:l=>`Piercing thermal laser line\nMelts armored carapaces · Width: ${(18*(1+.18*l)).toFixed(0)}px`,
-    next:l=>`Width: ${(18*(1+.18*(l+1))).toFixed(0)}px · DPS×${(1.3**(l+1)).toFixed(2)}`,
-    tier:l=>['SEAR','SOLAR NOVA','EXTINCTION BEAM'][Math.min(2,Math.floor(l/3))] },
-  { id:'ricochet', name:'SHRAPNEL RICOCHET', glyph:'☣', gc:'#10B981', glow:'#059669',
-    desc:l=>`Kinetic slugs bounce off walls & hulls\nBounces: ${1+Math.floor(l*.75)} · Splinters`,
-    next:l=>`Bounces: ${1+Math.floor((l+1)*.75)} · +${(l+1)*20}% dmg/bounce`,
-    tier:l=>['FLAK','KINETIC SPLINTER','HULL SHREDDER'][Math.min(2,Math.floor(l/3))] },
-  { id:'accelerator', name:'PULSE ACCELERATOR', glyph:'🎯', gc:'#FACC15', glow:'#EAB308',
-    desc:l=>`Rotary railgun fire rate overclock\nCD: ${(.28*.88**l*1000).toFixed(0)}ms`,
-    next:l=>`CD: ${(.28*.88**(l+1)*1000).toFixed(0)}ms`,
-    tier:l=>['OVERCLOCK','GATLING PULSE','HYPERDRIVE'][Math.min(2,Math.floor(l/3))] },
-  { id:'aegis', name:'KINETIC AEGIS', glyph:'🛡', gc:'#3B82F6', glow:'#2563EB',
-    desc:l=>`Fortifies perimeter defense barrier\nShields: ${3+l} · Regen: ${Math.max(2,8-l*1.2).toFixed(1)}s`,
-    next:l=>`Shields: ${4+l} · Regen: ${Math.max(2,8-(l+1)*1.2).toFixed(1)}s`,
-    tier:l=>['BARRIER','FORTRESS MATRIX','CITADEL AEGIS'][Math.min(2,Math.floor(l/3))] }
+  // ── 7 CORE WEAPON SYSTEMS ──
+  {
+    id: 'drones', category: 'CORE WEAPON', name: 'DRONE SWARM HIVE', glyph: '🛸', gc: '#38BDF8', glow: '#0284C7',
+    desc: l => `Autonomous combat drones orbit & engage swarms\nDrones: ${1 + l} · Arc-Sting shock & kinetic darts`,
+    next: l => `Drones: ${2 + l} · ${['Kinetic Splitters','Sortie Shield Repair','Brood Swarm'][Math.min(2, l)]}`,
+    tier: l => ['INTERCEPTOR', 'SWARM CARRIER', 'BROOD OVERMIND'][Math.min(2, Math.floor(l / 2))]
+  },
+  {
+    id: 'prism', category: 'CORE WEAPON', name: 'PRISM BEAM PROJECTOR', glyph: '💎', gc: '#F43F5E', glow: '#E11D48',
+    desc: l => `High-energy continuous thermal laser lance\nWidth: ${14 + l * 4}px · Refraction splinters foes`,
+    next: l => `Beam DPS ×1.32 · Sweeping arc & core burn`,
+    tier: l => ['PRISM LANCE', 'WAVE AMPLIFIER', 'SOLAR OMEGA'][Math.min(2, Math.floor(l / 2))]
+  },
+  {
+    id: 'skyfire', category: 'CORE WEAPON', name: 'SKYFIRE MISSILE BATTERY', glyph: '🚀', gc: '#C084FC', glow: '#A855F7',
+    desc: l => `Shoulder salvo pods with homing warheads\nCount: ${2 + l} · CD: ${(3.0 * (.92 ** l)).toFixed(1)}s · Cluster blast`,
+    next: l => `Count: ${3 + l} · Heavy armor piercing`,
+    tier: l => ['SALVO PODS', 'HEAVY BATTERY', 'APOCALYPSE GRID'][Math.min(2, Math.floor(l / 2))]
+  },
+  {
+    id: 'volt', category: 'CORE WEAPON', name: 'VOLT ARCING COIL', glyph: '⚡', gc: '#00E5FF', glow: '#00B4D8',
+    desc: l => `Cascading high-voltage lightning discharge\nChains: ${2 + l * 2} · High-voltage stun lockout`,
+    next: l => `Chains: ${4 + l * 2} · Stun duration +0.4s`,
+    tier: l => ['TESLA COIL', 'STORM GENERATOR', 'LIGHTNING CITADEL'][Math.min(2, Math.floor(l / 2))]
+  },
+  {
+    id: 'inferno', category: 'CORE WEAPON', name: 'INFERNO ORBIT WHEEL', glyph: '🔥', gc: '#FF5500', glow: '#CC3300',
+    desc: l => `Spinning fiery saw blades orbit chassis\nBlades: ${2 + Math.floor(l / 2)} · Slices & deflects`,
+    next: l => `Hyper velocity & perimeter kinetic shockwave`,
+    tier: l => ['SAW BLADE', 'ORBIT SHREDDER', 'INFERNO HORIZON'][Math.min(2, Math.floor(l / 2))]
+  },
+  {
+    id: 'scatter', category: 'CORE WEAPON', name: 'SCATTER CANNON BASTION', glyph: '💥', gc: '#F59E0B', glow: '#D97706',
+    desc: l => `Heavy rotary flak shotgun spread\nPellets: ${5 + l * 2} · Proximity field charges`,
+    next: l => `Pellets: ${7 + l * 2} · Anti-armor bore slugs`,
+    tier: l => ['FLAK SPREAD', 'ROTARY BASTION', 'DREADNOUGHT CANNON'][Math.min(2, Math.floor(l / 2))]
+  },
+  {
+    id: 'singularity', category: 'CORE WEAPON', name: 'SINGULARITY DISRUPTOR', glyph: '🌌', gc: '#A855F7', glow: '#7E22CE',
+    desc: l => `Gravitational vortex pulls & crushes aliens\nRadius: ${110 + l * 25}px · Resonance vulnerability`,
+    next: l => `Void vacuum pull +30% · Crush damage +35%`,
+    tier: l => ['VOID RIFT', 'GRAVITON CORE', 'EVENT HORIZON'][Math.min(2, Math.floor(l / 2))]
+  },
+
+  // ── VANGUARD OPERATIVE SYSTEMS & CHIPS (OFFENSE) ──
+  {
+    id: 'vanguard_barrel', category: 'VANGUARD SYSTEM', name: 'PRIMARY BARREL OUTPUT', glyph: '🎯', gc: '#FACC15', glow: '#CA8A04',
+    desc: l => `Direct kinetic railgun charge output\nPrimary Damage: +${(1 + l) * 25}%`,
+    next: l => `Primary Damage: +${(2 + l) * 25}%`,
+    tier: l => ['CHARGE I', 'CHARGE II', 'HEAVY BORE'][Math.min(2, l)]
+  },
+  {
+    id: 'vanguard_multichamber', category: 'VANGUARD SYSTEM', name: 'MULTI-CHAMBER RIFLING', glyph: '🔱', gc: '#FB923C', glow: '#EA580C',
+    desc: l => `Additional parallel railgun barrels\nBarrels: ${2 + l} projectiles per autofire volley`,
+    next: l => `Barrels: ${3 + l} projectiles per volley`,
+    tier: l => ['TRIPLE BARREL', 'QUAD BURST', 'PHALANX VOLLEY'][Math.min(2, l)]
+  },
+  {
+    id: 'vanguard_trigger', category: 'VANGUARD SYSTEM', name: 'TRIGGER ACCELERATION', glyph: '⏩', gc: '#FDE047', glow: '#EAB308',
+    desc: l => `Rapid-cycle trigger chamber overclock\nAutofire rate: +${(1 + l) * 22}%`,
+    next: l => `Autofire rate: +${(2 + l) * 22}%`,
+    tier: l => ['RAPID PIN', 'TURBO FEED', 'ROTARY HYPERDRIVE'][Math.min(2, l)]
+  },
+  {
+    id: 'vanguard_crit', category: 'VANGUARD SYSTEM', name: 'PRECISION CRIT OPTICS', glyph: '👁', gc: '#EF4444', glow: '#DC2626',
+    desc: l => `Targets alien structural stress points\nCrit Chance: ${6 + (1 + l) * 12}% · 220% Critical Damage`,
+    next: l => `Crit Chance: ${6 + (2 + l) * 12}%`,
+    tier: l => ['OPTIC LOCK', 'FOCUSED RETICLE', 'DEATH BLOW'][Math.min(2, l)]
+  },
+  {
+    id: 'chip_salvo', category: 'TACTICAL CHIP', name: 'OPENING SALVO EXECUTION', glyph: '🩸', gc: '#E11D48', glow: '#BE123C',
+    desc: l => `Ambush protocol against uninjured targets\n+${35 + (1 + l) * 15}% DMG vs aliens with >70% HP`,
+    next: l => `+${35 + (2 + l) * 15}% DMG vs fresh targets`,
+    tier: l => ['PRE-EMPTIVE', 'FIRST STRIKE', 'TERMINAL SALVO'][Math.min(2, l)]
+  },
+  {
+    id: 'chip_cull', category: 'TACTICAL CHIP', name: 'LOW-HEALTH CULLING BONUS', glyph: '💀', gc: '#9333EA', glow: '#7E22CE',
+    desc: l => `Instant execution protocol\nInstantly disintegrates non-boss foes <${14 + (1 + l) * 4}% HP`,
+    next: l => `Culling threshold: <${14 + (2 + l) * 4}% HP`,
+    tier: l => ['CULL PROTOCOL', 'REAPER CHIP', 'DISINTEGRATION'][Math.min(2, l)]
+  },
+  {
+    id: 'chip_predator', category: 'TACTICAL CHIP', name: 'ALPHA PREDATOR PROTOCOL', glyph: '🦅', gc: '#B45309', glow: '#92400E',
+    desc: l => `Specialized anti-heavy targeting data\n+${25 + (1 + l) * 15}% DMG to Titan Bosses & Carapaces`,
+    next: l => `+${25 + (2 + l) * 15}% Damage vs Elites`,
+    tier: l => ['HUNTER', 'TITAN SLAYER', 'APEX PREDATOR'][Math.min(2, l)]
+  },
+  {
+    id: 'chip_emplacement', category: 'TACTICAL CHIP', name: 'UNIFIED EMPLACEMENT AMP', glyph: '🧬', gc: '#06B6D4', glow: '#0891B2',
+    desc: l => `Synchronizes automated weapon logic\n+${(1 + l) * 20}% DMG to Drones, Missiles, Wheels, Coils`,
+    next: l => `+${(2 + l) * 20}% Autonomous weapon DPS`,
+    tier: l => ['NETWORK BUS', 'AUTONOMOUS AMP', 'OMNI-GRID'][Math.min(2, l)]
+  },
+
+  // ── HULL & CORE ENGINEERING (DEFENSE / SUSTAIN) ──
+  {
+    id: 'hull_aegis', category: 'HULL ENGINEERING', name: 'DEFLECTOR AEGIS BARRIER', glyph: '🛡', gc: '#3B82F6', glow: '#2563EB',
+    desc: l => `Fortifies perimeter defense barrier\nShield Cells: ${3 + (1 + l)} · Emits pulse on recovery`,
+    next: l => `Shield Cells: ${4 + (1 + l)}`,
+    tier: l => ['CAPACITOR', 'DEFLECTOR AEGIS', 'CITADEL FORTRESS'][Math.min(2, l)]
+  },
+  {
+    id: 'hull_flux', category: 'HULL ENGINEERING', name: 'BARRIER REGEN FLUX', glyph: '🔋', gc: '#10B981', glow: '#059669',
+    desc: l => `Accelerates shield re-energizing flux\nRecharge Time: ${Math.max(1.8, 7.5 - (1 + l) * 1.2).toFixed(1)}s`,
+    next: l => `Recharge Time: ${Math.max(1.8, 7.5 - (2 + l) * 1.2).toFixed(1)}s`,
+    tier: l => ['FLUX CONDUIT', 'HYPER-RECHARGE', 'INSTANT FLUX'][Math.min(2, l)]
+  },
+  {
+    id: 'hull_nanite', category: 'HULL ENGINEERING', name: 'NANITE FIELD RESTORATION', glyph: '🔧', gc: '#14B8A6', glow: '#0D9488',
+    desc: l => `Passive nanite repair matrix in chassis\nRestores 1 shield cell every ${Math.max(8, 16 - (1 + l) * 2)}s`,
+    next: l => `Restores 1 shield cell every ${Math.max(8, 16 - (2 + l) * 2)}s`,
+    tier: l => ['NANO-SWARM', 'REPAIR MATRIX', 'ETERNAL NANITES'][Math.min(2, l)]
+  },
+  {
+    id: 'hull_plating', category: 'HULL ENGINEERING', name: 'REACTIVE KINETIC PLATING', glyph: '🧱', gc: '#64748B', glow: '#475569',
+    desc: l => `Composite reactive armor plates\n${25 + (1 + l) * 10}% chance to absorb breach contact with 0 damage`,
+    next: l => `Absorb chance: ${25 + (2 + l) * 10}%`,
+    tier: l => ['CHOBHAM LAYER', 'REACTIVE PLATE', 'IMPERVIOUS HULL'][Math.min(2, l)]
+  },
+  {
+    id: 'hull_disrupt', category: 'HULL ENGINEERING', name: 'DISRUPTION DURATION AUGMENT', glyph: '❄', gc: '#67E8F9', glow: '#38BDF8',
+    desc: l => `Deep freeze & neural disruption coils\n+${(1 + l) * 50}% duration to Stuns, Slows, and Freezes`,
+    next: l => `+${(2 + l) * 50}% Disruption duration`,
+    tier: l => ['CRYO STASIS', 'SUB-ZERO FIELD', 'ABSOLUTE DISRUPTION'][Math.min(2, l)]
+  }
 ];
+
+// ═════════════════════════════════════════════════════════════
+// CROSS-WEAPON TACTICAL SYNERGIES (AUTO-ACTIVATED)
+// ═════════════════════════════════════════════════════════════
+const SYNERGY_DEFS = [
+  {
+    id: 'graviton',
+    name: 'GRAVITON DETONATION',
+    glyph: '💥',
+    col: '#C084FC',
+    desc: 'Skyfire Battery + Void Core: Missiles implode in micro-singularities before exploding',
+    isUnlocked: u => (u.skyfire || 0) >= 1 && (u.singularity || 0) >= 1
+  },
+  {
+    id: 'flakring',
+    name: 'ROTARY FLAK RING',
+    glyph: '🔄',
+    col: '#FF7700',
+    desc: 'Inferno Wheel + Scatter Bastion: Orbiting saw blades launch flak pellets outward',
+    isUnlocked: u => (u.inferno || 0) >= 1 && (u.scatter || 0) >= 1
+  },
+  {
+    id: 'conduit',
+    name: 'CONDUIT BEAM PULSE',
+    glyph: '⚡',
+    col: '#00E5FF',
+    desc: 'Volt Coil + Prism Beam: Laser conducts continuous electrical arcs to surrounding targets',
+    isUnlocked: u => (u.volt || 0) >= 1 && (u.prism || 0) >= 1
+  },
+  {
+    id: 'empnet',
+    name: 'EMP SHOCKWAVE NET',
+    glyph: '🌐',
+    col: '#38BDF8',
+    desc: 'Singularity Field + Arc Bolt: Black hole collapse releases a paralyzing EMP wave',
+    isUnlocked: u => (u.singularity || 0) >= 1 && (u.volt || 0) >= 1
+  },
+  {
+    id: 'horizon',
+    name: 'HORIZON IMPACT SINGULARITY',
+    glyph: '🌠',
+    col: '#E879F9',
+    desc: 'Missile Array + Black Hole Matrix: Catastrophic dual-singularity cluster orbital strike',
+    isUnlocked: u => (u.skyfire || 0) >= 2 && (u.singularity || 0) >= 2
+  }
+];
+
+let activeSynergies = {};
+function checkSynergies(){
+  for(const syn of SYNERGY_DEFS){
+    if(!activeSynergies[syn.id] && syn.isUnlocked(upg)){
+      activeSynergies[syn.id] = true;
+      fltxt(W / 2, H * 0.3, `★ SYNERGY: ${syn.name} ★`, syn.col);
+      burst(W / 2, H * 0.3, syn.col, 22, 160, 4);
+      waveBannerText = '★ SYNERGY ACTIVATED ★';
+      waveBannerSub = `${syn.name} ONLINE`;
+      waveBannerAlpha = 2.4;
+    }
+  }
+}
 
 // ═════════════════════════════════════════════════════════════
 // GAME ENGINE & WAVE SYSTEM
@@ -865,16 +1032,18 @@ let waveBannerSub = '';
 let waveBannerAlpha = 0;
 let activeBoss = null;
 
-// Helpers
-const fireCD = l => .28 * (.88 ** l); // Calibrated starting fire rate (~3.5/s)
-const flareW = l => 18 * (1 + .18 * l);
-const flareDPS = l => 12 * (1.3 ** l);
-const mCount = l => 2 + l;
-const mCD = l => 3.2 * (.92 ** l);
-const cryoCD = l => 4.5 * (.93 ** l);
-const cryoDur = l => 2.2 + l * .4;
-const regenTime = l => Math.max(2, 8 - l * 1.2);
 const bounces = l => 1 + Math.floor(l * .75);
+
+let droneAngle = 0, droneT = 0, droneSortieT = 0;
+let prismSwept = 0, prismPatches = [];
+let voltT = 0;
+let wheelAngle = 0, wheelFlakT = 0;
+let scatterT = 0, scatterPellets = [];
+let singularityT = 0, singularities = [];
+let firePatches = [];
+let droneProjectiles = [];
+let naniteT = 0;
+
 const fmtT = s => { const m = Math.floor(s / 60); return m ? `${m}m ${Math.floor(s % 60)}s` : `${Math.floor(s)}s`; };
 
 function mkEmber(){
@@ -934,6 +1103,14 @@ function startWave(wNum){
 function initGame(){
   score = 0; elapsed = 0; kills = 0; odLevel = 0; upg = {}; xp = 0; xpMax = 40;
   bulletT = 0; missileT = 0; cryoT = 0; regenT2 = 0; flarePhase = 0;
+  droneAngle = 0; droneT = 0; droneSortieT = 0;
+  prismSwept = 0; prismPatches = [];
+  voltT = 0; wheelAngle = 0; wheelFlakT = 0;
+  scatterT = 0; scatterPellets = [];
+  singularityT = 0; singularities = [];
+  firePatches = []; droneProjectiles = []; naniteT = 0;
+  activeSynergies = {};
+
   bullets = []; enemies = []; missiles = []; parts = []; ftexts = []; cryoRings = [];
 
   player = {
@@ -1001,8 +1178,10 @@ function triggerLU(){
     const d = document.createElement('div');
     d.className = 'card';
     d.style.borderColor = def.gc;
+    const catColor = def.category === 'CORE WEAPON' ? '#00E5FF' : (def.category === 'VANGUARD SYSTEM' ? '#FACC15' : '#10B981');
     d.innerHTML = `
       <div class="chk">[${i + 1}]</div>
+      <div class="ctg" style="background:rgba(255,255,255,0.08);color:${catColor};border-color:${catColor}">${def.category}</div>
       <div class="cgl" style="color:${def.gc};filter:drop-shadow(0 0 8px ${def.glow})">${def.glyph}</div>
       <div class="cnm">${def.name}</div>
       <div class="clv" style="color:${def.gc}">LVL ${l} → ${l + 1} · ${def.tier(l)}</div>
@@ -1020,10 +1199,13 @@ function pickCard(i){
   const def = currentCards[i];
   upg[def.id] = (upg[def.id] || 0) + 1;
 
-  if(def.id === 'aegis'){
-    player.shMax = 3 + upg.aegis;
+  if(def.id === 'hull_aegis'){
+    player.shMax = 3 + upg.hull_aegis;
     player.sh = Math.min(player.sh + 1, player.shMax);
   }
+
+  // Check for newly unlocked synergies!
+  checkSynergies();
 
   $lu.classList.remove('on');
 
@@ -1123,13 +1305,61 @@ function mkEnemy(type, x, y){
   enemies.push(e);
 }
 
-function dmgE(e, d, isThermal = false){
+function dmgE(e, d, opts = {}){
   let finalD = d;
-  if(e.shieldTether && e.type !== 'shielder') finalD *= 0.5;
-  if(e.type === 'carapace' && !isThermal) finalD *= 0.75;
 
+  // Autonomous weapon amplification
+  if(opts.isAutonomous && upg.chip_emplacement){
+    finalD *= (1 + upg.chip_emplacement * 0.2);
+  }
+
+  // Primary barrel output
+  if(opts.isPrimary && upg.vanguard_barrel){
+    finalD *= (1 + upg.vanguard_barrel * 0.25);
+  }
+
+  // Precision Critical Multiplier
+  if(opts.canCrit){
+    const critRate = 0.06 + (upg.vanguard_crit || 0) * 0.12;
+    if(Math.random() < critRate){
+      finalD *= 2.2;
+      burst(e.x, e.y, '#FACC15', 7, 90, 2);
+      fltxt(e.x, e.y - 10, 'CRIT!', '#FACC15');
+    }
+  }
+
+  // Opening Salvo Execution (>70% HP Target Buff)
+  if(upg.chip_salvo && (e.hp / e.mhp) > 0.7){
+    finalD *= (1.35 + upg.chip_salvo * 0.15);
+  }
+
+  // Alpha Predator Protocol (Elite & Boss Damage)
+  if(upg.chip_predator && (e.type === 'boss' || e.type === 'carapace')){
+    finalD *= (1.25 + upg.chip_predator * 0.15);
+  }
+
+  // Resonance Vulnerability Field (Singularity debuff)
+  if(e.resVulnerable && e.resVulnerable > 0){
+    finalD *= 1.35;
+  }
+
+  // Shield Tether
+  if(e.shieldTether && e.type !== 'shielder') finalD *= 0.5;
+
+  // Carapace Armor
+  if(e.type === 'carapace' && !opts.isThermal && !opts.isArmorPiercing) finalD *= 0.75;
+
+  // Apply damage
   e.hp -= finalD;
   e.flash = 3;
+
+  // Low-Health Culling Bonus
+  if(upg.chip_cull && e.type !== 'boss' && e.hp > 0 && (e.hp / e.mhp) <= (0.14 + upg.chip_cull * 0.04)){
+    e.hp = 0;
+    fltxt(e.x, e.y, 'CULLED!', '#C084FC');
+    burst(e.x, e.y, '#C084FC', 10, 110, 3);
+  }
+
   if(e.hp <= 0) killE(e);
 }
 
@@ -1144,6 +1374,13 @@ function killE(e){
 
   gainXP(e.xpv);
 
+  // Volt Nova on Kill (if Volt Coil >= 3)
+  if((upg.volt || 0) >= 3){
+    burst(e.x, e.y, '#00E5FF', 10, 100, 2.5);
+    const nearby = enemies.filter(o => !o.dead && o !== e && Math.hypot(o.x - e.x, o.y - e.y) < 85);
+    for(const n of nearby) dmgE(n, 2.5, { isAutonomous: true });
+  }
+
   const burstCol = e.type === 'crasher' ? '#FF3344' : (e.type === 'shielder' ? '#00E5FF' : '#FF7700');
   burst(e.x, e.y, burstCol, 14, 150, 4);
   burst(e.x, e.y, '#FFAA00', 8, 80, 2.5);
@@ -1155,7 +1392,7 @@ function killE(e){
         type: 'micro', x: e.x + (i ? 14 : -14), y: e.y,
         vy: 75, vx: i ? 35 : -35, w: 18, h: 14,
         hp: 2, mhp: 2, sc: 10, xpv: 4, dead: false, flash: 0,
-        slowTimer: 0, shieldTether: false
+        slowTimer: 0, stunTimer: 0, shieldTether: false
       });
     }
   }
@@ -1163,6 +1400,15 @@ function killE(e){
 
 function hitPlayer(){
   if(player.inv > 0) return;
+
+  // Reactive Kinetic Plating (Absorb chance)
+  if((upg.hull_plating || 0) > 0 && Math.random() < (0.25 + upg.hull_plating * 0.1)){
+    burst(player.x, PY, '#64748B', 14, 110, 3);
+    fltxt(player.x, PY - 25, 'PLATING DEFLECT!', '#60A5FA');
+    player.inv = 0.9;
+    return;
+  }
+
   player.sh--;
   player.flash = 10;
   player.inv = 1.8;
@@ -1210,77 +1456,326 @@ function getAimTarget(fromX, fromY, exclude){
 }
 
 // ═════════════════════════════════════════════════════════════
-// WEAPONS & COLOR-CODED ABILITIES
+// 7 CORE WEAPONS & TACTICAL ABILITIES
 // ═════════════════════════════════════════════════════════════
-function fireBullets(){
-  const ric = upg.ricochet ? bounces(upg.ricochet) : 0;
-  const isRic = (upg.ricochet || 0) > 0;
-  const isAcc = (upg.accelerator || 0) > 0;
-  const manual = isPlayerControlling();
 
-  // Twin railguns mounted at x = -20 and x = 20
-  if(manual){
-    for(const ox of [-20, 20]){
-      bullets.push({
-        x: player.x + ox, y: PY - PH / 2, vx: 0, vy: -BSPD,
-        bounces: ric, dead: false, lastHit: null, isRic, isAcc
-      });
-    }
-  } else {
-    const t1 = getAimTarget(player.x - 20, PY - PH / 2, null);
-    const t2 = getAimTarget(player.x + 20, PY - PH / 2, t1) || t1;
-    const tgts = [t1, t2];
-    [-20, 20].forEach((ox, i) => {
-      const sx = player.x + ox, sy = PY - PH / 2, t = tgts[i];
-      let vx = 0, vy = -BSPD;
+// 1. PRIMARY RAILGUNS (WITH MULTI-CHAMBER & AUTOFIRE ACCELERATION)
+function fireBullets(){
+  const manual = isPlayerControlling();
+  const barrels = 2 + (upg.vanguard_multichamber || 0);
+
+  let offsets = [];
+  if(barrels === 2) offsets = [-20, 20];
+  else if(barrels === 3) offsets = [-22, 0, 22];
+  else if(barrels === 4) offsets = [-24, -8, 8, 24];
+  else offsets = [-28, -14, 0, 14, 28];
+
+  offsets.forEach((ox) => {
+    const sx = player.x + ox, sy = PY - PH / 2;
+    let vx = 0, vy = -BSPD;
+    if(!manual){
+      const t = getAimTarget(sx, sy, null);
       if(t){
         const dx = t.x - sx, dy = Math.min(-50, t.y - sy);
         const dist = Math.hypot(dx, dy);
         if(dist > 1){ vx = (dx / dist) * BSPD; vy = (dy / dist) * BSPD; }
       }
-      bullets.push({
-        x: sx, y: sy, vx, vy, bounces: ric, dead: false, lastHit: null, isRic, isAcc
-      });
+    }
+    bullets.push({
+      x: sx, y: sy, vx, vy, bounces: 0, dead: false, lastHit: null,
+      canCrit: true, isPrimary: true
     });
+  });
+}
+
+// 2. ⚡ VOLT ARCING COIL: High-Voltage Lightning Chains & Stuns
+function triggerTesla(src, ox, oy, directTarget = null){
+  const chains = 2 + (upg.volt || 0) * 2;
+  const rng = 150;
+  let pool = enemies.filter(e => !e.dead && e !== src);
+  let curX = ox, curY = oy;
+
+  if(directTarget && !directTarget.dead){
+    applyVoltHit(directTarget, curX, curY);
+    curX = directTarget.x; curY = directTarget.y;
+    pool = pool.filter(e => e !== directTarget);
+  }
+
+  for(let c = 0; c < chains && pool.length; c++){
+    pool.sort((a, b) => Math.hypot(a.x - curX, a.y - curY) - Math.hypot(b.x - curX, b.y - curY));
+    const t = pool[0];
+    if(Math.hypot(t.x - curX, t.y - curY) > rng) break;
+    applyVoltHit(t, curX, curY);
+    curX = t.x; curY = t.y;
+    pool.shift();
   }
 }
 
-// ⚡ TESLA MATRIX: Electric Cyan Chain Shock
-function triggerTesla(src, ox, oy){
-  const chains = 1 + (upg.tesla || 0);
-  const rng = 135;
-  const pool = enemies.filter(e => !e.dead && e !== src);
-  const near = pool.filter(e => Math.hypot(e.x - ox, e.y - oy) < rng).sort(() => Math.random() - .5);
-  for(let c = 0; c < chains && near.length; c++){
-    const t = near.shift();
-    dmgE(t, 2);
-    parts.push({ type: 'bolt', x1: ox, y1: oy, x2: t.x, y2: t.y, life: 1, dk: .32, col: '#00E5FF' });
+function applyVoltHit(target, fromX, fromY){
+  const stunDur = (1.2 + (upg.volt || 0) * 0.2) * (1 + (upg.hull_disrupt || 0) * 0.5);
+  if((upg.volt || 0) >= 2){
+    target.stunTimer = stunDur;
+    fltxt(target.x, target.y - 12, 'STUNNED!', '#00E5FF');
+  }
+  dmgE(target, 3.2, { isAutonomous: true });
+  parts.push({ type: 'bolt', x1: fromX, y1: fromY, x2: target.x, y2: target.y, life: 1, dk: .32, col: '#00E5FF' });
+}
+
+function updateVolt(dt){
+  if(!upg.volt) return;
+  voltT -= dt;
+  if(voltT <= 0){
+    voltT = Math.max(0.85, 2.2 * (0.88 ** (upg.volt - 1)));
+    const target = getAimTarget(player.x, PY, null);
+    if(target){
+      triggerTesla(null, player.x, PY - 10, target);
+    }
   }
 }
 
-// 🚀 HIVE SWARM PODS: Cyber Violet Homing Missiles
-function fireHiveMissiles(){
-  const n = mCount(upg.missiles || 0);
-  for(let i = 0; i < n; i++){
-    const s = i % 2 ? 1 : -1, o = Math.floor(i / 2) * 14;
-    missiles.push({
-      x: player.x + s * (PW / 2 + 5 + o), y: PY,
-      vx: s * 70, vy: -140, dead: false, target: null, life: 4.5, trail: []
-    });
+// 3. 🛸 DRONE SWARM HIVE: Autonomous Seeking Drones & Sorties
+function updateDrones(dt){
+  if(!upg.drones) return;
+  const count = 1 + (upg.drones || 0);
+  droneAngle += 2.2 * dt;
+  droneT -= dt;
+  droneSortieT += dt;
+
+  // Recovery Sortie Protocol: restores 1 shield cell every 12s at Level 5
+  if(upg.drones >= 5 && droneSortieT >= 12){
+    droneSortieT = 0;
+    if(player.sh < player.shMax){
+      player.sh = Math.min(player.shMax, player.sh + 1);
+      burst(player.x, PY, '#38BDF8', 16, 120, 3);
+      fltxt(player.x, PY - 30, 'SORTIE REPAIR +1 SHIELD', '#38BDF8');
+    }
+  }
+
+  if(droneT <= 0){
+    droneT = 0.75;
+    for(let i = 0; i < count; i++){
+      const ang = droneAngle + (i * Math.PI * 2 / count);
+      const dx = player.x + Math.cos(ang) * 64;
+      const dy = PY - 10 + Math.sin(ang) * 44;
+      const t = getAimTarget(dx, dy, null);
+      if(t){
+        const tdx = t.x - dx, tdy = t.y - dy, dist = Math.hypot(tdx, tdy);
+        if(dist < 320){
+          const spd = 560;
+          droneProjectiles.push({
+            x: dx, y: dy, vx: (tdx / dist) * spd, vy: (tdy / dist) * spd,
+            dead: false, isSting: upg.drones >= 2, isKnockback: upg.drones >= 4
+          });
+          if(upg.drones >= 3){ // Kinetic Splitter
+            droneProjectiles.push({
+              x: dx, y: dy, vx: (tdx / dist) * spd + 35, vy: (tdy / dist) * spd,
+              dead: false, isSting: upg.drones >= 2, isKnockback: upg.drones >= 4
+            });
+          }
+        }
+      }
+    }
   }
 }
 
-// ❄️ CRYO DISRUPTION PULSE: Glacial Ice Blue EMP
-function triggerCryoPulse(){
-  const maxR = 260;
-  cryoRings.push({ x: player.x, y: PY, r: 10, maxR, life: 1 });
-  const dur = cryoDur(upg.cryo || 0);
+// 4. 💎 PRISM BEAM PROJECTOR: Continuous Focused Lance & Refractions
+function updatePrism(dt){
+  if(!upg.prism) return;
+  prismSwept += dt * 2.6;
+  const sweep = upg.prism >= 3 ? Math.sin(prismSwept) * 35 : 0;
+  const bx = player.x + sweep, bw = 16 + (upg.prism || 0) * 4;
+  const dps = 14 * (1.35 ** (upg.prism || 0));
+
   for(const e of enemies){
     if(e.dead) continue;
-    if(Math.hypot(e.x - player.x, e.y - PY) < maxR){
-      e.slowTimer = dur;
-      dmgE(e, 2);
-      burst(e.x, e.y, '#67E8F9', 6, 60, 2);
+    const er = Math.max(e.w, e.h) / 2;
+    if(Math.abs(e.x - bx) < bw / 2 + er){
+      dmgE(e, dps * dt, { isThermal: true, isAutonomous: true });
+
+      // Conduit Beam Pulse Synergy: conducts lightning along beam contact
+      if(activeSynergies.conduit && Math.random() < 0.22){
+        triggerTesla(e, e.x, e.y);
+      }
+
+      // Refractive Splinter: secondary rays to adjacent foes
+      if(upg.prism >= 2 && Math.random() < 0.18){
+        const pool = enemies.filter(o => !o.dead && o !== e && Math.hypot(o.x - e.x, o.y - e.y) < 130);
+        if(pool.length){
+          const sp = pool[0];
+          dmgE(sp, dps * dt * 0.6, { isThermal: true, isAutonomous: true });
+          parts.push({ type: 'bolt', x1: e.x, y1: e.y, x2: sp.x, y2: sp.y, life: 1, dk: .35, col: '#F43F5E' });
+        }
+      }
+
+      // Incendiary Core Burn: creates burning ground patch
+      if(upg.prism >= 5 && Math.random() < 0.04){
+        firePatches.push({ x: e.x, y: e.y, r: 24, life: 2.2, dps: 20 });
+      }
+    }
+  }
+}
+
+// 5. 🚀 SKYFIRE MISSILE BATTERY: Homing Salvos & Cluster Bomblets
+function updateSkyfire(dt){
+  if(!upg.skyfire) return;
+  missileT -= dt;
+  if(missileT <= 0){
+    missileT = 3.0 * (0.92 ** (upg.skyfire - 1));
+    const count = 2 + (upg.skyfire - 1);
+    for(let i = 0; i < count; i++){
+      const s = i % 2 ? 1 : -1, o = Math.floor(i / 2) * 14;
+      missiles.push({
+        x: player.x + s * (PW / 2 + 6 + o), y: PY,
+        vx: s * 80, vy: -150, dead: false, target: null, life: 4.5, trail: [],
+        cluster: upg.skyfire >= 4,
+        isArmorPiercing: upg.skyfire >= 3,
+        graviton: !!activeSynergies.graviton
+      });
+    }
+  }
+}
+
+// 6. 🔥 INFERNO ORBIT WHEELS: Slicing Saw Blades & Flak Ring
+function updateInferno(dt){
+  if(!upg.inferno) return;
+  const count = 2 + Math.floor((upg.inferno - 1) / 2);
+  const rad = upg.inferno >= 3 ? 82 : 60;
+  const speed = 4.2 + (upg.inferno - 1) * 0.8;
+  wheelAngle += speed * dt;
+
+  const dps = 18 * (1.3 ** (upg.inferno - 1));
+  for(let i = 0; i < count; i++){
+    const a = wheelAngle + i * (Math.PI * 2 / count);
+    const wx = player.x + Math.cos(a) * rad;
+    const wy = PY - 10 + Math.sin(a) * rad;
+
+    if(Math.random() < 0.35){
+      parts.push({
+        x: wx, y: wy, vx: (Math.random() - .5) * 20, vy: (Math.random() - .5) * 20,
+        r: 2.5, life: 1, dk: .08, col: '#FF5500', type: 'dot'
+      });
+    }
+
+    for(const e of enemies){
+      if(e.dead) continue;
+      const er = Math.max(e.w, e.h) / 2;
+      if(Math.hypot(e.x - wx, e.y - wy) < er + 14){
+        dmgE(e, dps * dt, { isThermal: true, isAutonomous: true });
+        if(upg.inferno >= 4 && e.type !== 'boss'){
+          e.y -= 20 * dt;
+        }
+      }
+    }
+  }
+
+  // Rotary Flak Ring synergy: saw wheels fire scatter flak outward
+  if(activeSynergies.flakring){
+    wheelFlakT -= dt;
+    if(wheelFlakT <= 0){
+      wheelFlakT = 0.55;
+      for(let i = 0; i < count; i++){
+        const a = wheelAngle + i * (Math.PI * 2 / count);
+        const wx = player.x + Math.cos(a) * rad;
+        const wy = PY - 10 + Math.sin(a) * rad;
+        scatterPellets.push({
+          x: wx, y: wy, vx: Math.cos(a) * 440, vy: Math.sin(a) * 440,
+          dead: false, pierces: 1, col: '#FF7700', isAutonomous: true
+        });
+      }
+    }
+  }
+}
+
+// 7. 💥 SCATTER CANNON BASTION: Wide Rotary Pellets
+function updateScatter(dt){
+  if(!upg.scatter) return;
+  scatterT -= dt;
+  if(scatterT <= 0){
+    scatterT = 1.25;
+    const pellets = 5 + (upg.scatter - 1) * 2;
+    const spreadArc = 0.75;
+    const pierces = upg.scatter >= 4 ? 2 : 0;
+    const prox = upg.scatter >= 3;
+    for(let i = 0; i < pellets; i++){
+      const ang = -Math.PI / 2 + (i / (pellets - 1) - 0.5) * spreadArc + (Math.random() - .5) * 0.12;
+      const spd = 580 + (Math.random() - .5) * 60;
+      scatterPellets.push({
+        x: player.x, y: PY - PH / 2, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd,
+        dead: false, pierces, prox, col: '#F59E0B', isAutonomous: true
+      });
+    }
+  }
+}
+
+// 8. 🌌 SINGULARITY FIELD DISRUPTION: Gravity Vortex & Core Vacuum
+function updateSingularities(dt){
+  if(upg.singularity){
+    singularityT -= dt;
+    if(singularityT <= 0){
+      singularityT = 3.4;
+      const target = getAimTarget(player.x, PY - 100, null);
+      const sx = target ? target.x : (player.x + (Math.random() - .5) * 160);
+      const sy = target ? Math.max(120, target.y) : (H * 0.35);
+      const rad = 110 + (upg.singularity - 1) * 25;
+      singularities.push({
+        x: sx, y: sy, rad, life: 2.8, maxLife: 2.8,
+        pull: 170, tether: upg.singularity >= 2,
+        coreDmg: 28 * (1.3 ** (upg.singularity - 1)),
+        resVuln: upg.singularity >= 4,
+        empNet: !!activeSynergies.empnet
+      });
+      burst(sx, sy, '#A855F7', 16, 120, 3.5);
+    }
+  }
+
+  for(const s of singularities){
+    s.life -= dt;
+    if(s.life <= 0){
+      if(s.empNet){
+        burst(s.x, s.y, '#38BDF8', 24, 180, 4);
+        fltxt(s.x, s.y, 'EMP SHOCKWAVE NET!', '#38BDF8');
+        for(const e of enemies){
+          if(!e.dead && Math.hypot(e.x - s.x, e.y - s.y) < s.rad + 50){
+            e.stunTimer = 1.8 * (1 + (upg.hull_disrupt || 0) * 0.5);
+            dmgE(e, 8, { isAutonomous: true });
+          }
+        }
+      }
+      s.dead = true;
+      continue;
+    }
+
+    for(const e of enemies){
+      if(e.dead) continue;
+      const d = Math.hypot(e.x - s.x, e.y - s.y);
+      if(d < s.rad){
+        const pullStr = (1 - d / s.rad) * s.pull;
+        e.x += ((s.x - e.x) / (d + 1)) * pullStr * dt;
+        e.y += ((s.y - e.y) / (d + 1)) * pullStr * dt;
+        if(s.tether) e.slowTimer = 0.5 * (1 + (upg.hull_disrupt || 0) * 0.5);
+        if(s.resVuln) e.resVulnerable = 3.0;
+
+        if(d < 36){
+          dmgE(e, s.coreDmg * dt, { isAutonomous: true });
+        }
+      }
+    }
+  }
+  singularities = singularities.filter(s => !s.dead);
+}
+
+// 9. 🔧 NANITE REPAIR MATRIX (HULL ENGINEERING)
+function updateNanites(dt){
+  if((upg.hull_nanite || 0) > 0){
+    naniteT += dt;
+    const interval = Math.max(8, 16 - upg.hull_nanite * 2);
+    if(naniteT >= interval){
+      naniteT = 0;
+      if(player.sh < player.shMax){
+        player.sh = Math.min(player.shMax, player.sh + 1);
+        burst(player.x, PY, '#14B8A6', 12, 80, 2.5);
+        fltxt(player.x, PY - 15, 'NANITE REPAIR +1', '#14B8A6');
+      }
     }
   }
 }
@@ -1357,16 +1852,6 @@ function loop(ts){
   if(player.inv > 0) player.inv -= dt;
   if(player.flash > 0) player.flash--;
 
-  // 3. Shield Regeneration
-  if(player.sh < player.shMax){
-    regenT2 += dt;
-    if(regenT2 >= regenTime(upg.aegis || 0)){
-      player.sh = Math.min(player.shMax, player.sh + 1);
-      regenT2 = 0;
-      burst(player.x, PY - PH / 2, '#3B82F6', 8, 60, 2);
-    }
-  }
-
   // Engine Thrusters
   if(Math.random() < .65) thrustP();
   for(const p of player.thrust){
@@ -1374,34 +1859,51 @@ function loop(ts){
   }
   player.thrust = player.thrust.filter(p => p.life > 0);
 
-  // 4. Primary Railgun Autofire (Paced at 0.28s base)
-  bulletT -= dt;
-  if(bulletT <= 0){
-    fireBullets();
-    bulletT = fireCD(upg.accelerator || 0);
+  // 3. Shield Regeneration
+  if(player.sh < player.shMax){
+    regenT2 += dt;
+    const delay = Math.max(1.8, 7.5 - (upg.hull_flux || 0) * 1.2);
+    if(regenT2 >= delay){
+      player.sh = Math.min(player.shMax, player.sh + 1);
+      regenT2 = 0;
+      burst(player.x, PY - PH / 2, '#3B82F6', 8, 60, 2);
+    }
   }
 
-  // 5. 🔥 Inferno Thermal Beam (Continuous Piercing)
-  if(upg.inferno){
-    flarePhase += dt;
-    const fw = flareW(upg.inferno), dps = flareDPS(upg.inferno);
+  // Passive Nanite Repair
+  updateNanites(dt);
+
+  // 4. Primary Railgun Autofire
+  bulletT -= dt;
+  const primaryCD = 0.28 * (0.85 ** (upg.vanguard_trigger || 0));
+  if(bulletT <= 0){
+    fireBullets();
+    bulletT = primaryCD;
+  }
+
+  // 5. 🛸 Drone Swarm Hive Update
+  updateDrones(dt);
+  for(const dp of droneProjectiles){
+    if(dp.dead) continue;
+    dp.x += dp.vx * dt; dp.y += dp.vy * dt;
+    if(dp.x < -20 || dp.x > W + 20 || dp.y < -20 || dp.y > H + 20){ dp.dead = true; continue; }
     for(const e of enemies){
       if(e.dead) continue;
-      const er = Math.max(e.w, e.h) / 2;
-      if(Math.abs(e.x - player.x) < fw / 2 + er){
-        dmgE(e, dps * dt, true);
+      if(Math.hypot(dp.x - e.x, dp.y - e.y) < Math.max(e.w, e.h) / 2 + 5){
+        dmgE(e, 2.5, { isAutonomous: true });
+        if(dp.isSting) e.slowTimer = 1.0 * (1 + (upg.hull_disrupt || 0) * 0.5);
+        if(dp.isKnockback && e.type !== 'boss') e.y -= 12;
+        dp.dead = true; break;
       }
     }
   }
+  droneProjectiles = droneProjectiles.filter(p => !p.dead);
 
-  // 6. 🚀 Hive Swarm Missiles
-  if(upg.missiles){
-    missileT -= dt;
-    if(missileT <= 0){
-      fireHiveMissiles();
-      missileT = mCD(upg.missiles);
-    }
-  }
+  // 6. 💎 Prism Beam Projector Update
+  updatePrism(dt);
+
+  // 7. 🚀 Skyfire Missiles Update
+  updateSkyfire(dt);
   for(const m of missiles){
     if(m.dead) continue;
     m.life -= dt;
@@ -1413,10 +1915,10 @@ function loop(ts){
     }
     if(m.target && !m.target.dead){
       const dx = m.target.x - m.x, dy = m.target.y - m.y, d = Math.hypot(dx, dy);
-      if(d > 1){ m.vx += (dx / d) * 240 * dt; m.vy += (dy / d) * 240 * dt; }
+      if(d > 1){ m.vx += (dx / d) * 260 * dt; m.vy += (dy / d) * 260 * dt; }
     }
     const sp = Math.hypot(m.vx, m.vy);
-    if(sp > 290){ m.vx = m.vx / sp * 290; m.vy = m.vy / sp * 290; }
+    if(sp > 310){ m.vx = m.vx / sp * 310; m.vy = m.vy / sp * 310; }
     m.trail.unshift({ x: m.x, y: m.y });
     if(m.trail.length > 9) m.trail.pop();
     m.x += m.vx * dt; m.y += m.vy * dt;
@@ -1426,8 +1928,31 @@ function loop(ts){
       if(e.dead) continue;
       const er = Math.max(e.w, e.h) / 2;
       if(Math.hypot(m.x - e.x, m.y - e.y) < er + 8){
-        dmgE(e, 4);
-        burst(m.x, m.y, '#C084FC', 12, 130, 3.5);
+        dmgE(e, 5.5, { isArmorPiercing: m.isArmorPiercing, isAutonomous: true });
+        burst(m.x, m.y, '#C084FC', 14, 140, 3.5);
+
+        // Graviton Detonation synergy: creates mini vacuum
+        if(m.graviton){
+          burst(m.x, m.y, '#E879F9', 16, 110, 3);
+          for(const near of enemies){
+            if(!near.dead && Math.hypot(near.x - m.x, near.y - m.y) < 75){
+              near.x += (m.x - near.x) * 0.4; near.y += (m.y - near.y) * 0.4;
+              dmgE(near, 3, { isAutonomous: true });
+            }
+          }
+        }
+
+        // Submunition Cluster Blast
+        if(m.cluster){
+          for(let k = 0; k < 3; k++){
+            const ca = Math.random() * Math.PI * 2;
+            scatterPellets.push({
+              x: m.x, y: m.y, vx: Math.cos(ca) * 280, vy: Math.sin(ca) * 280,
+              dead: false, pierces: 0, col: '#C084FC', isAutonomous: true
+            });
+          }
+        }
+
         m.dead = true; mhit = true; break;
       }
     }
@@ -1435,28 +1960,50 @@ function loop(ts){
   }
   missiles = missiles.filter(m => !m.dead);
 
-  // 7. ❄️ Cryo Disruption Pulse
-  if(upg.cryo){
-    cryoT -= dt;
-    if(cryoT <= 0){
-      triggerCryoPulse();
-      cryoT = cryoCD(upg.cryo);
+  // 8. ⚡ Volt Arcing Coil Update
+  updateVolt(dt);
+
+  // 9. 🔥 Inferno Orbit Wheels Update
+  updateInferno(dt);
+
+  // 10. 💥 Scatter Cannon Update
+  updateScatter(dt);
+  for(const sp of scatterPellets){
+    if(sp.dead) continue;
+    sp.x += sp.vx * dt; sp.y += sp.vy * dt;
+    if(sp.x < -20 || sp.x > W + 20 || sp.y < -20 || sp.y > H + 20){ sp.dead = true; continue; }
+    for(const e of enemies){
+      if(e.dead) continue;
+      const er = Math.max(e.w, e.h) / 2;
+      if(Math.hypot(sp.x - e.x, sp.y - e.y) < er + 6){
+        dmgE(e, 3.2, { canCrit: true, isAutonomous: sp.isAutonomous });
+        burst(sp.x, sp.y, sp.col || '#F59E0B', 5, 60, 2);
+        if(sp.pierces > 0){ sp.pierces--; }
+        else { sp.dead = true; break; }
+      }
     }
   }
-  for(const cr of cryoRings){
-    cr.r += 320 * dt;
-    cr.life = Math.max(0, 1 - cr.r / cr.maxR);
-  }
-  cryoRings = cryoRings.filter(cr => cr.life > 0);
+  scatterPellets = scatterPellets.filter(p => !p.dead);
 
-  // 8. Bullets Update
+  // 11. 🌌 Singularity Field Update
+  updateSingularities(dt);
+
+  // 12. Fire Patches Update
+  for(const fp of firePatches){
+    fp.life -= dt;
+    for(const e of enemies){
+      if(!e.dead && Math.hypot(e.x - fp.x, e.y - fp.y) < fp.r){
+        dmgE(e, fp.dps * dt, { isThermal: true, isAutonomous: true });
+      }
+    }
+  }
+  firePatches = firePatches.filter(p => p.life > 0);
+
+  // 13. Primary Bullets Update
   for(const b of bullets){
     if(b.dead) continue;
     b.x += b.vx * dt; b.y += b.vy * dt;
 
-    if(b.bounces > 0 && (b.x < 4 || b.x > W - 4)){
-      b.vx = -b.vx; b.bounces--;
-    }
     if(b.y < -20 || b.y > H + 20 || b.x < -20 || b.x > W + 20){
       b.dead = true; continue;
     }
@@ -1464,17 +2011,8 @@ function loop(ts){
     for(const e of enemies){
       if(e.dead) continue;
       if(Math.abs(b.x - e.x) < e.w / 2 + 3 && Math.abs(b.y - e.y) < e.h / 2 + 3){
-        const bounceDmgBonus = b.isRic ? 0.2 * (bounces(upg.ricochet || 0) - b.bounces) : 0;
-        dmgE(e, 1 + bounceDmgBonus);
-
-        if(upg.tesla) triggerTesla(e, e.x, e.y);
-
-        b.lastHit = e;
-        if(b.bounces > 0){
-          b.vy = -Math.abs(b.vy); b.bounces--;
-        } else {
-          b.dead = true;
-        }
+        dmgE(e, 1.2, { canCrit: b.canCrit, isPrimary: b.isPrimary });
+        b.dead = true;
         break;
       }
     }
@@ -1496,10 +2034,20 @@ function loop(ts){
     if(e.dead) continue;
 
     let spdMult = 1.0;
-    if(e.slowTimer > 0){
+    if(e.stunTimer > 0){
+      e.stunTimer -= dt;
+      spdMult = 0;
+      if(Math.random() < 0.25){
+        parts.push({
+          x: e.x + (Math.random() - .5) * e.w, y: e.y + (Math.random() - .5) * e.h,
+          vx: 0, vy: 0, r: 2, life: 1, dk: .12, col: '#00E5FF', type: 'dot'
+        });
+      }
+    } else if(e.slowTimer > 0){
       e.slowTimer -= dt;
       spdMult = 0.4;
     }
+    if(e.resVulnerable > 0) e.resVulnerable -= dt;
 
     if(e.type === 'crasher'){
       if(!e.sprinting && e.y > H * 0.38){
@@ -1568,13 +2116,19 @@ function loop(ts){
 // ═════════════════════════════════════════════════════════════
 function drawAll(){
   drawPerimeterLine();
-  drawFlare();
+  drawFirePatches();
+  drawSingularities();
+  drawPrism();
   drawCryoRings();
   drawEnemies();
   drawLockReticle();
+  drawScatterPellets();
+  drawDroneProjectiles();
   drawBullets();
   drawMissiles();
   drawParts();
+  drawInfernoWheels();
+  drawDrones();
   drawPlayer();
   drawFloats();
   drawHUD();
@@ -1753,23 +2307,112 @@ function drawBG(){
   X.fillRect(0, PY - 12, W, H - (PY - 12));
 }
 
-function drawFlare(){
-  if(!upg.inferno) return;
-  const fw = flareW(upg.inferno), cx = player.x, t = flarePhase;
-  const bg = X.createLinearGradient(0, PY, 0, 0);
-  bg.addColorStop(0, 'rgba(255,51,0,0.95)');
-  bg.addColorStop(.4, 'rgba(255,102,0,0.65)');
-  bg.addColorStop(1, 'rgba(255,170,0,0.08)');
-  X.shadowBlur = 35; X.shadowColor = '#FF3300'; X.globalAlpha = .75 + .15 * Math.sin(t * 9);
-  X.fillStyle = bg;
-  X.fillRect(cx - fw / 2, 0, fw, PY);
+function drawPrism(){
+  if(!upg.prism) return;
+  const sweep = upg.prism >= 3 ? Math.sin(prismSwept) * 35 : 0;
+  const bx = player.x + sweep, bw = 16 + (upg.prism || 0) * 4;
 
-  const cw = fw * .28, cg = X.createLinearGradient(0, PY, 0, 0);
-  cg.addColorStop(0, '#FFFFFF');
-  cg.addColorStop(1, 'rgba(255,255,255,0.05)');
-  X.globalAlpha = .65; X.fillStyle = cg;
-  X.fillRect(cx - cw / 2, 0, cw, PY);
-  X.shadowBlur = 0; X.globalAlpha = 1;
+  const bg = X.createLinearGradient(0, PY, 0, 0);
+  bg.addColorStop(0, 'rgba(244,63,94,0.95)');
+  bg.addColorStop(0.4, 'rgba(244,63,94,0.6)');
+  bg.addColorStop(1, 'rgba(244,63,94,0.08)');
+  X.shadowBlur = 32; X.shadowColor = '#F43F5E';
+  X.fillStyle = bg;
+  X.fillRect(bx - bw / 2, 0, bw, PY);
+
+  // Core laser beam
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(bx - bw * 0.2, 0, bw * 0.4, PY);
+  X.shadowBlur = 0;
+}
+
+function drawDrones(){
+  if(!upg.drones) return;
+  const count = 1 + (upg.drones || 0);
+  for(let i = 0; i < count; i++){
+    const ang = droneAngle + (i * Math.PI * 2 / count);
+    const dx = player.x + Math.cos(ang) * 64;
+    const dy = PY - 10 + Math.sin(ang) * 44;
+
+    X.save();
+    X.translate(dx, dy);
+    X.rotate(ang + Math.PI / 2);
+    X.fillStyle = '#182030';
+    X.fillRect(-6, -6, 12, 12);
+    X.fillStyle = '#38BDF8';
+    X.shadowColor = '#38BDF8'; X.shadowBlur = 10;
+    X.beginPath(); X.arc(0, 0, 3.5, 0, Math.PI * 2); X.fill();
+    X.fillStyle = '#FFFFFF';
+    X.beginPath(); X.arc(0, 0, 1.5, 0, Math.PI * 2); X.fill();
+    X.restore();
+  }
+}
+
+function drawDroneProjectiles(){
+  for(const dp of droneProjectiles){
+    X.shadowBlur = 10; X.shadowColor = '#38BDF8'; X.fillStyle = '#38BDF8';
+    X.beginPath(); X.arc(dp.x, dp.y, 2.5, 0, Math.PI * 2); X.fill();
+    X.shadowBlur = 0;
+  }
+}
+
+function drawInfernoWheels(){
+  if(!upg.inferno) return;
+  const count = 2 + Math.floor((upg.inferno - 1) / 2);
+  const rad = upg.inferno >= 3 ? 82 : 60;
+  for(let i = 0; i < count; i++){
+    const a = wheelAngle + i * (Math.PI * 2 / count);
+    const wx = player.x + Math.cos(a) * rad;
+    const wy = PY - 10 + Math.sin(a) * rad;
+
+    X.save();
+    X.translate(wx, wy);
+    X.rotate(wheelAngle * 4);
+    X.strokeStyle = '#FF5500'; X.lineWidth = 3;
+    X.shadowColor = '#FF5500'; X.shadowBlur = 14;
+    X.strokeRect(-9, -9, 18, 18);
+    X.fillStyle = '#FFAA00';
+    X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
+    X.restore();
+  }
+}
+
+function drawScatterPellets(){
+  for(const sp of scatterPellets){
+    X.shadowBlur = 8; X.shadowColor = sp.col || '#F59E0B'; X.fillStyle = sp.col || '#F59E0B';
+    X.beginPath(); X.arc(sp.x, sp.y, 3, 0, Math.PI * 2); X.fill();
+    X.shadowBlur = 0;
+  }
+}
+
+function drawSingularities(){
+  for(const s of singularities){
+    const rat = s.life / s.maxLife;
+    X.save();
+    X.translate(s.x, s.y);
+
+    // Outer gravity ripple
+    X.strokeStyle = 'rgba(168, 85, 247, ' + (0.4 + 0.3 * Math.sin(Date.now() * 0.01)) + ')';
+    X.lineWidth = 2;
+    X.beginPath(); X.arc(0, 0, s.rad * rat, 0, Math.PI * 2); X.stroke();
+
+    // Dark void center
+    X.fillStyle = '#06080F';
+    X.beginPath(); X.arc(0, 0, 22, 0, Math.PI * 2); X.fill();
+    X.strokeStyle = '#A855F7'; X.shadowColor = '#A855F7'; X.shadowBlur = 18;
+    X.lineWidth = 3;
+    X.stroke();
+    X.restore();
+  }
+}
+
+function drawFirePatches(){
+  for(const fp of firePatches){
+    X.fillStyle = 'rgba(255, 69, 0, ' + Math.min(0.6, fp.life * 0.3) + ')';
+    X.shadowColor = '#FF4500'; X.shadowBlur = 12;
+    X.beginPath(); X.arc(fp.x, fp.y, fp.r, 0, Math.PI * 2); X.fill();
+    X.shadowBlur = 0;
+  }
 }
 
 function drawBullets(){
@@ -1886,12 +2529,13 @@ function drawPlayer(){
   X.strokeRect(14, -7, 12, 18);
 
   // D. Robotic Arms & Weapon Gauntlets with Twin Railguns
+  const isOverclocked = (upg.vanguard_trigger || 0) > 0 || (upg.vanguard_barrel || 0) > 0;
   // Left arm & cannon
   X.fillStyle = '#181C26';
   X.fillRect(-24, -22, 7, 16);
   X.fillStyle = '#12151E';
   X.fillRect(-22, -36, 4, 28);
-  X.fillStyle = (upg.accelerator || 0) > 0 ? '#FACC15' : '#FFAA00';
+  X.fillStyle = isOverclocked ? '#FACC15' : '#FFAA00';
   X.fillRect(-23, -37, 6, 3);
 
   // Right arm & cannon
@@ -1899,7 +2543,7 @@ function drawPlayer(){
   X.fillRect(17, -22, 7, 16);
   X.fillStyle = '#12151E';
   X.fillRect(18, -36, 4, 28);
-  X.fillStyle = (upg.accelerator || 0) > 0 ? '#FACC15' : '#FFAA00';
+  X.fillStyle = isOverclocked ? '#FACC15' : '#FFAA00';
   X.fillRect(17, -37, 6, 3);
 
   // E. Central Chest Chassis & Cockpit Armor
@@ -1953,7 +2597,7 @@ function drawPlayer(){
   X.fillRect(-1.5, -12, 2, 1);
 
   // G. Missile Pods (if upgrade owned)
-  if(upg.missiles){
+  if(upg.skyfire){
     X.fillStyle = '#141720';
     X.fillRect(-30, -12, 8, 14);
     X.fillRect(22, -12, 8, 14);
@@ -2053,6 +2697,27 @@ function drawHUD(){
       X.fillStyle = def.gc; X.shadowBlur = 8; X.shadowColor = def.glow;
       X.fillText(def.glyph + ' ' + lv, ux, H - 17);
       X.shadowBlur = 0; ux += 38;
+      if(ux > W - 180) break;
+    }
+  }
+
+  // Active Cross-Weapon Synergies (Glowing Golden Badges)
+  const syns = Object.keys(activeSynergies);
+  if(syns.length){
+    let sx = 14;
+    X.font = 'bold 9px "Share Tech Mono",monospace';
+    for(const sid of syns){
+      const syn = SYNERGY_DEFS.find(s => s.id === sid);
+      if(!syn) continue;
+      X.fillStyle = 'rgba(255, 215, 0, 0.18)';
+      X.fillRect(sx, 56, 126, 17);
+      X.strokeStyle = '#FFD700'; X.lineWidth = 1;
+      X.strokeRect(sx, 56, 126, 17);
+      X.fillStyle = '#FFD700'; X.shadowColor = '#FFAA00'; X.shadowBlur = 6;
+      X.fillText(syn.glyph + ' ' + syn.name, sx + 5, 68);
+      X.shadowBlur = 0;
+      sx += 134;
+      if(sx > W - 140) break;
     }
   }
 }
