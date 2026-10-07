@@ -2,709 +2,1875 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BATTLEFRAME — Experimental Mecha Combat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BATTLEFRAME — Tactical Mecha Combat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{
-  background:#040508;display:flex;align-items:center;justify-content:center;
-  min-height:100vh;margin:0;font-family:'Share Tech Mono',monospace;overflow:hidden;
-  user-select:none;touch-action:none;
+:root{
+  --bg-deep:#07080C;
+  --bg-card:rgba(18,22,31,0.75);
+  --bg-card-border:rgba(255,255,255,0.12);
+  --text-primary:#FFFFFF;
+  --text-muted:#8F98A8;
+  --accent-amber:#FFAA00;
+  --accent-orange:#FF6600;
+  --ceramic-white:#F0F4FA;
+  --carbon-dark:#0D1017;
 }
-#gw{position:absolute;inset:0;width:100vw;height:100vh;overflow:hidden;touch-action:none;}
-canvas{display:block;width:100%;height:100%;}
-#fs-btn{position:absolute;top:60px;right:14px;z-index:25;cursor:pointer;color:#00F0FFaa;
-  font-size:11px;padding:5px 10px;border:1px solid #00f0ff33;border-radius:4px;
-  background:rgba(4,5,14,0.7);backdrop-filter:blur(4px);letter-spacing:1.5px;
-  transition:all .2s;}
-#fs-btn:hover{color:#fff;border-color:#00F0FF;box-shadow:0 0 12px #00f0ff44;}
-#lu{position:absolute;inset:0;z-index:20;display:none;flex-direction:column;
-  align-items:center;justify-content:center;background:rgba(4,5,14,0.9);
-  backdrop-filter:blur(8px);pointer-events:all;padding:16px;}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:var(--bg-deep);color:var(--text-primary);
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  user-select:none;-webkit-user-select:none;touch-action:none;
+}
+#gw{position:absolute;inset:0;width:100vw;height:100vh;overflow:hidden;}
+canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+/* Fullscreen Toggle */
+#fs-btn{
+  position:absolute;top:16px;right:18px;z-index:45;cursor:pointer;
+  color:#DDE3ED;font-family:'Share Tech Mono',monospace;font-size:11px;
+  padding:6px 12px;border:1px solid rgba(255,255,255,0.18);border-radius:4px;
+  background:rgba(15,19,26,0.85);backdrop-filter:blur(8px);
+  letter-spacing:1px;transition:all .2s;font-weight:700;
+}
+#fs-btn:hover{color:#FFAA00;border-color:#FF7700;box-shadow:0 0 16px rgba(255,119,0,0.35);}
+
+/* ═════════════════════════════════════════════════════════════
+   TACTICAL HANGAR DASHBOARD (DARK THEME MATCHING COMBAT)
+   ═════════════════════════════════════════════════════════════ */
+#ts{
+  position:absolute;inset:0;z-index:35;display:flex;flex-direction:column;
+  background:radial-gradient(ellipse 90% 80% at 50% 32%, #111520 0%, #090C12 55%, #05060A 100%);
+  color:var(--text-primary);overflow-y:auto;overflow-x:hidden;
+  transition:opacity .25s ease,visibility .25s;
+}
+#ts.gone{opacity:0;visibility:hidden;pointer-events:none;}
+
+/* Top Telemetry Bar */
+.hangar-top{
+  height:68px;width:100%;display:flex;align-items:center;
+  justify-content:space-between;padding:0 28px;z-index:10;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  background:rgba(12,15,22,0.75);backdrop-filter:blur(12px);flex-shrink:0;
+}
+.ht-left{display:flex;align-items:center;gap:18px;}
+.back-tag{
+  background:#1A202C;color:#FFFFFF;width:38px;height:34px;
+  display:flex;align-items:center;justify-content:center;
+  clip-path:polygon(10px 0%, 100% 0%, 100% 100%, 10px 100%, 0% 50%);
+  padding-left:6px;cursor:pointer;transition:transform .15s,background .15s;
+}
+.back-tag:hover{transform:translateX(-2px);background:#FFAA00;color:#000;}
+.back-tag .arrow{font-size:13px;font-weight:900;}
+.ht-title{font-size:22px;font-weight:800;letter-spacing:1px;color:#FFFFFF;font-family:'Orbitron',sans-serif;}
+.ht-sub{font-size:13px;color:#FFAA00;font-weight:600;font-family:'Share Tech Mono',monospace;margin-left:8px;}
+
+.ht-right{display:flex;align-items:center;gap:14px;}
+.ht-badge{display:flex;align-items:center;height:34px;color:#FFFFFF;}
+.gear-badge{
+  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;
+}
+.gear-badge svg{width:18px;height:18px;stroke:#DDE3ED;}
+.credit-badge{
+  background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.16);
+  border-radius:20px;padding:0 14px 0 16px;gap:8px;font-weight:700;font-size:14px;
+  letter-spacing:0.5px;
+}
+.cred-plus{color:#FFAA00;font-size:16px;font-weight:800;margin-left:2px;}
+.signal-badge{gap:3.5px;align-items:flex-end;height:16px;padding:0 4px;}
+.sig-bar{width:3.5px;background:#FFAA00;border-radius:1px;}
+.sig-bar.s1{height:5px;}
+.sig-bar.s2{height:8px;}
+.sig-bar.s3{height:12px;}
+.sig-bar.s4{height:16px;}
+.batt-badge{align-items:center;}
+.batt-shell{
+  width:22px;height:12px;border:2px solid #DDE3ED;border-radius:2.5px;
+  position:relative;padding:1px;display:flex;align-items:center;
+}
+.batt-shell::after{
+  content:'';position:absolute;right:-4px;top:2.5px;width:2.5px;height:5px;
+  background:#DDE3ED;border-radius:0 1px 1px 0;
+}
+.batt-fill{width:80%;height:100%;background:#FFAA00;border-radius:1px;}
+
+/* Main 3-Column Hangar Workspace */
+.hangar-body{
+  flex:1;display:grid;grid-template-columns:300px 1fr 310px;
+  padding:16px 28px 24px;position:relative;min-height:0;
+  max-width:1440px;margin:0 auto;width:100%;align-items:center;
+}
+
+/* Left Column: Systems & Avionics Readouts */
+.hangar-left{
+  display:flex;flex-direction:column;gap:12px;z-index:5;
+  height:100%;justify-content:center;max-height:640px;
+}
+.panel-section-tag{
+  font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;
+  letter-spacing:2.5px;color:#FFAA00;margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+.panel-section-tag::before{
+  content:'';width:8px;height:8px;background:#FFAA00;border-radius:2px;
+}
+.sys-card{
+  display:flex;align-items:center;gap:14px;padding:12px 14px;
+  border-radius:6px;background:var(--bg-card);
+  border:1px solid var(--bg-card-border);transition:all .2s ease;
+  backdrop-filter:blur(8px);
+}
+.sys-card:hover{
+  background:rgba(25,31,44,0.9);border-color:rgba(255,170,0,0.4);
+  transform:translateX(3px);
+}
+.sys-card.active{
+  border-color:#FFAA00;box-shadow:0 0 20px rgba(255,170,0,0.15);
+}
+.sys-icon{
+  width:42px;height:42px;background:#0D1017;border:1px solid rgba(255,255,255,0.15);
+  border-radius:5px;display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:#FFAA00;flex-shrink:0;
+}
+.sys-meta{display:flex;flex-direction:column;}
+.sys-name{font-size:13px;font-weight:800;letter-spacing:1px;color:#FFFFFF;font-family:'Orbitron',sans-serif;}
+.sys-desc{font-size:11px;color:#8F98A8;margin-top:3px;line-height:1.3;}
+
+.hangar-instructions{
+  margin-top:8px;padding:12px 14px;border-radius:6px;
+  background:rgba(12,15,22,0.6);border:1px solid rgba(255,255,255,0.06);
+  font-family:'Share Tech Mono',monospace;font-size:10.5px;
+  color:#9AA2B0;line-height:1.7;letter-spacing:1px;
+}
+.hangar-instructions span{color:#FFAA00;font-weight:700;}
+
+/* Center Column: Top-Down Mecha on Tactical Platform */
+.hangar-center{
+  position:relative;height:100%;display:flex;
+  align-items:center;justify-content:center;z-index:2;
+}
+.hero-canvas-wrap{
+  position:relative;width:100%;height:100%;max-width:540px;max-height:560px;
+  display:flex;align-items:center;justify-content:center;
+}
+#hero-canvas{
+  width:100%;height:100%;object-fit:contain;
+  filter:drop-shadow(0 14px 28px rgba(0,0,0,0.6));
+}
+
+/* Right Column: Telemetry Specs & Tactical Start Button */
+.hangar-right{
+  display:flex;flex-direction:column;gap:18px;z-index:5;
+  height:100%;justify-content:center;max-height:640px;padding-left:14px;
+}
+.level-header{display:flex;align-items:flex-start;gap:18px;}
+.level-box{display:flex;flex-direction:column;align-items:center;min-width:70px;}
+.level-val{
+  font-size:62px;font-weight:900;line-height:0.95;
+  color:#FFFFFF;font-family:'Inter',sans-serif;letter-spacing:-1.5px;
+  text-shadow:0 0 25px rgba(255,170,0,0.3);
+}
+.level-tag{
+  background:#FFAA00;color:#090C12;font-size:10.5px;font-weight:900;
+  letter-spacing:2.5px;padding:3px 8px;border-radius:2px;margin-top:4px;
+}
+.unit-title-box{display:flex;flex-direction:column;padding-top:6px;}
+.unit-name{
+  font-size:24px;font-weight:900;letter-spacing:2px;
+  color:#FFFFFF;font-family:'Orbitron',sans-serif;line-height:1.1;
+}
+.unit-class{font-size:13px;font-weight:600;color:#8F98A8;margin-top:4px;}
+.unit-class b{color:#FFAA00;font-weight:800;}
+
+/* Stat Telemetry Bars */
+.stats-card{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
+.stat-row{display:flex;flex-direction:column;gap:5px;}
+.stat-meta{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-weight:700;letter-spacing:1px;color:#D8DEE9;
+}
+.stat-lbl{color:#B0B8C8;}
+.stat-num{font-family:'Share Tech Mono',monospace;font-size:14px;color:#FFAA00;font-weight:700;}
+.stat-track{
+  width:100%;height:6px;background:rgba(255,255,255,0.08);
+  border-radius:3px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.05);
+}
+.stat-fill{
+  height:100%;background:linear-gradient(90deg, #FF7700 0%, #FFAA00 100%);
+  border-radius:3px;box-shadow:0 0 10px rgba(255,170,0,0.5);
+}
+
+/* Skills Section */
+.skills-section{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.skills-title{
+  font-size:12px;font-weight:800;letter-spacing:2px;
+  color:#8F98A8;font-family:'Inter',sans-serif;
+}
+.skills-row{display:flex;gap:12px;}
+.skill-box{
+  width:44px;height:44px;background:#181D28;border:1px solid rgba(255,255,255,0.14);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  color:#DDE3ED;box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  transition:all .15s;cursor:pointer;
+}
+.skill-box:hover{
+  background:#232A3B;border-color:#FFAA00;color:#FFAA00;
+  transform:translateY(-2px);box-shadow:0 0 15px rgba(255,170,0,0.3);
+}
+.skill-box svg{width:22px;height:22px;}
+
+/* Tactical Launch Button */
+.launch-wrap{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.tactical-start-btn{
+  position:relative;width:100%;background:#0E121B;color:#FFFFFF;
+  border:1px solid rgba(255,255,255,0.25);border-radius:3px;padding:16px 24px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:900;letter-spacing:5px;font-family:'Orbitron',sans-serif;
+  box-shadow:0 6px 20px rgba(0,0,0,0.5);transition:all .2s ease;
+}
+.tactical-start-btn:hover{
+  background:#FFAA00;color:#07080C;border-color:#FFAA00;
+  box-shadow:0 0 30px rgba(255,170,0,0.6);transform:translateY(-2px);
+}
+.tactical-start-btn:hover .bracket{border-color:#07080C;}
+.tactical-start-btn:active{transform:translateY(0);}
+.bracket{
+  position:absolute;width:9px;height:9px;border-color:#FFFFFF;
+  border-style:solid;pointer-events:none;transition:border-color .2s;
+}
+.b-tl{top:6px;left:6px;border-width:2px 0 0 2px;}
+.b-tr{top:6px;right:6px;border-width:2px 2px 0 0;}
+.b-bl{bottom:6px;left:6px;border-width:0 0 2px 2px;}
+.b-br{bottom:6px;right:6px;border-width:0 2px 2px 0;}
+.launch-hint{
+  font-size:10px;color:#8F98A8;text-align:center;
+  letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   OVERDRIVE LEVEL-UP MODAL
+   ═════════════════════════════════════════════════════════════ */
+#lu{
+  position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
+  align-items:center;justify-content:center;background:rgba(7,9,14,0.94);
+  backdrop-filter:blur(14px);pointer-events:all;padding:20px;
+}
 #lu.on{display:flex;}
-#lu-t{font-family:'Orbitron',monospace;font-size:clamp(20px, 4.5vw, 26px);font-weight:900;color:#00F0FF;
-  letter-spacing:clamp(4px, 1.5vw, 8px);text-shadow:0 0 20px #00F0FF,0 0 50px #00F0FF88;margin-bottom:6px;
-  animation:pg 1.4s ease-in-out infinite alternate;text-align:center;}
-#lu-s{font-size:clamp(9px, 2vw, 11px);color:#ffffff55;letter-spacing:4px;margin-bottom:24px;text-align:center;}
-#cr{display:flex;gap:clamp(8px, 1.8vw, 16px);max-width:96vw;justify-content:center;flex-wrap:wrap;}
-.card{width:clamp(102px, 29vw, 150px);min-height:190px;background:linear-gradient(155deg,#0c1526 0%,#07101d 100%);
-  border:1px solid #00f0ff44;border-radius:8px;padding:clamp(10px, 1.8vw, 14px) clamp(6px, 1.2vw, 10px) 12px;
+#lu-t{
+  font-family:'Orbitron',monospace;font-size:clamp(22px, 4.5vw, 28px);font-weight:900;
+  color:#FFFFFF;letter-spacing:clamp(4px, 1.5vw, 8px);
+  text-shadow:0 0 24px rgba(255,119,0,0.9),0 0 50px rgba(255,119,0,0.5);
+  margin-bottom:6px;text-align:center;
+}
+#lu-s{font-size:clamp(10px, 2vw, 12px);color:#8F98A8;letter-spacing:4px;margin-bottom:28px;text-align:center;}
+#cr{display:flex;gap:clamp(10px, 2vw, 18px);max-width:96vw;justify-content:center;flex-wrap:wrap;}
+.card{
+  width:clamp(120px, 28vw, 160px);min-height:205px;
+  background:linear-gradient(160deg, #161B26 0%, #0E121A 100%);
+  color:#FFFFFF;border-radius:6px;padding:14px 10px 12px;
   cursor:pointer;pointer-events:all;position:relative;overflow:hidden;
-  transition:transform .15s,border-color .15s,box-shadow .15s;
-  display:flex;flex-direction:column;align-items:center;}
-.card::before{content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,#00f0ff0a,transparent 55%);opacity:0;transition:opacity .15s;}
-.card:hover{transform:translateY(-4px);border-color:#00F0FF;
-  box-shadow:0 0 24px #00f0ff44,inset 0 0 24px #00f0ff0c;}
-.card:hover::before{opacity:1;}
-.chk{position:absolute;top:6px;right:7px;font-size:clamp(8px, 1.6vw, 9.5px);color:#00f0ff66;letter-spacing:1px;}
-.cgl{font-size:clamp(22px, 5vw, 32px);margin-bottom:6px;line-height:1;}
-.cnm{font-family:'Orbitron',monospace;font-size:clamp(7.5px, 1.8vw, 9.5px);font-weight:700;color:#00F0FF;
-  letter-spacing:1px;text-align:center;margin-bottom:4px;line-height:1.25;}
-.clv{font-size:clamp(7.5px, 1.6vw, 9px);color:#FFAA00;text-align:center;margin-bottom:6px;letter-spacing:1px;}
-.cds{font-size:clamp(7.5px, 1.6vw, 9px);color:#99aacc;text-align:center;line-height:1.45;flex:1;}
-.cnx{font-size:clamp(7px, 1.4vw, 8px);color:#00ff9988;text-align:center;line-height:1.35;
-  border-top:1px solid #00f0ff1a;padding-top:6px;margin-top:5px;width:100%;}
-#ts{position:absolute;inset:0;z-index:30;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;pointer-events:all;padding:20px;}
-#ts.gone{display:none;}
-.tl{font-family:'Orbitron',monospace;font-size:clamp(30px, 7vw, 54px);font-weight:900;color:#fff;
-  letter-spacing:clamp(4px, 1.8vw, 12px);text-shadow:0 0 30px #00F0FF,0 0 70px #00F0FF99,0 0 120px #00F0FF44;
-  margin-bottom:6px;animation:pg 2s ease-in-out infinite alternate;text-align:center;}
-.tt{font-size:clamp(8px, 2vw, 11px);color:#00F0FFaa;letter-spacing:clamp(2px, 0.8vw, 5px);margin-bottom:42px;text-align:center;}
-.tb{font-size:clamp(11px, 2.4vw, 14px);color:#fff;letter-spacing:clamp(2px, 0.8vw, 5px);border:1px solid #00f0ff66;
-  padding:12px clamp(18px, 4vw, 34px);cursor:pointer;text-shadow:0 0 10px #00F0FF;
-  box-shadow:0 0 20px #00f0ff22;animation:bk 1.2s step-end infinite;text-align:center;}
-.tc{margin-top:32px;font-size:clamp(8.5px, 1.8vw, 11px);color:#ffffff55;letter-spacing:1.5px;text-align:center;line-height:2.1;}
-#go{position:absolute;inset:0;z-index:30;display:none;flex-direction:column;
-  align-items:center;justify-content:center;background:rgba(0,0,0,0.92);pointer-events:all;padding:20px;}
+  transition:transform .15s,box-shadow .15s,border-color .15s;
+  display:flex;flex-direction:column;align-items:center;
+  box-shadow:0 12px 36px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.16);
+}
+.card:hover{
+  transform:translateY(-6px);border-color:#FFAA00;
+  box-shadow:0 16px 40px rgba(255,119,0,0.35);
+}
+.chk{position:absolute;top:7px;right:9px;font-size:10px;font-weight:800;color:rgba(255,255,255,0.4);letter-spacing:1px;}
+.cgl{
+  width:46px;height:46px;background:#0A0D14;border:1px solid rgba(255,255,255,0.15);
+  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:10px;line-height:1;color:#FFAA00;
+  box-shadow:inset 0 0 10px rgba(0,0,0,0.6);
+}
+.cnm{
+  font-family:'Orbitron',monospace;font-size:9.5px;font-weight:800;
+  color:#FFFFFF;letter-spacing:1px;text-align:center;margin-bottom:4px;line-height:1.2;
+}
+.clv{font-size:9.5px;color:#FFAA00;text-align:center;margin-bottom:6px;letter-spacing:1px;font-weight:800;}
+.cds{font-size:9.5px;color:#9EA5B0;text-align:center;line-height:1.45;flex:1;}
+.cnx{
+  font-size:8.5px;color:#E2E6EC;font-weight:700;text-align:center;line-height:1.35;
+  border-top:1px solid rgba(255,255,255,0.1);padding-top:6px;margin-top:6px;width:100%;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   GAME OVER MODAL
+   ═════════════════════════════════════════════════════════════ */
+#go{
+  position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
+  align-items:center;justify-content:center;background:rgba(6,8,12,0.96);
+  backdrop-filter:blur(14px);pointer-events:all;padding:24px;
+}
 #go.on{display:flex;}
-.got{font-family:'Orbitron',monospace;font-size:clamp(24px, 5vw, 34px);font-weight:900;color:#FF0055;
-  letter-spacing:clamp(4px, 1.5vw, 8px);text-shadow:0 0 30px #FF0055,0 0 60px #FF005588;margin-bottom:24px;text-align:center;}
-.gos{font-size:clamp(10px, 2.2vw, 13px);color:#aabbcc;letter-spacing:2px;margin-bottom:9px;text-align:center;}
-.gos span{color:#00F0FF;}
-.gor{margin-top:28px;font-size:clamp(10px, 2.2vw, 13px);color:#fff;letter-spacing:3px;
-  animation:bk 1s step-end infinite;border:1px solid #00f0ff66;padding:10px 24px;cursor:pointer;}
-@keyframes bk{50%{opacity:0;}}
-@keyframes pg{from{text-shadow:0 0 20px #00F0FF,0 0 40px #00F0FF88;}
-  to{text-shadow:0 0 45px #00F0FF,0 0 90px #00F0FFaa,0 0 130px #00F0FF44;}}
+.got{
+  font-family:'Orbitron',monospace;font-size:clamp(24px, 5.5vw, 36px);font-weight:900;
+  color:#FF3344;letter-spacing:clamp(4px, 1.5vw, 8px);
+  text-shadow:0 0 30px #FF3344,0 0 60px rgba(255,51,68,0.6);margin-bottom:24px;text-align:center;
+}
+.gos{font-size:clamp(11px, 2.2vw, 14px);color:#9EA5B0;letter-spacing:2px;margin-bottom:10px;text-align:center;}
+.gos span{color:#FFAA00;font-weight:700;}
+.go-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;justify-content:center;}
+.go-btn{
+  font-size:13px;font-weight:800;letter-spacing:2.5px;padding:12px 28px;
+  border-radius:4px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;
+}
+.restart-btn{background:#FFAA00;color:#141720;border:none;box-shadow:0 0 20px rgba(255,170,0,0.35);}
+.restart-btn:hover{background:#FFB726;transform:scale(1.04);}
+.hangar-btn{background:rgba(255,255,255,0.1);color:#FFFFFF;border:1px solid rgba(255,255,255,0.25);}
+.hangar-btn:hover{background:rgba(255,255,255,0.2);border-color:#FFFFFF;}
+
+/* ═════════════════════════════════════════════════════════════
+   RESPONSIVENESS
+   ═════════════════════════════════════════════════════════════ */
+@media(max-width:960px){
+  .hangar-body{
+    grid-template-columns:1fr;grid-template-rows:auto auto auto;
+    overflow-y:auto;gap:20px;padding:14px 18px 30px;align-items:start;
+  }
+  .hangar-left{order:2;max-height:none;}
+  .hangar-center{order:1;height:280px;}
+  .hero-canvas-wrap{max-height:280px;}
+  .hangar-right{order:3;max-height:none;padding-left:0;}
+}
+@media(max-width:540px){
+  .hangar-top{padding:0 16px;height:58px;}
+  .ht-title{font-size:18px;}
+  .credit-badge{padding:0 10px;font-size:12px;}
+  .level-val{font-size:48px;}
+  .unit-name{font-size:20px;}
+}
 </style>
 </head>
 <body>
 <div id="gw">
+  <!-- Combat Background Canvas -->
   <canvas id="c"></canvas>
-  <div id="fs-btn">[ ⛶ FULLSCREEN ]</div>
+
+  <!-- Fullscreen Toggle -->
+  <button id="fs-btn" type="button">[ ⛶ FULLSCREEN ]</button>
+
+  <!-- ═════════════════════════════════════════════════════════════
+       TACTICAL HANGAR DASHBOARD (MATCHING GAME THEME)
+       ═════════════════════════════════════════════════════════════ -->
   <div id="ts">
-    <div class="tl">BATTLEFRAME</div>
-    <div class="tt">EXPERIMENTAL MECHA UNIT // COMBAT READY</div>
-    <div class="tb" id="tb">[ PRESS ENTER OR TAP TO START ]</div>
-    <div class="tc">MOVING · STRAIGHT FIRE &nbsp;|&nbsp; IDLE · AUTO-AIM LOCK<br>A/D, ←→ or TOUCH/DRAG · MOVE &nbsp;|&nbsp; 1/2/3 · UPGRADE &nbsp;|&nbsp; F · FULLSCREEN &nbsp;|&nbsp; ESC · PAUSE</div>
+    <!-- Top Telemetry Bar -->
+    <header class="hangar-top">
+      <div class="ht-left">
+        <div class="back-tag" id="back-tag-btn" title="Back"><span class="arrow">◀</span></div>
+        <h1 class="ht-title">BATTLEFRAME <span class="ht-sub">// TACTICAL HANGAR</span></h1>
+      </div>
+      <div class="ht-right">
+        <div class="ht-badge gear-badge" title="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </div>
+        <div class="ht-badge credit-badge">
+          <span class="cred-num">2523</span>
+          <span class="cred-plus">+</span>
+        </div>
+        <div class="ht-badge signal-badge" title="Signal: Full">
+          <div class="sig-bar s1"></div><div class="sig-bar s2"></div><div class="sig-bar s3"></div><div class="sig-bar s4"></div>
+        </div>
+        <div class="ht-badge batt-badge" title="Power: 85%">
+          <div class="batt-shell"><div class="batt-fill"></div></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 3-Column Body -->
+    <div class="hangar-body">
+      <!-- Left Column: Unit Loadout / Systems Diagnostic -->
+      <aside class="hangar-left">
+        <div class="panel-section-tag">MECHA SYSTEMS // CLASS S</div>
+        
+        <div class="sys-card active">
+          <div class="sys-icon">⚡</div>
+          <div class="sys-meta">
+            <div class="sys-name">TWIN PULSE RAILGUNS</div>
+            <div class="sys-desc">Wing-mounted kinetic cannons · Straight fire & auto-lock</div>
+          </div>
+        </div>
+
+        <div class="sys-card">
+          <div class="sys-icon">◈</div>
+          <div class="sys-meta">
+            <div class="sys-name">KINETIC AEGIS BARRIER</div>
+            <div class="sys-desc">Ceramic composite shielding · Passive regenerative cells</div>
+          </div>
+        </div>
+
+        <div class="sys-card">
+          <div class="sys-icon">▶▶</div>
+          <div class="sys-meta">
+            <div class="sys-name">VECTOR DUAL THRUSTERS</div>
+            <div class="sys-desc">Supersonic aerial drift · Dynamic combat roll banking</div>
+          </div>
+        </div>
+
+        <div class="sys-card">
+          <div class="sys-icon">◎</div>
+          <div class="sys-meta">
+            <div class="sys-name">TACTICAL SENSOR SUITE</div>
+            <div class="sys-desc">Glowing amber ocular array · Autonomous targeting computer</div>
+          </div>
+        </div>
+
+        <div class="hangar-instructions">
+          <span>NAVIGATION:</span> A / D, ARROWS, or TOUCH / DRAG<br>
+          <span>BALLISTICS:</span> MOVING = STRAIGHT | IDLE = AUTO-AIM<br>
+          <span>PACING:</span> CALIBRATED SLOW START (RAMPS UP GRADUALLY)
+        </div>
+      </aside>
+
+      <!-- Center Column: Top-Down Mecha on Tactical Platform -->
+      <main class="hangar-center">
+        <div class="hero-canvas-wrap">
+          <canvas id="hero-canvas" width="600" height="600"></canvas>
+        </div>
+      </main>
+
+      <!-- Right Column: Telemetry Specs & Tactical Launch Button -->
+      <aside class="hangar-right">
+        <div class="level-header">
+          <div class="level-box">
+            <div class="level-val">78</div>
+            <div class="level-tag">LEVEL</div>
+          </div>
+          <div class="unit-title-box">
+            <h2 class="unit-name">BATTLEFRAME</h2>
+            <div class="unit-class">Class <b>S</b> // READY</div>
+          </div>
+        </div>
+
+        <!-- Stat Rows -->
+        <div class="stats-card">
+          <div class="stat-row">
+            <div class="stat-meta">
+              <span class="stat-lbl">ATTACK</span>
+              <span class="stat-num">120</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" style="width: 80%;"></div></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-meta">
+              <span class="stat-lbl">DEFENSE</span>
+              <span class="stat-num">30</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" style="width: 30%;"></div></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-meta">
+              <span class="stat-lbl">ACCURACY</span>
+              <span class="stat-num">28</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" style="width: 56%;"></div></div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-meta">
+              <span class="stat-lbl">DEXTRETY</span>
+              <span class="stat-num">220</span>
+            </div>
+            <div class="stat-track"><div class="stat-fill" style="width: 73%;"></div></div>
+          </div>
+        </div>
+
+        <!-- Skills Badges -->
+        <div class="skills-section">
+          <div class="skills-title">SKILLS</div>
+          <div class="skills-row">
+            <div class="skill-box" title="Kinetic Armor Plating">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/>
+              </svg>
+            </div>
+            <div class="skill-box" title="Solar Overdrive Thruster">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/>
+              </svg>
+            </div>
+            <div class="skill-box" title="Twin Magnetic Pulse Pod">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <rect x="3" y="3" width="8" height="8" rx="1.5"/>
+                <rect x="13" y="13" width="8" height="8" rx="1.5"/>
+                <circle cx="17" cy="7" r="3.5"/>
+                <circle cx="7" cy="17" r="3.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tactical Launch Button -->
+        <div class="launch-wrap">
+          <button class="tactical-start-btn" id="tb" type="button">
+            <span class="bracket b-tl"></span>
+            <span class="bracket b-tr"></span>
+            <span class="bracket b-bl"></span>
+            <span class="bracket b-br"></span>
+            <span>START</span>
+          </button>
+          <div class="launch-hint">PRESS ENTER OR TAP TO LAUNCH</div>
+        </div>
+      </aside>
+    </div>
   </div>
+
+  <!-- Level-Up Overdrive Selection Modal -->
   <div id="lu">
-    <div id="lu-t">⚡ OVERDRIVE ⚡</div>
-    <div id="lu-s">SELECT UPGRADE MODULE</div>
+    <div id="lu-t">⚡ OVERDRIVE MODULE ⚡</div>
+    <div id="lu-s">TACTICAL SYSTEM UPGRADE AVAILABLE</div>
     <div id="cr"></div>
   </div>
+
+  <!-- Unit Destroyed Modal -->
   <div id="go">
     <div class="got">UNIT DESTROYED</div>
     <div class="gos">SURVIVAL TIME &nbsp;·&nbsp; <span id="gt">0s</span></div>
     <div class="gos">FINAL SCORE &nbsp;·&nbsp; <span id="gs">0</span></div>
     <div class="gos">KILLS &nbsp;·&nbsp; <span id="gk">0</span></div>
     <div class="gos">OVERDRIVE LEVEL &nbsp;·&nbsp; <span id="gl">0</span></div>
-    <div class="gor" id="gr">[ R TO RESTART ]</div>
+    <div class="go-actions">
+      <button class="go-btn restart-btn" id="gr" type="button">[ RESTART (R) ]</button>
+      <button class="go-btn hangar-btn" id="gh" type="button">[ HANGAR (H) ]</button>
+    </div>
   </div>
 </div>
+
 <script>
 'use strict';
-const C=document.getElementById('c'),X=C.getContext('2d');
-let W=window.innerWidth,H=window.innerHeight;
-C.width=W;C.height=H;
-let PY=H-Math.max(65,Math.min(85,H*0.12));
-const PW=44,PH=52,BSPD=660;
-const $ts=document.getElementById('ts'),$lu=document.getElementById('lu');
-const $cr=document.getElementById('cr'),$go=document.getElementById('go');
-const $gt=document.getElementById('gt'),$gs=document.getElementById('gs');
-const $gk=document.getElementById('gk'),$gl=document.getElementById('gl');
-const $fs=document.getElementById('fs-btn');
+
+// ═════════════════════════════════════════════════════════════
+// HERO TOP-DOWN MECHA RENDERING (INSPECTION PLATFORM VIEW)
+// ═════════════════════════════════════════════════════════════
+const heroCvs = document.getElementById('hero-canvas');
+const heroCtx = heroCvs ? heroCvs.getContext('2d') : null;
+let heroHoverTilt = 0;
+
+window.addEventListener('mousemove', e => {
+  if(GS !== 'title') return;
+  const rect = heroCvs.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  heroHoverTilt = Math.max(-0.25, Math.min(0.25, (e.clientX - cx) * 0.0008));
+});
+
+function drawHeroMecha(ctx, w, h, tilt, time){
+  ctx.clearRect(0, 0, w, h);
+  const cx = w * 0.5, cy = h * 0.48;
+  const s = Math.min(w, h) * 0.42;
+
+  // 1. Tactical Launch Pad & Range Telemetry
+  ctx.save();
+  ctx.translate(cx, cy);
+  // Outer dashed telemetry circle
+  ctx.strokeStyle = 'rgba(255, 170, 0, 0.22)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([8, 8]);
+  ctx.beginPath(); ctx.arc(0, 0, s * 1.15, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Rotating degree reticle
+  ctx.save();
+  ctx.rotate(time * 0.15);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for(let a = 0; a < Math.PI * 2; a += Math.PI / 4){
+    ctx.moveTo(Math.cos(a) * s * 1.05, Math.sin(a) * s * 1.05);
+    ctx.lineTo(Math.cos(a) * s * 1.25, Math.sin(a) * s * 1.25);
+  }
+  ctx.stroke();
+  ctx.restore();
+
+  // Inner launch ring
+  ctx.strokeStyle = 'rgba(255, 170, 0, 0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(0, 0, s * 0.85, 0, Math.PI * 2); ctx.stroke();
+
+  // Crosshairs
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(-s * 1.3, 0); ctx.lineTo(s * 1.3, 0);
+  ctx.moveTo(0, -s * 1.3); ctx.lineTo(0, s * 1.3);
+  ctx.stroke();
+  ctx.restore();
+
+  // 2. Render Top-Down Mecha Body (With Interactive Roll Bank)
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(tilt);
+
+  // Rear Thruster Exhaust Flares
+  const pulse = 0.85 + 0.15 * Math.sin(time * 18);
+  const exL = s * 0.45 * pulse;
+  const flCol = ctx.createLinearGradient(0, s * 0.55, 0, s * 0.55 + exL);
+  flCol.addColorStop(0, '#FFFFFF');
+  flCol.addColorStop(0.2, '#FFAA00');
+  flCol.addColorStop(0.7, '#FF4400');
+  flCol.addColorStop(1, 'transparent');
+
+  ctx.fillStyle = flCol;
+  ctx.shadowColor = '#FF6600';
+  ctx.shadowBlur = 24;
+  // Left engine exhaust
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.28, s * 0.52);
+  ctx.lineTo(-s * 0.18, s * 0.52);
+  ctx.lineTo(-s * 0.23, s * 0.52 + exL);
+  ctx.closePath(); ctx.fill();
+  // Right engine exhaust
+  ctx.beginPath();
+  ctx.moveTo(s * 0.18, s * 0.52);
+  ctx.lineTo(s * 0.28, s * 0.52);
+  ctx.lineTo(s * 0.23, s * 0.52 + exL);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // 3. Matte Carbon Fiber Under-Chassis & Engine Nacelles
+  ctx.fillStyle = '#11141D';
+  ctx.beginPath();
+  // Central frame & rear nacelles
+  ctx.moveTo(0, -s * 0.65);
+  ctx.lineTo(s * 0.18, -s * 0.2);
+  ctx.lineTo(s * 0.42, s * 0.45);
+  ctx.lineTo(s * 0.15, s * 0.55);
+  ctx.lineTo(0, s * 0.48);
+  ctx.lineTo(-s * 0.15, s * 0.55);
+  ctx.lineTo(-s * 0.42, s * 0.45);
+  ctx.lineTo(-s * 0.18, -s * 0.2);
+  ctx.closePath();
+  ctx.fill();
+
+  // 4. Twin Forward Heavy Pulse Railgun Barrels (Mounted on Flanks)
+  ctx.fillStyle = '#181C26';
+  // Left barrel
+  ctx.fillRect(-s * 0.32, -s * 0.85, s * 0.08, s * 0.95);
+  // Right barrel
+  ctx.fillRect(s * 0.24, -s * 0.85, s * 0.08, s * 0.95);
+
+  // Muzzle coils and tips
+  ctx.fillStyle = '#FFAA00';
+  ctx.shadowColor = '#FF7700';
+  ctx.shadowBlur = 12;
+  // Left coils
+  ctx.fillRect(-s * 0.33, -s * 0.88, s * 0.10, s * 0.06);
+  ctx.fillRect(-s * 0.33, -s * 0.65, s * 0.10, s * 0.03);
+  ctx.fillRect(-s * 0.33, -s * 0.45, s * 0.10, s * 0.03);
+  // Right coils
+  ctx.fillRect(s * 0.23, -s * 0.88, s * 0.10, s * 0.06);
+  ctx.fillRect(s * 0.23, -s * 0.65, s * 0.10, s * 0.03);
+  ctx.fillRect(s * 0.23, -s * 0.45, s * 0.10, s * 0.03);
+  ctx.shadowBlur = 0;
+
+  // 5. Ceramic White Swept Delta Wings (Aerodynamic Armor Plating)
+  ctx.shadowColor = 'rgba(0,0,0,0.5)';
+  ctx.shadowBlur = 18;
+
+  // Left Wing Plate
+  const lWingGrad = ctx.createLinearGradient(-s * 0.75, 0, 0, 0);
+  lWingGrad.addColorStop(0, '#CBD2DE');
+  lWingGrad.addColorStop(0.6, '#E8EDF5');
+  lWingGrad.addColorStop(1, '#FFFFFF');
+  ctx.fillStyle = lWingGrad;
+
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.08, -s * 0.35);
+  ctx.lineTo(-s * 0.82, s * 0.28);
+  ctx.lineTo(-s * 0.72, s * 0.42);
+  ctx.lineTo(-s * 0.38, s * 0.38);
+  ctx.lineTo(-s * 0.28, s * 0.52);
+  ctx.lineTo(-s * 0.08, s * 0.42);
+  ctx.closePath();
+  ctx.fill();
+
+  // Right Wing Plate
+  const rWingGrad = ctx.createLinearGradient(s * 0.75, 0, 0, 0);
+  rWingGrad.addColorStop(0, '#CBD2DE');
+  rWingGrad.addColorStop(0.6, '#E8EDF5');
+  rWingGrad.addColorStop(1, '#FFFFFF');
+  ctx.fillStyle = rWingGrad;
+
+  ctx.beginPath();
+  ctx.moveTo(s * 0.08, -s * 0.35);
+  ctx.lineTo(s * 0.82, s * 0.28);
+  ctx.lineTo(s * 0.72, s * 0.42);
+  ctx.lineTo(s * 0.38, s * 0.38);
+  ctx.lineTo(s * 0.28, s * 0.52);
+  ctx.lineTo(s * 0.08, s * 0.42);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Wing Panel Bevel Lines
+  ctx.strokeStyle = '#12151E';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(-s * 0.48, s * 0.05); ctx.lineTo(-s * 0.28, s * 0.35);
+  ctx.moveTo(s * 0.48, s * 0.05); ctx.lineTo(s * 0.28, s * 0.35);
+  ctx.stroke();
+
+  // 6. Central Ceramic Fuselage & Cockpit Spine
+  const bodyGrad = ctx.createLinearGradient(-s * 0.2, 0, s * 0.2, 0);
+  bodyGrad.addColorStop(0, '#D6DCE6');
+  bodyGrad.addColorStop(0.5, '#FFFFFF');
+  bodyGrad.addColorStop(1, '#D6DCE6');
+  ctx.fillStyle = bodyGrad;
+
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.78);
+  ctx.lineTo(s * 0.16, -s * 0.35);
+  ctx.lineTo(s * 0.18, s * 0.25);
+  ctx.lineTo(s * 0.08, s * 0.46);
+  ctx.lineTo(-s * 0.08, s * 0.46);
+  ctx.lineTo(-s * 0.18, s * 0.25);
+  ctx.lineTo(-s * 0.16, -s * 0.35);
+  ctx.closePath();
+  ctx.fill();
+
+  // Center Longitudinal Panel Line
+  ctx.strokeStyle = '#141720';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.76);
+  ctx.lineTo(0, -s * 0.18);
+  ctx.stroke();
+
+  // 7. Glowing Amber Ocular Visor / Cockpit Canopy (Signature Look)
+  ctx.fillStyle = '#090B10';
+  ctx.beginPath();
+  ctx.moveTo(0, -s * 0.32);
+  ctx.lineTo(s * 0.11, -s * 0.12);
+  ctx.lineTo(s * 0.07, s * 0.08);
+  ctx.lineTo(-s * 0.07, s * 0.08);
+  ctx.lineTo(-s * 0.11, -s * 0.12);
+  ctx.closePath();
+  ctx.fill();
+
+  // Twin Glowing Amber Visor Slits
+  ctx.shadowColor = '#FF6600';
+  ctx.shadowBlur = 14;
+  ctx.fillStyle = '#FFAA00';
+  // Left visor slit
+  ctx.beginPath();
+  ctx.ellipse(-s * 0.045, -s * 0.12, s * 0.035, s * 0.015, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+  // Right visor slit
+  ctx.beginPath();
+  ctx.ellipse(s * 0.045, -s * 0.12, s * 0.035, s * 0.015, 0.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Specular core reflection
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowBlur = 0;
+  ctx.fillRect(-s * 0.05, -s * 0.13, s * 0.018, s * 0.01);
+  ctx.fillRect(s * 0.032, -s * 0.13, s * 0.018, s * 0.01);
+
+  ctx.restore();
+}
+
+// ═════════════════════════════════════════════════════════════
+// COMBAT ENGINE & BALANCED PACING
+// ═════════════════════════════════════════════════════════════
+const C = document.getElementById('c'), X = C.getContext('2d');
+let W = window.innerWidth, H = window.innerHeight;
+C.width = W; C.height = H;
+let PY = H - Math.max(65, Math.min(85, H * 0.12));
+const PW = 48, PH = 54, BSPD = 680;
+
+const $ts = document.getElementById('ts');
+const $lu = document.getElementById('lu');
+const $cr = document.getElementById('cr');
+const $go = document.getElementById('go');
+const $gt = document.getElementById('gt');
+const $gs = document.getElementById('gs');
+const $gk = document.getElementById('gk');
+const $gl = document.getElementById('gl');
+const $fs = document.getElementById('fs-btn');
 
 function toggleFS(){
   if(!document.fullscreenElement){
-    if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
-  }else{
-    if(document.exitFullscreen)document.exitFullscreen().catch(()=>{});
+    if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
   }
 }
-if($fs)$fs.onclick=toggleFS;
+if($fs) $fs.onclick = toggleFS;
 
 function resize(){
-  W=C.width=window.innerWidth;
-  H=C.height=window.innerHeight;
-  PY=H-Math.max(65,Math.min(85,H*0.12));
-  if(typeof player!=='undefined'&&player){
-    player.x=Math.max(PW/2,Math.min(W-PW/2,player.x));
+  W = C.width = window.innerWidth;
+  H = C.height = window.innerHeight;
+  PY = H - Math.max(65, Math.min(85, H * 0.12));
+  if(typeof player !== 'undefined' && player){
+    player.x = Math.max(PW / 2, Math.min(W - PW / 2, player.x));
   }
   initBG();
 }
-window.addEventListener('resize',resize);
+window.addEventListener('resize', resize);
 
-// Touch tracking
-let touchX=null;
-window.addEventListener('touchstart',e=>{
-  if(e.touches.length>0)touchX=e.touches[0].clientX;
-},{passive:true});
-window.addEventListener('touchmove',e=>{
-  if(e.touches.length>0)touchX=e.touches[0].clientX;
-},{passive:true});
-window.addEventListener('touchend',()=>{touchX=null;});
-window.addEventListener('touchcancel',()=>{touchX=null;});
+// Touch Controls
+let touchX = null;
+window.addEventListener('touchstart', e => {
+  if(e.touches.length > 0) touchX = e.touches[0].clientX;
+}, { passive: true });
+window.addEventListener('touchmove', e => {
+  if(e.touches.length > 0) touchX = e.touches[0].clientX;
+}, { passive: true });
+window.addEventListener('touchend', () => { touchX = null; });
+window.addEventListener('touchcancel', () => { touchX = null; });
 
-// Input
-const KEY={};
-window.addEventListener('keydown',e=>{
-  KEY[e.code]=true;
-  if(e.code==='Escape')onEsc();
-  if(e.code==='KeyF')toggleFS();
-  if(e.code==='KeyR'&&GS==='over')restart();
-  if(e.code==='Enter'&&GS==='title')startGame();
-  if(GS==='levelup'){if(e.code==='Digit1')pickCard(0);if(e.code==='Digit2')pickCard(1);if(e.code==='Digit3')pickCard(2);}
-  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code))e.preventDefault();
+// Keyboard Controls
+const KEY = {};
+window.addEventListener('keydown', e => {
+  KEY[e.code] = true;
+  if(e.code === 'Escape') onEsc();
+  if(e.code === 'KeyF') toggleFS();
+  if(e.code === 'KeyR' && GS === 'over') restart();
+  if(e.code === 'KeyH' && GS === 'over') returnToHangar();
+  if(e.code === 'Enter' && GS === 'title') startGame();
+  if(GS === 'levelup'){
+    if(e.code === 'Digit1') pickCard(0);
+    if(e.code === 'Digit2') pickCard(1);
+    if(e.code === 'Digit3') pickCard(2);
+  }
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)) e.preventDefault();
 });
-window.addEventListener('keyup',e=>{KEY[e.code]=false;});
-document.getElementById('tb').onclick=()=>GS==='title'&&startGame();
-document.getElementById('gr').onclick=()=>GS==='over'&&restart();
+window.addEventListener('keyup', e => { KEY[e.code] = false; });
 
-// Upgrade definitions
-const UDefs=[
-  {id:'ricochet',name:'KINETIC RICOCHET',glyph:'↻',gc:'#00ffcc',
+document.getElementById('tb').onclick = () => GS === 'title' && startGame();
+document.getElementById('gr').onclick = () => GS === 'over' && restart();
+document.getElementById('gh').onclick = () => GS === 'over' && returnToHangar();
+document.getElementById('back-tag-btn').onclick = () => { /* Visual feedback */ };
+
+// Upgrade Definitions
+const UDefs = [
+  { id:'ricochet', name:'KINETIC RICOCHET', glyph:'↻', gc:'#FFFFFF',
     desc:l=>`Projectiles bounce off walls & enemies\nBounces: ${1+Math.floor(l*.75)}`,
     next:l=>`Bounces: ${1+Math.floor((l+1)*.75)} · +${(l+1)*15}% dmg/bounce`,
-    tier:l=>['STANDARD','ADVANCED','OVERDRIVE'][Math.min(2,Math.floor(l/3))]},
-  {id:'solarflare',name:'SOLAR FLARE BEAM',glyph:'☀',gc:'#FFAA00',
+    tier:l=>['STANDARD','ADVANCED','OVERDRIVE'][Math.min(2,Math.floor(l/3))] },
+  { id:'solarflare', name:'SOLAR FLARE BEAM', glyph:'☀', gc:'#FF7700',
     desc:l=>`Thermal pierce beam\nWidth: ${(20*(1+.15*l)).toFixed(0)}px · Burns`,
     next:l=>`Width: ${(20*(1+.15*(l+1))).toFixed(0)}px · DPS×${(1.3**(l+1)).toFixed(2)}`,
-    tier:l=>['THERMAL','INFERNO','SOLAR NOVA'][Math.min(2,Math.floor(l/3))]},
-  {id:'missiles',name:'SWARM MISSILES',glyph:'⚡',gc:'#ff6622',
+    tier:l=>['THERMAL','INFERNO','SOLAR NOVA'][Math.min(2,Math.floor(l/3))] },
+  { id:'missiles', name:'SWARM MISSILES', glyph:'⚡', gc:'#FFAA00',
     desc:l=>`Homing shoulder pods\nCount: ${2+l} · CD: ${(3*.92**l).toFixed(2)}s`,
     next:l=>`Count: ${3+l} · CD: ${(3*.92**(l+1)).toFixed(2)}s`,
-    tier:l=>['SALVO','BARRAGE','APOCALYPSE'][Math.min(2,Math.floor(l/3))]},
-  {id:'lightning',name:'CHAIN LIGHTNING',glyph:'⚡',gc:'#aaaaff',
+    tier:l=>['SALVO','BARRAGE','APOCALYPSE'][Math.min(2,Math.floor(l/3))] },
+  { id:'lightning', name:'CHAIN LIGHTNING', glyph:'⚡', gc:'#FFE57F',
     desc:l=>`Laser arcs electric bolts\nChains: ${l+1}`,
     next:l=>`Chains: ${l+2} · Range +10%`,
-    tier:l=>['SPARK','STORM','THUNDERGOD'][Math.min(2,Math.floor(l/3))]},
-  {id:'accelerator',name:'PULSE ACCELERATOR',glyph:'▶▶',gc:'#00F0FF',
+    tier:l=>['SPARK','STORM','THUNDERGOD'][Math.min(2,Math.floor(l/3))] },
+  { id:'accelerator', name:'PULSE ACCELERATOR', glyph:'▶▶', gc:'#FFFFFF',
     desc:l=>`Primary fire rate boost\nCD: ${(.14*.91**l*1000).toFixed(0)}ms`,
     next:l=>`CD: ${(.14*.91**(l+1)*1000).toFixed(0)}ms`,
-    tier:l=>['BURST','RAPID','HYPERSTRIKE'][Math.min(2,Math.floor(l/3))]},
-  {id:'aegis',name:'KINETIC AEGIS',glyph:'◈',gc:'#4499ff',
+    tier:l=>['BURST','RAPID','HYPERSTRIKE'][Math.min(2,Math.floor(l/3))] },
+  { id:'aegis', name:'KINETIC AEGIS', glyph:'◈', gc:'#E2E8F0',
     desc:l=>`Extra shields + passive regen\nShields: ${3+l} · Regen: ${Math.max(2,8-l*.5).toFixed(1)}s`,
     next:l=>`Shields: ${4+l} · Regen: ${Math.max(2,8-(l+1)*.5).toFixed(1)}s`,
-    tier:l=>['BARRIER','BULWARK','FORTRESS'][Math.min(2,Math.floor(l/3))]},
+    tier:l=>['BARRIER','BULWARK','FORTRESS'][Math.min(2,Math.floor(l/3))] }
 ];
 
-// State
-let GS='title';
-function onEsc(){if(GS==='play')GS='pause';else if(GS==='pause')GS='play';}
+// Game State
+let GS = 'title';
+function onEsc(){
+  if(GS === 'play') GS = 'pause';
+  else if(GS === 'pause') GS = 'play';
+}
 
-// Game vars
-let score,elapsed,kills,odLevel,upg,xp,xpMax;
-let player,bullets,enemies,meteors,missiles,orbs,parts,ftexts;
-let spawnT=0,bulletT=0,missileT=0,regenT2=0,flarePhase=0;
-let stars=[],embers=[];
-let currentCards=[];
+let score, elapsed, kills, odLevel, upg, xp, xpMax;
+let player, bullets, enemies, meteors, missiles, parts, ftexts;
+let spawnT = 0, bulletT = 0, missileT = 0, regenT2 = 0, flarePhase = 0;
+let stars = [], embers = [];
+let currentCards = [];
 
-// Helpers
-const fireCD=l=>.14*.91**l;
-const flareW=l=>20*(1+.15*l);
-const flareDPS=l=>8*1.3**l;
-const mCount=l=>2+l;
-const mCD=l=>3*.92**l;
-const regenTime=l=>Math.max(2,8-l*.5);
-const bounces=l=>1+Math.floor(l*.75);
-const fmtT=s=>{const m=Math.floor(s/60);return m?`${m}m ${Math.floor(s%60)}s`:`${Math.floor(s)}s`;};
+// Formulae
+const fireCD = l => .14 * (.91 ** l);
+const flareW = l => 20 * (1 + .15 * l);
+const flareDPS = l => 8 * (1.3 ** l);
+const mCount = l => 2 + l;
+const mCD = l => 3 * (.92 ** l);
+const regenTime = l => Math.max(2, 8 - l * .5);
+const bounces = l => 1 + Math.floor(l * .75);
+const fmtT = s => { const m = Math.floor(s / 60); return m ? `${m}m ${Math.floor(s % 60)}s` : `${Math.floor(s)}s`; };
 
 function mkEmber(){
-  return{x:Math.random()*W,y:H+5,r:Math.random()*2.5+.5,
-    vx:(Math.random()-.5)*14,vy:-(Math.random()*22+8),
-    life:1,dk:Math.random()*.003+.001,col:Math.random()>.5?'#FFAA00':'#FF6600'};
-}
-function initBG(){
-  const starCount=Math.min(240,Math.max(70,Math.floor((W*H)/4200)));
-  stars=Array.from({length:starCount},()=>({x:Math.random()*W,y:Math.random()*H,
-    r:Math.random()*1.3+.2,a:Math.random()*.55+.2,tw:Math.random()*Math.PI*2}));
-  const emberCount=Math.min(36,Math.max(14,Math.floor(W/30)));
-  embers=Array.from({length:emberCount},mkEmber);
-}
-function initGame(){
-  score=0;elapsed=0;kills=0;odLevel=0;upg={};xp=0;xpMax=40;
-  spawnT=0;bulletT=0;missileT=0;regenT2=0;flarePhase=0;
-  bullets=[];enemies=[];meteors=[];missiles=[];orbs=[];parts=[];ftexts=[];
-  player={x:W/2,vx:0,tilt:0,sh:3,shMax:3,inv:0,flash:0,thrust:[]};
-  initBG();
-}
-function startGame(){$ts.classList.add('gone');$go.classList.remove('on');GS='play';initGame();}
-function restart(){$go.classList.remove('on');GS='play';initGame();}
-function gameOver(){
-  GS='over';$gt.textContent=fmtT(elapsed);$gs.textContent=score.toLocaleString();
-  $gk.textContent=kills;$gl.textContent=odLevel;$go.classList.add('on');
+  return {
+    x: Math.random() * W, y: H + 5, r: Math.random() * 2.5 + .5,
+    vx: (Math.random() - .5) * 14, vy: -(Math.random() * 22 + 8),
+    life: 1, dk: Math.random() * .003 + .001, col: Math.random() > .5 ? '#FFAA00' : '#FF6600'
+  };
 }
 
-// Level-up
+function initBG(){
+  const starCount = Math.min(240, Math.max(70, Math.floor((W * H) / 4200)));
+  stars = Array.from({ length: starCount }, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    r: Math.random() * 1.3 + .2, a: Math.random() * .55 + .2, tw: Math.random() * Math.PI * 2
+  }));
+  const emberCount = Math.min(36, Math.max(14, Math.floor(W / 30)));
+  embers = Array.from({ length: emberCount }, mkEmber);
+}
+
+function initGame(){
+  score = 0; elapsed = 0; kills = 0; odLevel = 0; upg = {}; xp = 0; xpMax = 40;
+  spawnT = 1.0; // Start with gentle delay
+  bulletT = 0; missileT = 0; regenT2 = 0; flarePhase = 0;
+  bullets = []; enemies = []; meteors = []; missiles = []; parts = []; ftexts = [];
+
+  player = {
+    x: W / 2, vx: 0, tilt: 0,
+    sh: 3, shMax: 3,
+    inv: 0, flash: 0, thrust: []
+  };
+  initBG();
+}
+
+function startGame(){
+  $ts.classList.add('gone');
+  $go.classList.remove('on');
+  GS = 'play';
+  initGame();
+}
+
+function restart(){
+  $go.classList.remove('on');
+  GS = 'play';
+  initGame();
+}
+
+function returnToHangar(){
+  $go.classList.remove('on');
+  $ts.classList.remove('gone');
+  GS = 'title';
+}
+
+function gameOver(){
+  GS = 'over';
+  $gt.textContent = fmtT(elapsed);
+  $gs.textContent = score.toLocaleString();
+  $gk.textContent = kills;
+  $gl.textContent = odLevel;
+  $go.classList.add('on');
+}
+
+// ═════════════════════════════════════════════════════════════
+// DIRECT AUTOMATIC XP (ZERO ORBS DROPPED) & ROBUST LEVEL-UP
+// ═════════════════════════════════════════════════════════════
+function gainXP(v){
+  xp += v;
+  checkLU();
+}
+
+function checkLU(){
+  if(xp >= xpMax && GS === 'play'){
+    xp -= xpMax;
+    odLevel++;
+    xpMax = Math.floor(40 * (1.18 ** odLevel));
+    triggerLU();
+  }
+}
+
 function triggerLU(){
-  GS='levelup';
-  const pool=[...UDefs].sort(()=>Math.random()-.5).slice(0,3);
-  currentCards=pool;$cr.innerHTML='';
-  pool.forEach((def,i)=>{
-    const l=upg[def.id]||0,d=document.createElement('div');d.className='card';
-    d.innerHTML=`<div class="chk">[${i+1}]</div>
-      <div class="cgl" style="color:${def.gc};filter:drop-shadow(0 0 8px ${def.gc})">${def.glyph}</div>
+  GS = 'levelup';
+  const pool = [...UDefs].sort(() => Math.random() - .5).slice(0, 3);
+  currentCards = pool;
+  $cr.innerHTML = '';
+  pool.forEach((def, i) => {
+    const l = upg[def.id] || 0;
+    const d = document.createElement('div');
+    d.className = 'card';
+    d.innerHTML = `
+      <div class="chk">[${i + 1}]</div>
+      <div class="cgl">${def.glyph}</div>
       <div class="cnm">${def.name}</div>
-      <div class="clv">LVL ${l} → ${l+1} · ${def.tier(l)}</div>
-      <div class="cds">${def.desc(l).replace(/\n/g,'<br>')}</div>
-      <div class="cnx">▲ NEXT: ${def.next(l).replace(/\n/g,'<br>')}</div>`;
-    d.onclick=()=>pickCard(i);$cr.appendChild(d);
+      <div class="clv">LVL ${l} → ${l + 1} · ${def.tier(l)}</div>
+      <div class="cds">${def.desc(l).replace(/\n/g, '<br>')}</div>
+      <div class="cnx">▲ NEXT: ${def.next(l).replace(/\n/g, '<br>')}</div>
+    `;
+    d.onclick = () => pickCard(i);
+    $cr.appendChild(d);
   });
   $lu.classList.add('on');
 }
-function pickCard(i){
-  if(i>=currentCards.length)return;
-  const def=currentCards[i];upg[def.id]=(upg[def.id]||0)+1;
-  if(def.id==='aegis'){player.shMax=3+upg.aegis;player.sh=Math.min(player.sh+1,player.shMax);}
-  $lu.classList.remove('on');GS='play';
-}
 
-function spawnInterval(){return Math.max(.35,2.2*Math.exp(-.009*elapsed));}
-function enemySpd(){return 70*(1+(elapsed/90)*.8);}
-function spawnPool(){
-  const t=elapsed,p=['meteor','meteor','meteor'];
-  if(t>10)p.push('drone','drone');if(t>20)p.push('asteroid');
-  if(t>30)p.push('heavy');if(t>60)p.push('heavy','heavy','asteroid');
-  if(t>90)p.push('asteroid','asteroid');return p;
-}
-function spawnWave(){
-  const laneW=Math.max(65,Math.min(95,W/8));
-  const numLanes=Math.max(4,Math.floor(W/laneW));
-  const maxCnt=Math.min(numLanes-1,Math.max(1,Math.floor((W/260)*(0.8+elapsed/75))));
-  const cnt=Math.min(numLanes-1,Math.max(1,Math.floor(Math.random()*maxCnt)+1));
-  const pool=spawnPool(),spd=enemySpd();
-  const lanes=Array.from({length:numLanes},(_,i)=>i).sort(()=>Math.random()-.5).slice(0,cnt);
-  for(const lane of lanes){
-    const type=pool[Math.floor(Math.random()*pool.length)];
-    const lx=lane*laneW+laneW*.2+Math.random()*laneW*.6;
-    mkEnemy(type,Math.max(25,Math.min(W-25,lx)),-44,spd);
+function pickCard(i){
+  if(i >= currentCards.length) return;
+  const def = currentCards[i];
+  upg[def.id] = (upg[def.id] || 0) + 1;
+
+  if(def.id === 'aegis'){
+    player.shMax = 3 + upg.aegis;
+    player.sh = Math.min(player.sh + 1, player.shMax);
+  }
+
+  $lu.classList.remove('on');
+
+  // Process queued excess XP cleanly
+  if(xp >= xpMax){
+    xp -= xpMax;
+    odLevel++;
+    xpMax = Math.floor(40 * (1.18 ** odLevel));
+    triggerLU();
+  } else {
+    GS = 'play';
   }
 }
-function mkEnemy(type,x,y,spd){
-  const b={x,y,vy:spd,vx:0,dead:false,flash:0,type};
-  if(type==='meteor'||type==='asteroid'){
-    const isSplit=type==='asteroid';
-    Object.assign(b,{r:isSplit?26+Math.random()*8:18+Math.random()*10,
-      hp:isSplit?6:2,mhp:isSplit?6:2,sc:isSplit?30:10,xpv:isSplit?12:4,
-      rot:Math.random()*Math.PI*2,rotSpd:(Math.random()-.5)*2,
-      vx:(Math.random()-.5)*(isSplit?20:35),
-      sides:7+Math.floor(Math.random()*4),seed:Math.random()*200,splits:isSplit});
+
+// ═════════════════════════════════════════════════════════════
+// PACING ENGINE: SLOW STARTING INTENSITY GRADUALLY SCALING
+// ═════════════════════════════════════════════════════════════
+function spawnInterval(){
+  // Starts comfortably slow (3.4s) and gradually ramps up
+  return Math.max(0.45, 3.4 * Math.exp(-0.007 * elapsed));
+}
+
+function enemySpd(){
+  // Starts calm and readable at 45 px/s, scaling gradually
+  return 45 + Math.min(170, elapsed * 0.72);
+}
+
+function spawnPool(){
+  const t = elapsed;
+  if(t < 25) return ['meteor'];
+  if(t < 55) return ['meteor', 'meteor', 'drone'];
+  if(t < 95) return ['meteor', 'drone', 'asteroid'];
+  return ['drone', 'asteroid', 'heavy', 'heavy'];
+}
+
+function spawnWave(){
+  const laneW = Math.max(70, Math.min(100, W / 8));
+  const numLanes = Math.max(4, Math.floor(W / laneW));
+
+  // Early game: 1 single target at a time so player is never overwhelmed
+  let maxCnt = 1;
+  if(elapsed > 30) maxCnt = 2;
+  if(elapsed > 60) maxCnt = Math.min(numLanes - 1, Math.max(1, Math.floor((W / 260) * (0.8 + elapsed / 90))));
+
+  const cnt = Math.min(numLanes - 1, Math.max(1, Math.floor(Math.random() * maxCnt) + 1));
+  const pool = spawnPool(), spd = enemySpd();
+  const lanes = Array.from({ length: numLanes }, (_, i) => i).sort(() => Math.random() - .5).slice(0, cnt);
+  for(const lane of lanes){
+    const type = pool[Math.floor(Math.random() * pool.length)];
+    const lx = lane * laneW + laneW * .2 + Math.random() * laneW * .6;
+    mkEnemy(type, Math.max(25, Math.min(W - 25, lx)), -44, spd);
+  }
+}
+
+function mkEnemy(type, x, y, spd){
+  const b = { x, y, vy: spd, vx: 0, dead: false, flash: 0, type };
+  if(type === 'meteor' || type === 'asteroid'){
+    const isSplit = type === 'asteroid';
+    Object.assign(b, {
+      r: isSplit ? 26 + Math.random() * 8 : 18 + Math.random() * 10,
+      hp: isSplit ? 6 : 2, mhp: isSplit ? 6 : 2,
+      sc: isSplit ? 30 : 10, xpv: isSplit ? 12 : 4,
+      rot: Math.random() * Math.PI * 2, rotSpd: (Math.random() - .5) * 1.5,
+      vx: (Math.random() - .5) * (isSplit ? 18 : 28),
+      sides: 7 + Math.floor(Math.random() * 4), seed: Math.random() * 200, splits: isSplit
+    });
     meteors.push(b);
-  }else{
-    const hv=type==='heavy';
-    Object.assign(b,{w:hv?40:28,h:hv?34:22,hp:hv?14:3,mhp:hv?14:3,
-      sc:hv?65:20,xpv:hv?25:8,wPhase:Math.random()*Math.PI*2,wAmp:hv?14:28});
+  } else {
+    const hv = type === 'heavy';
+    Object.assign(b, {
+      w: hv ? 40 : 28, h: hv ? 34 : 22, hp: hv ? 14 : 3, mhp: hv ? 14 : 3,
+      sc: hv ? 65 : 20, xpv: hv ? 25 : 8, wPhase: Math.random() * Math.PI * 2, wAmp: hv ? 12 : 24
+    });
     enemies.push(b);
   }
 }
-function dmgE(e,d){
-  e.hp-=d;e.flash=3;if(e.hp<=0)killE(e);
+
+function dmgE(e, d){
+  e.hp -= d;
+  e.flash = 3;
+  if(e.hp <= 0) killE(e);
 }
+
+// AUTOMATIC DIRECT XP - NO ORBS LEFT BEHIND
 function killE(e){
-  if(e.dead)return;e.dead=true;score+=e.sc;kills++;
-  dropOrbs(e.x,e.y,e.xpv);burst(e.x,e.y,'#FF6622',14,150,4);
-  burst(e.x,e.y,'#FFCC00',8,90,2.5);fltxt(e.x,e.y,`+${e.sc}`,'#FFCC00');
+  if(e.dead) return;
+  e.dead = true;
+  score += e.sc;
+  kills++;
+
+  // Instantly award XP directly
+  gainXP(e.xpv);
+
+  // Explosions & score / XP text
+  burst(e.x, e.y, '#FF6622', 14, 150, 4);
+  burst(e.x, e.y, '#FFCC00', 8, 90, 2.5);
+  fltxt(e.x, e.y, `+${e.sc}  ▲+${e.xpv}XP`, '#FFAA00');
+
   if(e.splits){
-    const s=enemySpd(),fr=e.r*.58;
-    for(let i=0;i<2;i++){
-      meteors.push({x:e.x+(i?fr:-fr),y:e.y,vy:s*.8,vx:i?55:-55,
-        hp:2,mhp:2,sc:14,xpv:5,r:fr,rot:Math.random()*Math.PI*2,
-        rotSpd:(Math.random()-.5)*3,sides:6,seed:Math.random()*200,
-        splits:false,dead:false,flash:0,type:'meteor'});
+    const s = enemySpd(), fr = e.r * .58;
+    for(let i = 0; i < 2; i++){
+      meteors.push({
+        x: e.x + (i ? fr : -fr), y: e.y, vy: s * .8, vx: i ? 45 : -45,
+        hp: 2, mhp: 2, sc: 14, xpv: 5, r: fr, rot: Math.random() * Math.PI * 2,
+        rotSpd: (Math.random() - .5) * 2.5, sides: 6, seed: Math.random() * 200,
+        splits: false, dead: false, flash: 0, type: 'meteor'
+      });
     }
   }
 }
-function dropOrbs(x,y,tot){
-  const n=Math.max(1,Math.floor(tot/3));
-  for(let i=0;i<n;i++)orbs.push({x:x+(Math.random()-.5)*32,y:y+(Math.random()-.5)*18,
-    vx:(Math.random()-.5)*55,vy:Math.random()*28+8,val:3,r:5,life:9,
-    pulse:Math.random()*Math.PI*2,done:false});
-}
-function gainXP(v){
-  xp+=v;
-  while(xp>=xpMax){xp-=xpMax;odLevel++;xpMax=Math.floor(40*1.15**odLevel);triggerLU();return;}
-}
+
 function hitPlayer(){
-  if(player.inv>0)return;player.sh--;player.flash=10;player.inv=1.8;regenT2=0;
-  burst(player.x,PY,'#FF0055',20,180,4);if(player.sh<=0)gameOver();
+  if(player.inv > 0) return;
+  player.sh--;
+  player.flash = 10;
+  player.inv = 1.8;
+  regenT2 = 0;
+  burst(player.x, PY, '#FF0055', 20, 180, 4);
+  if(player.sh <= 0) gameOver();
 }
-function burst(x,y,col,n,spd,sz){
-  for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=spd*(0.5+Math.random()*.5);
-    parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:sz*(0.5+Math.random()*.5),
-      life:1,dk:.04+Math.random()*.05,col,type:'dot'});}
-}
-function fltxt(x,y,txt,col){ftexts.push({x,y,txt,col,life:1,vy:-50});}
-function thrustP(){
-  player.thrust.push({x:player.x+(Math.random()-.5)*14,y:PY+PH/2-4,
-    vx:(Math.random()-.5)*22,vy:40+Math.random()*55,
-    r:3.5+Math.random()*2,life:1,dk:.07+Math.random()*.07,
-    col:Math.random()>.5?'#00AAFF':'#0055CC'});
-}
-function isPlayerControlling(){
-  return !!(KEY.KeyA || KEY.ArrowLeft || KEY.KeyD || KEY.ArrowRight || (touchX !== null && Math.abs(touchX - (player?player.x:0)) > 8));
-}
-function getAimTarget(fromX,fromY,exclude){
-  const pool=[...enemies,...meteors].filter(e=>!e.dead&&e!==exclude&&e.y<PY+30);
-  if(!pool.length)return null;
-  pool.sort((a,b)=>Math.hypot(a.x-fromX,a.y-fromY)-Math.hypot(b.x-fromX,b.y-fromY));
-  return pool[0];
-}
-function fireBullets(){
-  const b=upg.ricochet?bounces(upg.ricochet):0,ch=upg.lightning||0;
-  const manual=isPlayerControlling();
-  if(manual){
-    // When actively moving/controlling: fire pure straight up!
-    for(const ox of[-11,11]){
-      bullets.push({x:player.x+ox,y:PY-PH/2,vx:0,vy:-BSPD,bounces:b,chains:ch,dead:false,lastHit:null});
-    }
-  } else {
-    // When idle: auto-aim directly angled at targets with straight-line trajectories
-    const t1=getAimTarget(player.x-11,PY-PH/2,null);
-    const t2=getAimTarget(player.x+11,PY-PH/2,t1)||t1;
-    const tgts=[t1,t2];
-    [-11,11].forEach((ox,i)=>{
-      const sx=player.x+ox,sy=PY-PH/2,t=tgts[i];
-      let vx=0,vy=-BSPD;
-      if(t){
-        const dx=t.x-sx,dy=Math.min(-50,t.y-sy);
-        const dist=Math.hypot(dx,dy);
-        if(dist>1){vx=(dx/dist)*BSPD;vy=(dy/dist)*BSPD;}
-      }
-      bullets.push({x:sx,y:sy,vx,vy,bounces:b,chains:ch,dead:false,lastHit:null});
+
+function burst(x, y, col, n, spd, sz){
+  for(let i = 0; i < n; i++){
+    const a = Math.random() * Math.PI * 2, s = spd * (0.5 + Math.random() * .5);
+    parts.push({
+      x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, r: sz * (0.5 + Math.random() * .5),
+      life: 1, dk: .04 + Math.random() * .05, col, type: 'dot'
     });
   }
 }
-function fireMissiles(){
-  const n=mCount(upg.missiles||0);
-  for(let i=0;i<n;i++){const s=i%2?1:-1,o=Math.floor(i/2)*14;
-    missiles.push({x:player.x+s*(PW/2+5+o),y:PY,vx:s*65,vy:-130,dead:false,target:null,life:4.5,trail:[]});}
+
+function fltxt(x, y, txt, col){
+  ftexts.push({ x, y, txt, col, life: 1, vy: -50 });
 }
-function chainLightning(src,ch,ox,oy){
-  const rng=120*(1+ch*.1);
-  const pool=[...enemies,...meteors].filter(e=>!e.dead&&e!==src);
-  const near=pool.filter(e=>Math.hypot(e.x-ox,e.y-oy)<rng).sort(()=>Math.random()-.5);
-  for(let c=0;c<ch&&near.length;c++){
-    const t=near.shift();dmgE(t,2);
-    parts.push({type:'bolt',x1:ox,y1:oy,x2:t.x,y2:t.y,life:1,dk:.35});
+
+function thrustP(){
+  player.thrust.push({
+    x: player.x + (Math.random() - .5) * 16, y: PY + PH / 2 - 4,
+    vx: (Math.random() - .5) * 20, vy: 40 + Math.random() * 50,
+    r: 3.5 + Math.random() * 2, life: 1, dk: .07 + Math.random() * .07,
+    col: Math.random() > .5 ? '#FF7700' : '#FFAA00'
+  });
+}
+
+function isPlayerControlling(){
+  return !!(KEY.KeyA || KEY.ArrowLeft || KEY.KeyD || KEY.ArrowRight || (touchX !== null && Math.abs(touchX - (player ? player.x : 0)) > 8));
+}
+
+function getAimTarget(fromX, fromY, exclude){
+  const pool = [...enemies, ...meteors].filter(e => !e.dead && e !== exclude && e.y < PY + 30);
+  if(!pool.length) return null;
+  pool.sort((a, b) => Math.hypot(a.x - fromX, a.y - fromY) - Math.hypot(b.x - fromX, b.y - fromY));
+  return pool[0];
+}
+
+function fireBullets(){
+  const b = upg.ricochet ? bounces(upg.ricochet) : 0, ch = upg.lightning || 0;
+  const manual = isPlayerControlling();
+  if(manual){
+    // When moving: fire pure straight forward from twin railgun muzzles
+    for(const ox of [-14, 14]){
+      bullets.push({ x: player.x + ox, y: PY - PH / 2, vx: 0, vy: -BSPD, bounces: b, chains: ch, dead: false, lastHit: null });
+    }
+  } else {
+    // When idle: auto-aim directly angled at targets with straight trajectory
+    const t1 = getAimTarget(player.x - 14, PY - PH / 2, null);
+    const t2 = getAimTarget(player.x + 14, PY - PH / 2, t1) || t1;
+    const tgts = [t1, t2];
+    [-14, 14].forEach((ox, i) => {
+      const sx = player.x + ox, sy = PY - PH / 2, t = tgts[i];
+      let vx = 0, vy = -BSPD;
+      if(t){
+        const dx = t.x - sx, dy = Math.min(-50, t.y - sy);
+        const dist = Math.hypot(dx, dy);
+        if(dist > 1){ vx = (dx / dist) * BSPD; vy = (dy / dist) * BSPD; }
+      }
+      bullets.push({ x: sx, y: sy, vx, vy, bounces: b, chains: ch, dead: false, lastHit: null });
+    });
   }
 }
 
-// ── Main Loop ──────────────────────────────────────────
-let lastTS=null;
+function fireMissiles(){
+  const n = mCount(upg.missiles || 0);
+  for(let i = 0; i < n; i++){
+    const s = i % 2 ? 1 : -1, o = Math.floor(i / 2) * 14;
+    missiles.push({ x: player.x + s * (PW / 2 + 5 + o), y: PY, vx: s * 65, vy: -130, dead: false, target: null, life: 4.5, trail: [] });
+  }
+}
+
+function chainLightning(src, ch, ox, oy){
+  const rng = 120 * (1 + ch * .1);
+  const pool = [...enemies, ...meteors].filter(e => !e.dead && e !== src);
+  const near = pool.filter(e => Math.hypot(e.x - ox, e.y - oy) < rng).sort(() => Math.random() - .5);
+  for(let c = 0; c < ch && near.length; c++){
+    const t = near.shift();
+    dmgE(t, 2);
+    parts.push({ type: 'bolt', x1: ox, y1: oy, x2: t.x, y2: t.y, life: 1, dk: .35 });
+  }
+}
+
+// ═════════════════════════════════════════════════════════════
+// MAIN GAME LOOP
+// ═════════════════════════════════════════════════════════════
+let lastTS = null;
 function loop(ts){
   requestAnimationFrame(loop);
-  if(!lastTS)lastTS=ts;
-  const dt=Math.min((ts-lastTS)/1000,.05);lastTS=ts;
-  if(GS==='title'){drawBG();return;}
-  if(GS==='levelup'||GS==='over'){drawBG();drawAll();return;}
-  if(GS==='pause'){drawBG();drawAll();drawPause();return;}
+  if(!lastTS) lastTS = ts;
+  const dt = Math.min((ts - lastTS) / 1000, .05);
+  lastTS = ts;
 
-  elapsed+=dt;
+  if(GS === 'title'){
+    drawBG();
+    if(heroCtx) drawHeroMecha(heroCtx, 600, 600, heroHoverTilt, ts * 0.001);
+    return;
+  }
+  if(GS === 'levelup' || GS === 'over'){
+    drawBG();
+    drawAll();
+    return;
+  }
+  if(GS === 'pause'){
+    drawBG();
+    drawAll();
+    drawPause();
+    return;
+  }
 
-  // Player
-  const left=KEY.KeyA||KEY.ArrowLeft,right=KEY.KeyD||KEY.ArrowRight;
-  if(left)player.vx-=1500*dt;
-  if(right)player.vx+=1500*dt;
-  if(touchX!==null){
-    const diff=touchX-player.x;
-    if(Math.abs(diff)>3){
-      const dir=Math.sign(diff);
-      player.vx+=dir*3000*dt;
-      if(Math.abs(diff)<26){
-        player.vx*=0.8;
-        player.x+=diff*0.2;
+  elapsed += dt;
+
+  // Player Movement & Smooth Banking Tilt
+  const left = KEY.KeyA || KEY.ArrowLeft, right = KEY.KeyD || KEY.ArrowRight;
+  const maxSpd = 480;
+  if(left) player.vx -= 1600 * dt;
+  if(right) player.vx += 1600 * dt;
+  if(touchX !== null){
+    const diff = touchX - player.x;
+    if(Math.abs(diff) > 3){
+      const dir = Math.sign(diff);
+      player.vx += dir * 3200 * dt;
+      if(Math.abs(diff) < 26){
+        player.vx *= 0.8;
+        player.x += diff * 0.2;
       }
     }
   }
-  player.vx*=1-.14*60*dt;
-  player.vx=Math.max(-500,Math.min(500,player.vx));
-  player.x+=player.vx*dt;player.x=Math.max(PW/2,Math.min(W-PW/2,player.x));
-  player.tilt+=(player.vx/500*.35-player.tilt)*10*dt;
-  if(player.inv>0)player.inv-=dt;if(player.flash>0)player.flash--;
+  player.vx *= 1 - .14 * 60 * dt;
+  player.vx = Math.max(-maxSpd, Math.min(maxSpd, player.vx));
+  player.x += player.vx * dt;
+  player.x = Math.max(PW / 2, Math.min(W - PW / 2, player.x));
+  player.tilt += (player.vx / maxSpd * .38 - player.tilt) * 10 * dt;
 
-  // Shield regen
-  if(player.sh<player.shMax){
-    regenT2+=dt;
-    if(regenT2>=regenTime(upg.aegis||0)){
-      player.sh=Math.min(player.shMax,player.sh+1);regenT2=0;
-      burst(player.x,PY-PH/2,'#4499FF',8,60,2);
+  if(player.inv > 0) player.inv -= dt;
+  if(player.flash > 0) player.flash--;
+
+  // Shield Regeneration
+  if(player.sh < player.shMax){
+    regenT2 += dt;
+    if(regenT2 >= regenTime(upg.aegis || 0)){
+      player.sh = Math.min(player.shMax, player.sh + 1);
+      regenT2 = 0;
+      burst(player.x, PY - PH / 2, '#FFAA00', 8, 60, 2);
     }
   }
-  if(Math.random()<.65)thrustP();
-  for(const p of player.thrust){p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=p.dk;p.r*=.96;}
-  player.thrust=player.thrust.filter(p=>p.life>0);
 
-  // Autofire
-  bulletT-=dt;if(bulletT<=0){fireBullets();bulletT=fireCD(upg.accelerator||0);}
+  // Thruster Particles
+  if(Math.random() < .65) thrustP();
+  for(const p of player.thrust){
+    p.x += p.vx * dt; p.y += p.vy * dt; p.life -= p.dk; p.r *= .96;
+  }
+  player.thrust = player.thrust.filter(p => p.life > 0);
 
-  // Solar flare
+  // Auto Weapon Fire
+  bulletT -= dt;
+  if(bulletT <= 0){
+    fireBullets();
+    bulletT = fireCD(upg.accelerator || 0);
+  }
+
+  // Solar Flare Beam
   if(upg.solarflare){
-    flarePhase+=dt;const fw=flareW(upg.solarflare),dps=flareDPS(upg.solarflare);
-    for(const e of[...enemies,...meteors]){
-      if(e.dead)continue;const er=e.r||Math.max(e.w,e.h)/2;
-      if(Math.abs(e.x-player.x)<fw/2+er)dmgE(e,dps*dt);
+    flarePhase += dt;
+    const fw = flareW(upg.solarflare), dps = flareDPS(upg.solarflare);
+    for(const e of [...enemies, ...meteors]){
+      if(e.dead) continue;
+      const er = e.r || Math.max(e.w, e.h) / 2;
+      if(Math.abs(e.x - player.x) < fw / 2 + er) dmgE(e, dps * dt);
     }
   }
 
-  // Missiles
-  if(upg.missiles){missileT-=dt;if(missileT<=0){fireMissiles();missileT=mCD(upg.missiles);}}
-  for(const m of missiles){
-    if(m.dead)continue;m.life-=dt;if(m.life<=0){m.dead=true;continue;}
-    const pool=[...enemies,...meteors].filter(e=>!e.dead);
-    if(pool.length){pool.sort((a,b)=>Math.hypot(a.x-m.x,a.y-m.y)-Math.hypot(b.x-m.x,b.y-m.y));m.target=pool[0];}
-    if(m.target&&!m.target.dead){
-      const dx=m.target.x-m.x,dy=m.target.y-m.y,d=Math.hypot(dx,dy);
-      if(d>1){m.vx+=(dx/d)*240*dt;m.vy+=(dy/d)*240*dt;}
+  // Swarm Missiles
+  if(upg.missiles){
+    missileT -= dt;
+    if(missileT <= 0){
+      fireMissiles();
+      missileT = mCD(upg.missiles);
     }
-    const sp=Math.hypot(m.vx,m.vy);if(sp>290){m.vx=m.vx/sp*290;m.vy=m.vy/sp*290;}
-    m.trail.unshift({x:m.x,y:m.y});if(m.trail.length>9)m.trail.pop();
-    m.x+=m.vx*dt;m.y+=m.vy*dt;
-    let mhit=false;
-    for(const e of[...enemies,...meteors]){
-      if(e.dead)continue;const er=e.r||Math.max(e.w,e.h)/2;
-      if(Math.hypot(m.x-e.x,m.y-e.y)<er+7){dmgE(e,3);burst(m.x,m.y,'#FF6622',8,120,3);m.dead=true;mhit=true;break;}
-    }
-    if(!mhit&&(m.x<-20||m.x>W+20||m.y<-20||m.y>H+20))m.dead=true;
   }
-  missiles=missiles.filter(m=>!m.dead);
+  for(const m of missiles){
+    if(m.dead) continue;
+    m.life -= dt;
+    if(m.life <= 0){ m.dead = true; continue; }
+    const pool = [...enemies, ...meteors].filter(e => !e.dead);
+    if(pool.length){
+      pool.sort((a, b) => Math.hypot(a.x - m.x, a.y - m.y) - Math.hypot(b.x - m.x, b.y - m.y));
+      m.target = pool[0];
+    }
+    if(m.target && !m.target.dead){
+      const dx = m.target.x - m.x, dy = m.target.y - m.y, d = Math.hypot(dx, dy);
+      if(d > 1){ m.vx += (dx / d) * 240 * dt; m.vy += (dy / d) * 240 * dt; }
+    }
+    const sp = Math.hypot(m.vx, m.vy);
+    if(sp > 290){ m.vx = m.vx / sp * 290; m.vy = m.vy / sp * 290; }
+    m.trail.unshift({ x: m.x, y: m.y });
+    if(m.trail.length > 9) m.trail.pop();
+    m.x += m.vx * dt; m.y += m.vy * dt;
+
+    let mhit = false;
+    for(const e of [...enemies, ...meteors]){
+      if(e.dead) continue;
+      const er = e.r || Math.max(e.w, e.h) / 2;
+      if(Math.hypot(m.x - e.x, m.y - e.y) < er + 7){
+        dmgE(e, 3);
+        burst(m.x, m.y, '#FF6622', 8, 120, 3);
+        m.dead = true; mhit = true; break;
+      }
+    }
+    if(!mhit && (m.x < -20 || m.x > W + 20 || m.y < -20 || m.y > H + 20)) m.dead = true;
+  }
+  missiles = missiles.filter(m => !m.dead);
 
   // Bullets
   for(const b of bullets){
-    if(b.dead)continue;
-    b.x+=b.vx*dt;b.y+=b.vy*dt;
-    if(upg.ricochet&&b.bounces>0&&(b.x<4||b.x>W-4)){b.vx=-b.vx;b.bounces--;}
-    if(b.y<-20||b.y>H+20||b.x<-20||b.x>W+20){b.dead=true;continue;}
-    let hit=false;
+    if(b.dead) continue;
+    b.x += b.vx * dt; b.y += b.vy * dt;
+    if(upg.ricochet && b.bounces > 0 && (b.x < 4 || b.x > W - 4)){
+      b.vx = -b.vx; b.bounces--;
+    }
+    if(b.y < -20 || b.y > H + 20 || b.x < -20 || b.x > W + 20){
+      b.dead = true; continue;
+    }
+    let hit = false;
     for(const e of enemies){
-      if(e.dead)continue;
-      if(Math.abs(b.x-e.x)<e.w/2+3&&Math.abs(b.y-e.y)<e.h/2+3){
-        const d=1*(1+(upg.ricochet?(((upg.ricochet)-b.bounces)*.15):0));
-        dmgE(e,d);if(b.chains>0)chainLightning(e,b.chains,e.x,e.y);
-        b.lastHit=e;
-        if(b.bounces>0){b.vy=-Math.abs(b.vy);b.bounces--;}else b.dead=true;hit=true;break;
+      if(e.dead) continue;
+      if(Math.abs(b.x - e.x) < e.w / 2 + 3 && Math.abs(b.y - e.y) < e.h / 2 + 3){
+        const d = 1 * (1 + (upg.ricochet ? (((upg.ricochet) - b.bounces) * .15) : 0));
+        dmgE(e, d);
+        if(b.chains > 0) chainLightning(e, b.chains, e.x, e.y);
+        b.lastHit = e;
+        if(b.bounces > 0){ b.vy = -Math.abs(b.vy); b.bounces--; }
+        else b.dead = true;
+        hit = true; break;
       }
     }
-    if(hit)continue;
+    if(hit) continue;
     for(const m of meteors){
-      if(m.dead)continue;
-      if(Math.hypot(b.x-m.x,b.y-m.y)<m.r+3){
-        dmgE(m,1);if(b.chains>0)chainLightning(m,b.chains,m.x,m.y);
-        b.lastHit=m;
-        if(b.bounces>0){b.vy=-Math.abs(b.vy);b.bounces--;}else b.dead=true;break;
+      if(m.dead) continue;
+      if(Math.hypot(b.x - m.x, b.y - m.y) < m.r + 3){
+        dmgE(m, 1);
+        if(b.chains > 0) chainLightning(m, b.chains, m.x, m.y);
+        b.lastHit = m;
+        if(b.bounces > 0){ b.vy = -Math.abs(b.vy); b.bounces--; }
+        else b.dead = true;
+        break;
       }
     }
   }
-  bullets=bullets.filter(b=>!b.dead);
+  bullets = bullets.filter(b => !b.dead);
 
-  // Spawn
-  spawnT-=dt;if(spawnT<=0){spawnWave();spawnT=spawnInterval();}
+  // Spawn Waves
+  spawnT -= dt;
+  if(spawnT <= 0){ spawnWave(); spawnT = spawnInterval(); }
 
-  // Meteors
+  // Asteroids & Meteors (Slow gentle start)
   for(const m of meteors){
-    if(m.dead)continue;
-    const toCenter=(W/2-m.x);
-    m.vx+=(toCenter*0.35-m.vx*0.7)*dt;
-    m.x+=m.vx*dt;m.y+=m.vy*dt;m.rot+=m.rotSpd*dt;
-    if(m.flash>0)m.flash--;
-    if(m.x<m.r){m.x=m.r;m.vx=Math.abs(m.vx);}
-    if(m.x>W-m.r){m.x=W-m.r;m.vx=-Math.abs(m.vx);}
-    if(!m.dead&&Math.hypot(m.x-player.x,m.y-PY)<m.r+PW/2-4){hitPlayer();m.dead=true;burst(m.x,m.y,'#FF6622',14,170,5);}
-    if(m.y>H+60)m.dead=true;
+    if(m.dead) continue;
+    const toCenter = (W / 2 - m.x);
+    m.vx += (toCenter * 0.3 - m.vx * 0.6) * dt;
+    m.x += m.vx * dt; m.y += m.vy * dt; m.rot += m.rotSpd * dt;
+    if(m.flash > 0) m.flash--;
+    if(m.x < m.r){ m.x = m.r; m.vx = Math.abs(m.vx); }
+    if(m.x > W - m.r){ m.x = W - m.r; m.vx = -Math.abs(m.vx); }
+    if(!m.dead && Math.hypot(m.x - player.x, m.y - PY) < m.r + PW / 2 - 4){
+      hitPlayer(); m.dead = true; burst(m.x, m.y, '#FF6622', 14, 170, 5);
+    }
+    if(m.y > H + 60) m.dead = true;
   }
-  meteors=meteors.filter(m=>!m.dead);
+  meteors = meteors.filter(m => !m.dead);
 
-  // Enemies
+  // Enemy Ships
   for(const e of enemies){
-    if(e.dead)continue;
-    e.wPhase+=dt*1.6;
-    const centerPull=(W/2-e.x)*0.4;
-    e.x+=(Math.sin(e.wPhase)*e.wAmp+centerPull)*dt;
-    e.y+=e.vy*dt;
-    if(e.flash>0)e.flash--;
-    if(!e.dead&&Math.abs(e.x-player.x)<(e.w+PW)/2-5&&Math.abs(e.y-PY)<(e.h+PH)/2-5){hitPlayer();e.dead=true;}
-    if(e.y>H+60)e.dead=true;
+    if(e.dead) continue;
+    e.wPhase += dt * 1.5;
+    const centerPull = (W / 2 - e.x) * 0.35;
+    e.x += (Math.sin(e.wPhase) * e.wAmp + centerPull) * dt;
+    e.y += e.vy * dt;
+    if(e.flash > 0) e.flash--;
+    if(!e.dead && Math.abs(e.x - player.x) < (e.w + PW) / 2 - 5 && Math.abs(e.y - PY) < (e.h + PH) / 2 - 5){
+      hitPlayer(); e.dead = true;
+    }
+    if(e.y > H + 60) e.dead = true;
   }
-  enemies=enemies.filter(e=>!e.dead);
+  enemies = enemies.filter(e => !e.dead);
 
-  // Orbs
-  for(const o of orbs){
-    if(o.done)continue;o.life-=dt;o.pulse+=dt*4;
-    const dx=player.x-o.x,dy=PY-o.y,d=Math.hypot(dx,dy);
-    if(d<130){const pull=(1-d/130)*420;o.vx+=(dx/d)*pull*dt;o.vy+=(dy/d)*pull*dt;}
-    o.x+=o.vx*dt;o.y+=o.vy*dt;o.vx*=.982;o.vy*=.982;
-    if((d<22&&GS==='play')||o.life<=0){if(d<22&&GS==='play')gainXP(o.val);o.done=true;}
-    if(o.y>H+20)o.done=true;
-  }
-  orbs=orbs.filter(o=>!o.done);
-
-  // Particles
+  // Particle updates
   for(const p of parts){
-    if(p.type==='bolt'){p.life-=p.dk;continue;}
-    p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=65*dt;p.life-=p.dk;p.r*=.97;
+    if(p.type === 'bolt'){ p.life -= p.dk; continue; }
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 65 * dt; p.life -= p.dk; p.r *= .97;
   }
-  parts=parts.filter(p=>p.life>0);
+  parts = parts.filter(p => p.life > 0);
 
   // Float texts
-  for(const t of ftexts){t.y+=t.vy*dt;t.life-=dt*1.3;}
-  ftexts=ftexts.filter(t=>t.life>0);
+  for(const t of ftexts){ t.y += t.vy * dt; t.life -= dt * 1.3; }
+  ftexts = ftexts.filter(t => t.life > 0);
 
   // Embers
-  for(let i=0;i<embers.length;i++){
-    const e=embers[i];e.x+=e.vx*dt;e.y+=e.vy*dt;e.life-=e.dk;
-    if(e.life<=0||e.y<-10)embers[i]=mkEmber();
+  for(let i = 0; i < embers.length; i++){
+    const e = embers[i]; e.x += e.vx * dt; e.y += e.vy * dt; e.life -= e.dk;
+    if(e.life <= 0 || e.y < -10) embers[i] = mkEmber();
   }
 
-  drawBG();drawAll();
+  drawBG();
+  drawAll();
 }
 
-// ── Draw ────────────────────────────────────────────────
+// ═════════════════════════════════════════════════════════════
+// RENDERING & VISUAL DESIGN
+// ═════════════════════════════════════════════════════════════
 function drawAll(){
-  drawFlare();drawMeteors();drawEnemies();drawLockReticle();drawBullets();drawMissiles();
-  drawOrbs();drawParts();drawPlayer();drawFloats();drawHUD();
+  drawFlare();
+  drawMeteors();
+  drawEnemies();
+  drawLockReticle();
+  drawBullets();
+  drawMissiles();
+  drawParts();
+  drawPlayer();
+  drawFloats();
+  drawHUD();
 }
+
 function drawLockReticle(){
-  if(GS!=='play'||isPlayerControlling())return;
-  const tgt=getAimTarget(player.x,PY-PH/2,null);
-  if(!tgt)return;
-  const r=(tgt.r||Math.max(tgt.w,tgt.h)/2)+8;
-  X.save();X.translate(tgt.x,tgt.y);
-  X.strokeStyle='#00F0FFaa';X.lineWidth=1.5;
-  X.shadowBlur=8;X.shadowColor='#00F0FF';
-  const s=r*1.08,d=6;
+  if(GS !== 'play' || isPlayerControlling()) return;
+  const tgt = getAimTarget(player.x, PY - PH / 2, null);
+  if(!tgt) return;
+  const r = (tgt.r || Math.max(tgt.w, tgt.h) / 2) + 8;
+  X.save();
+  X.translate(tgt.x, tgt.y);
+  X.strokeStyle = '#FFAA00';
+  X.lineWidth = 1.5;
+  X.shadowBlur = 10;
+  X.shadowColor = '#FF7700';
+  const s = r * 1.08, d = 6;
   X.beginPath();X.moveTo(-s+d,-s);X.lineTo(-s,-s);X.lineTo(-s,-s+d);X.stroke();
   X.beginPath();X.moveTo(s-d,-s);X.lineTo(s,-s);X.lineTo(s,-s+d);X.stroke();
   X.beginPath();X.moveTo(-s+d,s);X.lineTo(-s,s);X.lineTo(-s,s-d);X.stroke();
   X.beginPath();X.moveTo(s-d,s);X.lineTo(s,s);X.lineTo(s,s-d);X.stroke();
-  X.fillStyle='#00F0FFcc';X.beginPath();X.arc(0,0,1.5,0,Math.PI*2);X.fill();
-  X.restore();X.shadowBlur=0;
+  X.fillStyle = '#FFAA00';
+  X.beginPath();X.arc(0, 0, 1.8, 0, Math.PI * 2);X.fill();
+  X.restore();
+  X.shadowBlur = 0;
 }
+
 function drawBG(){
-  const g=X.createLinearGradient(0,0,0,H);
-  g.addColorStop(0,'#0b0c14');g.addColorStop(.55,'#0f1220');g.addColorStop(1,'#181b2b');
-  X.fillStyle=g;X.fillRect(0,0,W,H);
-  const t=Date.now()*.001;
+  const g = X.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#06070B');
+  g.addColorStop(.5, '#0A0D13');
+  g.addColorStop(1, '#11141C');
+  X.fillStyle = g;
+  X.fillRect(0, 0, W, H);
+
+  // Subtle tactical simulation grid
+  X.strokeStyle = 'rgba(255,255,255,0.025)';
+  X.lineWidth = 1;
+  const gStep = 70;
+  for(let x = (W / 2) % gStep; x < W; x += gStep){ X.beginPath(); X.moveTo(x, 0); X.lineTo(x, H); X.stroke(); }
+  for(let y = 0; y < H; y += gStep){ X.beginPath(); X.moveTo(0, y); X.lineTo(W, y); X.stroke(); }
+
+  const t = Date.now() * .001;
   for(const s of stars){
-    X.globalAlpha=s.a*(0.6+0.4*Math.sin(t*.8+s.tw));
-    X.fillStyle='#fff';X.beginPath();X.arc(s.x,s.y,s.r,0,Math.PI*2);X.fill();
+    X.globalAlpha = s.a * (0.5 + 0.5 * Math.sin(t * .8 + s.tw));
+    X.fillStyle = '#E2E8F0';
+    X.beginPath(); X.arc(s.x, s.y, s.r, 0, Math.PI * 2); X.fill();
   }
-  X.globalAlpha=1;
+  X.globalAlpha = 1;
+
   for(const e of embers){
-    X.globalAlpha=e.life*.7;X.shadowBlur=7;X.shadowColor=e.col;X.fillStyle=e.col;
-    X.beginPath();X.arc(e.x,e.y,e.r,0,Math.PI*2);X.fill();X.shadowBlur=0;
+    X.globalAlpha = e.life * .75;
+    X.shadowBlur = 8; X.shadowColor = e.col; X.fillStyle = e.col;
+    X.beginPath(); X.arc(e.x, e.y, e.r, 0, Math.PI * 2); X.fill();
+    X.shadowBlur = 0;
   }
-  X.globalAlpha=1;
-  const bg=X.createLinearGradient(0,PY-10,0,H);
-  bg.addColorStop(0,'transparent');bg.addColorStop(1,'#001133');
-  X.fillStyle=bg;X.fillRect(0,PY-10,W,H-(PY-10));
-  X.strokeStyle='#00f0ff33';X.lineWidth=1;X.setLineDash([9,7]);
-  X.beginPath();X.moveTo(0,PY+PH/2+5);X.lineTo(W,PY+PH/2+5);X.stroke();
+  X.globalAlpha = 1;
+
+  const bg = X.createLinearGradient(0, PY - 12, 0, H);
+  bg.addColorStop(0, 'transparent');
+  bg.addColorStop(1, '#0B0E15');
+  X.fillStyle = bg;
+  X.fillRect(0, PY - 12, W, H - (PY - 12));
+
+  X.strokeStyle = 'rgba(255,170,0,0.3)';
+  X.lineWidth = 1;
+  X.setLineDash([8, 6]);
+  X.beginPath(); X.moveTo(0, PY + PH / 2 + 5); X.lineTo(W, PY + PH / 2 + 5); X.stroke();
   X.setLineDash([]);
 }
+
 function drawFlare(){
-  if(!upg.solarflare)return;
-  const fw=flareW(upg.solarflare),cx=player.x,t=flarePhase;
-  const bg=X.createLinearGradient(0,PY,0,0);
-  bg.addColorStop(0,'rgba(255,140,0,0.88)');bg.addColorStop(.35,'rgba(255,200,0,0.55)');bg.addColorStop(1,'rgba(255,60,0,0.05)');
-  X.shadowBlur=35;X.shadowColor='#FFAA00';X.globalAlpha=.68+.14*Math.sin(t*9);X.fillStyle=bg;
-  X.fillRect(cx-fw/2,0,fw,PY);
-  const cw=fw*.25,cg=X.createLinearGradient(0,PY,0,0);
-  cg.addColorStop(0,'rgba(255,255,200,0.8)');cg.addColorStop(1,'rgba(255,255,200,0.03)');
-  X.globalAlpha=.45;X.fillStyle=cg;X.fillRect(cx-cw/2,0,cw,PY);
-  X.shadowBlur=0;X.globalAlpha=1;
+  if(!upg.solarflare) return;
+  const fw = flareW(upg.solarflare), cx = player.x, t = flarePhase;
+  const bg = X.createLinearGradient(0, PY, 0, 0);
+  bg.addColorStop(0, 'rgba(255,119,0,0.92)');
+  bg.addColorStop(.4, 'rgba(255,170,0,0.55)');
+  bg.addColorStop(1, 'rgba(255,200,80,0.05)');
+  X.shadowBlur = 35; X.shadowColor = '#FF7700'; X.globalAlpha = .7 + .15 * Math.sin(t * 9);
+  X.fillStyle = bg;
+  X.fillRect(cx - fw / 2, 0, fw, PY);
+
+  const cw = fw * .25, cg = X.createLinearGradient(0, PY, 0, 0);
+  cg.addColorStop(0, 'rgba(255,255,255,0.9)');
+  cg.addColorStop(1, 'rgba(255,255,255,0.05)');
+  X.globalAlpha = .5; X.fillStyle = cg;
+  X.fillRect(cx - cw / 2, 0, cw, PY);
+  X.shadowBlur = 0; X.globalAlpha = 1;
 }
-function srng(seed){let s=seed;return()=>{s=(s*9301+49297)%233280;return s/233280;};}
+
+function srng(seed){ let s = seed; return () => { s = (s * 9301 + 49297) % 233280; return s / 233280; }; }
+
 function drawMeteors(){
   for(const m of meteors){
-    if(m.dead)continue;X.save();X.translate(m.x,m.y);X.rotate(m.rot);
-    const fl=m.flash>0;
-    X.shadowBlur=fl?22:14;X.shadowColor=fl?'#fff':'#FFAA00';X.fillStyle=fl?'#fff':'#08090d';
-    const rng=srng(m.seed);X.beginPath();
-    for(let i=0;i<m.sides;i++){
-      const a=(i/m.sides)*Math.PI*2,r=m.r*(.74+rng()*.3);
-      i===0?X.moveTo(Math.cos(a)*r,Math.sin(a)*r):X.lineTo(Math.cos(a)*r,Math.sin(a)*r);
+    if(m.dead) continue;
+    X.save(); X.translate(m.x, m.y); X.rotate(m.rot);
+    const fl = m.flash > 0;
+    X.shadowBlur = fl ? 22 : 12;
+    X.shadowColor = fl ? '#fff' : '#FF7700';
+    X.fillStyle = fl ? '#fff' : '#0E1118';
+    const rng = srng(m.seed);
+    X.beginPath();
+    for(let i = 0; i < m.sides; i++){
+      const a = (i / m.sides) * Math.PI * 2, r = m.r * (.74 + rng() * .3);
+      i === 0 ? X.moveTo(Math.cos(a) * r, Math.sin(a) * r) : X.lineTo(Math.cos(a) * r, Math.sin(a) * r);
     }
-    X.closePath();X.fill();X.shadowBlur=0;
+    X.closePath(); X.fill(); X.shadowBlur = 0;
     if(!fl){
-      const rng2=srng(m.seed+15),nc=3+Math.floor(rng2()*3);
-      X.strokeStyle='#FFAA00';X.lineWidth=1.5;X.shadowBlur=8;X.shadowColor='#FFAA00';X.globalAlpha=.78;
-      for(let c=0;c<nc;c++){const a=rng2()*Math.PI*2,l=m.r*(.28+rng2()*.52);X.beginPath();X.moveTo(0,0);X.lineTo(Math.cos(a)*l,Math.sin(a)*l);X.stroke();}
-      X.globalAlpha=1;X.shadowBlur=0;
+      const rng2 = srng(m.seed + 15), nc = 3 + Math.floor(rng2() * 3);
+      X.strokeStyle = '#FF7700'; X.lineWidth = 1.5; X.shadowBlur = 7; X.shadowColor = '#FF7700'; X.globalAlpha = .75;
+      for(let c = 0; c < nc; c++){
+        const a = rng2() * Math.PI * 2, l = m.r * (.28 + rng2() * .52);
+        X.beginPath(); X.moveTo(0, 0); X.lineTo(Math.cos(a) * l, Math.sin(a) * l); X.stroke();
+      }
+      X.globalAlpha = 1; X.shadowBlur = 0;
     }
-    if(m.splits){const rat=Math.max(0,m.hp/m.mhp);X.strokeStyle=rat>.5?'#FFAA00':'#FF4400';X.lineWidth=2;X.globalAlpha=.55;X.beginPath();X.arc(0,0,m.r+4,-Math.PI/2,-Math.PI/2+Math.PI*2*rat);X.stroke();X.globalAlpha=1;}
+    if(m.splits){
+      const rat = Math.max(0, m.hp / m.mhp);
+      X.strokeStyle = rat > .5 ? '#FFAA00' : '#FF3300';
+      X.lineWidth = 2; X.globalAlpha = .6;
+      X.beginPath(); X.arc(0, 0, m.r + 4, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * rat); X.stroke();
+      X.globalAlpha = 1;
+    }
     X.restore();
   }
 }
+
 function drawEnemies(){
   for(const e of enemies){
-    if(e.dead)continue;X.save();X.translate(e.x,e.y);
-    const fl=e.flash>0,ac=e.type==='heavy'?'#FF0055':'#FF2266';
-    X.shadowBlur=fl?22:12;X.shadowColor=fl?'#fff':ac;
-    if(e.type==='drone')drawDrone(e.w,e.h,fl,ac);else drawHeavy(e.w,e.h,fl,ac);
-    X.shadowBlur=0;
-    if(e.type==='heavy'&&!fl){const bw=e.w+4,rat=Math.max(0,e.hp/e.mhp);X.fillStyle='#111';X.fillRect(-bw/2,e.h/2+4,bw,4);X.fillStyle=rat>.5?'#FF0055':'#FF6600';X.fillRect(-bw/2,e.h/2+4,bw*rat,4);}
+    if(e.dead) continue;
+    X.save(); X.translate(e.x, e.y);
+    const fl = e.flash > 0, ac = e.type === 'heavy' ? '#FF4400' : '#FF7700';
+    X.shadowBlur = fl ? 22 : 12; X.shadowColor = fl ? '#fff' : ac;
+    if(e.type === 'drone') drawDrone(e.w, e.h, fl, ac);
+    else drawHeavy(e.w, e.h, fl, ac);
+    X.shadowBlur = 0;
+    if(e.type === 'heavy' && !fl){
+      const bw = e.w + 4, rat = Math.max(0, e.hp / e.mhp);
+      X.fillStyle = '#0C0E14'; X.fillRect(-bw / 2, e.h / 2 + 4, bw, 4);
+      X.fillStyle = rat > .5 ? '#FFAA00' : '#FF3300'; X.fillRect(-bw / 2, e.h / 2 + 4, bw * rat, 4);
+    }
     X.restore();
   }
 }
-function drawDrone(w,h,fl,ac){
-  X.fillStyle=fl?'#fff':'#08090d';
-  X.beginPath();X.moveTo(0,-h/2);X.lineTo(w/2,0);X.lineTo(w/3,h/2);X.lineTo(-w/3,h/2);X.lineTo(-w/2,0);X.closePath();X.fill();
-  X.beginPath();X.moveTo(-w/2,0);X.lineTo(-w/2-9,h/3);X.lineTo(-w/3,h/2);X.closePath();X.fill();
-  X.beginPath();X.moveTo(w/2,0);X.lineTo(w/2+9,h/3);X.lineTo(w/3,h/2);X.closePath();X.fill();
-  if(!fl){X.shadowBlur=14;X.shadowColor=ac;X.fillStyle=ac;X.beginPath();X.ellipse(0,-h/4,7,3.5,0,0,Math.PI*2);X.fill();X.fillStyle='#fff';X.shadowBlur=0;X.beginPath();X.ellipse(-1,-h/4-.5,2.5,1.5,0,0,Math.PI*2);X.fill();}
+
+function drawDrone(w, h, fl, ac){
+  X.fillStyle = fl ? '#fff' : '#0D1017';
+  X.beginPath(); X.moveTo(0, -h / 2); X.lineTo(w / 2, 0); X.lineTo(w / 3, h / 2); X.lineTo(-w / 3, h / 2); X.lineTo(-w / 2, 0); X.closePath(); X.fill();
+  X.fillStyle = fl ? '#fff' : '#E2E8F0';
+  X.beginPath(); X.moveTo(-w / 2, 0); X.lineTo(-w / 2 - 8, h / 3); X.lineTo(-w / 3, h / 2); X.closePath(); X.fill();
+  X.beginPath(); X.moveTo(w / 2, 0); X.lineTo(w / 2 + 8, h / 3); X.lineTo(w / 3, h / 2); X.closePath(); X.fill();
+  if(!fl){
+    X.shadowBlur = 14; X.shadowColor = ac; X.fillStyle = ac;
+    X.beginPath(); X.ellipse(0, -h / 4, 6, 3, 0, 0, Math.PI * 2); X.fill();
+    X.fillStyle = '#fff'; X.shadowBlur = 0;
+    X.beginPath(); X.ellipse(-1, -h / 4 - .5, 2, 1.2, 0, 0, Math.PI * 2); X.fill();
+  }
 }
-function drawHeavy(w,h,fl,ac){
-  X.fillStyle=fl?'#fff':'#08090d';X.fillRect(-w/2,-h/2,w,h);
-  X.fillRect(-w/2-9,-h/2,9,h*.65);X.fillRect(w/2,-h/2,9,h*.65);
-  X.beginPath();X.moveTo(-9,-h/2);X.lineTo(0,-h/2-12);X.lineTo(9,-h/2);X.closePath();X.fill();
-  if(!fl){X.shadowBlur=18;X.shadowColor=ac;X.fillStyle=ac;X.beginPath();X.ellipse(-9,-h/4,5.5,4,0,0,Math.PI*2);X.fill();X.beginPath();X.ellipse(9,-h/4,5.5,4,0,0,Math.PI*2);X.fill();X.fillStyle='#fff';X.shadowBlur=0;X.beginPath();X.arc(-9,-h/4,2,0,Math.PI*2);X.fill();X.beginPath();X.arc(9,-h/4,2,0,Math.PI*2);X.fill();}
+
+function drawHeavy(w, h, fl, ac){
+  X.fillStyle = fl ? '#fff' : '#0A0C12'; X.fillRect(-w / 2, -h / 2, w, h);
+  X.fillStyle = fl ? '#fff' : '#E2E8F0';
+  X.fillRect(-w / 2 - 8, -h / 2, 8, h * .65);
+  X.fillRect(w / 2, -h / 2, 8, h * .65);
+  X.beginPath(); X.moveTo(-8, -h / 2); X.lineTo(0, -h / 2 - 11); X.lineTo(8, -h / 2); X.closePath(); X.fill();
+  if(!fl){
+    X.shadowBlur = 16; X.shadowColor = ac; X.fillStyle = ac;
+    X.beginPath(); X.ellipse(-8, -h / 4, 5, 3.5, 0, 0, Math.PI * 2); X.fill();
+    X.beginPath(); X.ellipse(8, -h / 4, 5, 3.5, 0, 0, Math.PI * 2); X.fill();
+    X.fillStyle = '#fff'; X.shadowBlur = 0;
+    X.beginPath(); X.arc(-8, -h / 4, 1.8, 0, Math.PI * 2); X.fill();
+    X.beginPath(); X.arc(8, -h / 4, 1.8, 0, Math.PI * 2); X.fill();
+  }
 }
+
 function drawBullets(){
-  for(const b of bullets){if(b.dead)continue;X.shadowBlur=18;X.shadowColor='#00F0FF';X.strokeStyle='#00F0FF';X.lineWidth=4;X.globalAlpha=.6;X.beginPath();X.moveTo(b.x,b.y);X.lineTo(b.x-b.vx*.018,b.y-b.vy*.018);X.stroke();X.strokeStyle='#fff';X.lineWidth=1.5;X.globalAlpha=1;X.beginPath();X.moveTo(b.x,b.y);X.lineTo(b.x-b.vx*.012,b.y-b.vy*.012);X.stroke();X.shadowBlur=0;}X.globalAlpha=1;
+  for(const b of bullets){
+    if(b.dead) continue;
+    X.shadowBlur = 16; X.shadowColor = '#FF7700'; X.strokeStyle = '#FFAA00'; X.lineWidth = 3.8; X.globalAlpha = .7;
+    X.beginPath(); X.moveTo(b.x, b.y); X.lineTo(b.x - b.vx * .018, b.y - b.vy * .018); X.stroke();
+    X.strokeStyle = '#FFFFFF'; X.lineWidth = 1.8; X.globalAlpha = 1;
+    X.beginPath(); X.moveTo(b.x, b.y); X.lineTo(b.x - b.vx * .012, b.y - b.vy * .012); X.stroke();
+    X.shadowBlur = 0;
+  }
+  X.globalAlpha = 1;
 }
+
 function drawMissiles(){
-  for(const m of missiles){if(m.dead)continue;for(let i=0;i<m.trail.length;i++){const t=m.trail[i];X.globalAlpha=(1-i/m.trail.length)*.5;X.fillStyle='#FF8822';X.beginPath();X.arc(t.x,t.y,Math.max(.5,2-i*.2),0,Math.PI*2);X.fill();}X.globalAlpha=1;X.shadowBlur=12;X.shadowColor='#FF8822';X.fillStyle='#FF6622';const a=Math.atan2(m.vy,m.vx);X.save();X.translate(m.x,m.y);X.rotate(a+Math.PI/2);X.fillRect(-2,-7,4,12);X.restore();X.shadowBlur=0;}
+  for(const m of missiles){
+    if(m.dead) continue;
+    for(let i = 0; i < m.trail.length; i++){
+      const t = m.trail[i]; X.globalAlpha = (1 - i / m.trail.length) * .55; X.fillStyle = '#FF7700';
+      X.beginPath(); X.arc(t.x, t.y, Math.max(.5, 2.2 - i * .2), 0, Math.PI * 2); X.fill();
+    }
+    X.globalAlpha = 1; X.shadowBlur = 12; X.shadowColor = '#FF7700'; X.fillStyle = '#FFAA00';
+    const a = Math.atan2(m.vy, m.vx);
+    X.save(); X.translate(m.x, m.y); X.rotate(a + Math.PI / 2);
+    X.fillStyle = '#E2E8F0'; X.fillRect(-2, -7, 4, 10);
+    X.fillStyle = '#FF7700'; X.fillRect(-1.5, -9, 3, 3);
+    X.restore(); X.shadowBlur = 0;
+  }
 }
-function drawOrbs(){
-  for(const o of orbs){if(o.done)continue;const p=.8+.2*Math.sin(o.pulse);X.shadowBlur=14*p;X.shadowColor='#00F0FF';X.fillStyle='#00F0FF';X.globalAlpha=.9*Math.min(1,o.life);X.beginPath();X.arc(o.x,o.y,o.r*p,0,Math.PI*2);X.fill();X.fillStyle='#fff';X.globalAlpha=.7;X.beginPath();X.arc(o.x-o.r*.3,o.y-o.r*.3,o.r*.3,0,Math.PI*2);X.fill();X.globalAlpha=1;X.shadowBlur=0;}
-}
+
 function drawParts(){
   for(const p of parts){
-    if(p.type==='bolt'){X.globalAlpha=p.life*.85;X.strokeStyle='#aaaaff';X.shadowBlur=10;X.shadowColor='#aaaaff';X.lineWidth=1.5;X.beginPath();X.moveTo(p.x1,p.y1);const steps=5,dx=(p.x2-p.x1)/steps,dy=(p.y2-p.y1)/steps;for(let i=1;i<steps;i++)X.lineTo(p.x1+dx*i+(Math.random()-.5)*22,p.y1+dy*i+(Math.random()-.5)*22);X.lineTo(p.x2,p.y2);X.stroke();X.shadowBlur=0;X.globalAlpha=1;continue;}
-    X.globalAlpha=Math.max(0,p.life);X.shadowBlur=6;X.shadowColor=p.col;X.fillStyle=p.col;X.beginPath();X.arc(p.x,p.y,Math.max(.1,p.r),0,Math.PI*2);X.fill();X.shadowBlur=0;
-  }X.globalAlpha=1;
+    if(p.type === 'bolt'){
+      X.globalAlpha = p.life * .85; X.strokeStyle = '#FFAA00'; X.shadowBlur = 12; X.shadowColor = '#FF7700'; X.lineWidth = 1.6;
+      X.beginPath(); X.moveTo(p.x1, p.y1);
+      const steps = 5, dx = (p.x2 - p.x1) / steps, dy = (p.y2 - p.y1) / steps;
+      for(let i = 1; i < steps; i++) X.lineTo(p.x1 + dx * i + (Math.random() - .5) * 20, p.y1 + dy * i + (Math.random() - .5) * 20);
+      X.lineTo(p.x2, p.y2); X.stroke(); X.shadowBlur = 0; X.globalAlpha = 1; continue;
+    }
+    X.globalAlpha = Math.max(0, p.life); X.shadowBlur = 6; X.shadowColor = p.col; X.fillStyle = p.col;
+    X.beginPath(); X.arc(p.x, p.y, Math.max(.1, p.r), 0, Math.PI * 2); X.fill(); X.shadowBlur = 0;
+  }
+  X.globalAlpha = 1;
 }
-function drawPlayer(){
-  for(const p of player.thrust){X.globalAlpha=Math.max(0,p.life*.8);X.fillStyle=p.col;X.shadowBlur=9;X.shadowColor=p.col;X.beginPath();X.arc(p.x,p.y,Math.max(.1,p.r),0,Math.PI*2);X.fill();X.shadowBlur=0;}X.globalAlpha=1;
-  if(player.inv>0&&Math.floor(Date.now()/80)%2===0&&player.flash===0)return;
-  X.save();X.translate(player.x,PY);X.rotate(player.tilt);
-  const fl=player.flash>0;
-  if(fl){X.shadowBlur=35;X.shadowColor='#FF0055';X.fillStyle='#FF3366';}else{X.shadowBlur=22;X.shadowColor='#00F0FF';X.fillStyle='#08090d';}
-  X.beginPath();X.moveTo(0,-PH/2);X.lineTo(PW/2-4,-PH/4);X.lineTo(PW/2,PH/4);X.lineTo(PW/3,PH/2);X.lineTo(-PW/3,PH/2);X.lineTo(-PW/2,PH/4);X.lineTo(-PW/2+4,-PH/4);X.closePath();X.fill();
-  X.beginPath();X.moveTo(-PW/2,-PH/6);X.lineTo(-PW/2-9,PH/8);X.lineTo(-PW/3,PH/4);X.lineTo(-PW/2,PH/4);X.closePath();X.fill();
-  X.beginPath();X.moveTo(PW/2,-PH/6);X.lineTo(PW/2+9,PH/8);X.lineTo(PW/3,PH/4);X.lineTo(PW/2,PH/4);X.closePath();X.fill();
-  X.fillRect(-PW/2+1,-PH/2-10,7,18);X.fillRect(PW/2-8,-PH/2-10,7,18);
-  X.beginPath();X.moveTo(-6,-PH/2);X.lineTo(-15,-PH/2-18);X.lineTo(-2,-PH/2-2);X.closePath();X.fill();
-  X.beginPath();X.moveTo(6,-PH/2);X.lineTo(15,-PH/2-18);X.lineTo(2,-PH/2-2);X.closePath();X.fill();
-  if(!fl){X.shadowBlur=18;X.shadowColor='#00F0FF';X.fillStyle='#00F0FF';X.beginPath();X.ellipse(0,-PH/4,11,4,0,0,Math.PI*2);X.fill();X.shadowBlur=0;X.fillStyle='#fff';X.beginPath();X.ellipse(-3,-PH/4-1,3.5,1.8,0,0,Math.PI*2);X.fill();}
-  if(!fl){X.shadowBlur=14;X.shadowColor='#0088FF';X.fillStyle='#003366';X.beginPath();X.arc(0,PH/8,6,0,Math.PI*2);X.fill();X.shadowColor='#00F0FF';X.fillStyle='#00F0FF';X.beginPath();X.arc(0,PH/8,3.5,0,Math.PI*2);X.fill();X.shadowBlur=0;}
-  if(upg.missiles){X.fillStyle=fl?'#FF3366':'#0a0e18';X.fillRect(-PW/2-14,-PH/4,10,18);X.fillRect(PW/2+4,-PH/4,10,18);if(!fl){X.fillStyle='#FF6622';X.shadowBlur=6;X.shadowColor='#FF6622';X.fillRect(-PW/2-12,-PH/4+2,6,4);X.fillRect(PW/2+6,-PH/4+2,6,4);X.shadowBlur=0;}}
-  X.restore();X.shadowBlur=0;
-}
-function drawFloats(){
-  for(const t of ftexts){X.globalAlpha=Math.min(1,t.life);X.shadowBlur=8;X.shadowColor=t.col;X.fillStyle=t.col;X.font='bold 13px "Share Tech Mono",monospace';X.textAlign='center';X.fillText(t.txt,t.x,t.y);X.textAlign='left';X.shadowBlur=0;}X.globalAlpha=1;
-}
-function drawHUD(){
-  X.fillStyle='rgba(0,0,0,0.62)';X.fillRect(0,0,W,52);
-  X.strokeStyle='#00f0ff2a';X.lineWidth=1;X.beginPath();X.moveTo(0,52);X.lineTo(W,52);X.stroke();
-  X.font='700 '+(W<460?'13px':'15px')+' Orbitron,monospace';X.fillStyle='#fff';X.shadowBlur=12;X.shadowColor='#00F0FF';X.fillText('BATTLEFRAME',14,22);X.shadowBlur=0;
-  X.font=(W<460?'9.5px':'11px')+' "Share Tech Mono",monospace';X.fillStyle='#00F0FF';X.fillText('SCORE: '+score.toLocaleString(),14,41);
-  X.fillStyle='#aabbcc';X.textAlign='right';X.fillText('TIME: '+fmtT(elapsed),W-14,22);X.fillText('KILLS: '+kills,W-14,41);X.textAlign='left';
-  const shMax=player.shMax,pip=W<460?11:16,gap=W<460?3:5,totalW=shMax*(pip+gap)-gap,sx=W/2-totalW/2;
-  for(let i=0;i<shMax;i++){const px=sx+i*(pip+gap),active=i<player.sh;X.shadowBlur=active?12:0;X.shadowColor='#00F0FF';X.fillStyle=active?'#00F0FF':'#0a1e2e';X.strokeStyle=active?'#00F0FF':'#1a3344';X.lineWidth=1;X.fillRect(px,18,pip,8);X.strokeRect(px,18,pip,8);X.shadowBlur=0;}
-  X.font='8px "Share Tech Mono",monospace';X.fillStyle='#00F0FF77';X.textAlign='center';X.fillText('SHIELD',W/2,15);X.textAlign='left';
-  const by=H-13,bh=7;X.fillStyle='#090e18';X.fillRect(0,by,W,bh);
-  const xrat=Math.min(1,xp/xpMax);if(xrat>0){const xg=X.createLinearGradient(0,0,W*xrat,0);xg.addColorStop(0,'#0033aa');xg.addColorStop(1,'#00F0FF');X.shadowBlur=10;X.shadowColor='#00F0FF';X.fillStyle=xg;X.fillRect(0,by,W*xrat,bh);X.shadowBlur=0;}
-  X.strokeStyle='#00f0ff33';X.lineWidth=1;X.strokeRect(0,by,W,bh);
-  X.font='8px "Share Tech Mono",monospace';X.fillStyle='#00f0ffaa';X.textAlign='right';X.fillText('OD·'+odLevel+' · '+Math.floor(xrat*100)+'%',W-4,by-2);X.textAlign='left';
-  const owned=Object.entries(upg||{}).filter(([k,v])=>v>0);
-  if(owned.length){let ux=10;X.font='9px "Share Tech Mono",monospace';for(const[id,lv]of owned){const def=UDefs.find(u=>u.id===id);if(!def)continue;X.fillStyle=def.gc;X.shadowBlur=6;X.shadowColor=def.gc;X.fillText(def.glyph+lv,ux,H-18);X.shadowBlur=0;ux+=28;}}
-}
-function drawPause(){X.fillStyle='rgba(0,0,0,0.5)';X.fillRect(0,0,W,H);X.font='700 26px Orbitron,monospace';X.fillStyle='#00F0FF';X.shadowBlur=22;X.shadowColor='#00F0FF';X.textAlign='center';X.fillText('PAUSED',W/2,H/2);X.font='11px "Share Tech Mono",monospace';X.fillStyle='#ffffff66';X.shadowBlur=0;X.fillText('ESC TO RESUME',W/2,H/2+30);X.textAlign='left';}
 
+// ═════════════════════════════════════════════════════════════
+// IN-COMBAT TOP-DOWN MECHA RENDERING (MATCHING HANGAR MECHA)
+// ═════════════════════════════════════════════════════════════
+function drawPlayer(){
+  for(const p of player.thrust){
+    X.globalAlpha = Math.max(0, p.life * .8); X.fillStyle = p.col; X.shadowBlur = 10; X.shadowColor = p.col;
+    X.beginPath(); X.arc(p.x, p.y, Math.max(.1, p.r), 0, Math.PI * 2); X.fill(); X.shadowBlur = 0;
+  }
+  X.globalAlpha = 1;
+  if(player.inv > 0 && Math.floor(Date.now() / 80) % 2 === 0 && player.flash === 0) return;
+
+  X.save();
+  X.translate(player.x, PY);
+  X.rotate(player.tilt);
+
+  const fl = player.flash > 0;
+  if(fl){
+    X.shadowBlur = 35; X.shadowColor = '#FF3344'; X.fillStyle = '#FF4455';
+    X.beginPath(); X.arc(0, 0, PW / 2 + 4, 0, Math.PI * 2); X.fill();
+    X.restore(); return;
+  }
+
+  const s = PW * 0.5;
+
+  // 1. Under-Chassis & Rear Engine Mounts
+  X.fillStyle = '#11141D';
+  X.beginPath();
+  X.moveTo(0, -PH * 0.45);
+  X.lineTo(PW * 0.25, -PH * 0.15);
+  X.lineTo(PW * 0.48, PH * 0.38);
+  X.lineTo(PW * 0.22, PH * 0.48);
+  X.lineTo(0, PH * 0.42);
+  X.lineTo(-PW * 0.22, PH * 0.48);
+  X.lineTo(-PW * 0.48, PH * 0.38);
+  X.lineTo(-PW * 0.25, -PH * 0.15);
+  X.closePath();
+  X.fill();
+
+  // 2. Twin Pulse Railguns (Forward-pointing on wings)
+  X.fillStyle = '#181C26';
+  // Left barrel
+  X.fillRect(-17, -PH * 0.58, 6, 26);
+  // Right barrel
+  X.fillRect(11, -PH * 0.58, 6, 26);
+
+  // Muzzle coil highlights
+  X.fillStyle = '#FFAA00'; X.shadowColor = '#FF7700'; X.shadowBlur = 8;
+  X.fillRect(-18, -PH * 0.62, 8, 3.5);
+  X.fillRect(10, -PH * 0.62, 8, 3.5);
+  X.shadowBlur = 0;
+
+  // 3. Swept Ceramic White Delta Wings
+  X.shadowColor = 'rgba(0,0,0,0.5)';
+  X.shadowBlur = 10;
+  X.fillStyle = '#E6ECF5';
+  // Left wing
+  X.beginPath();
+  X.moveTo(-6, -PH * 0.25);
+  X.lineTo(-PW * 0.5, PH * 0.24);
+  X.lineTo(-PW * 0.42, PH * 0.42);
+  X.lineTo(-PW * 0.2, PH * 0.36);
+  X.lineTo(-6, PH * 0.32);
+  X.closePath(); X.fill();
+
+  // Right wing
+  X.beginPath();
+  X.moveTo(6, -PH * 0.25);
+  X.lineTo(PW * 0.5, PH * 0.24);
+  X.lineTo(PW * 0.42, PH * 0.42);
+  X.lineTo(PW * 0.2, PH * 0.36);
+  X.lineTo(6, PH * 0.32);
+  X.closePath(); X.fill();
+  X.shadowBlur = 0;
+
+  // 4. Central Fuselage & Armor Spine
+  X.fillStyle = '#FFFFFF';
+  X.beginPath();
+  X.moveTo(0, -PH * 0.52);
+  X.lineTo(9, -PH * 0.22);
+  X.lineTo(10, PH * 0.22);
+  X.lineTo(0, PH * 0.4);
+  X.lineTo(-10, PH * 0.22);
+  X.lineTo(-9, -PH * 0.22);
+  X.closePath(); X.fill();
+
+  // Seam line
+  X.strokeStyle = '#141720';
+  X.lineWidth = 1.4;
+  X.beginPath(); X.moveTo(0, -PH * 0.5); X.lineTo(0, -PH * 0.12); X.stroke();
+
+  // 5. Glowing Amber Cockpit / Visor Canopy
+  X.fillStyle = '#0B0D12';
+  X.beginPath();
+  X.moveTo(0, -PH * 0.2);
+  X.lineTo(6, -PH * 0.06);
+  X.lineTo(4, PH * 0.08);
+  X.lineTo(-4, PH * 0.08);
+  X.lineTo(-6, -PH * 0.06);
+  X.closePath(); X.fill();
+
+  // Glowing Visor
+  X.shadowColor = '#FF6600'; X.shadowBlur = 10;
+  X.fillStyle = '#FFAA00';
+  X.beginPath();
+  X.ellipse(0, -PH * 0.06, 4.5, 2.2, 0, 0, Math.PI * 2);
+  X.fill();
+  X.fillStyle = '#FFFFFF'; X.shadowBlur = 0;
+  X.beginPath(); X.arc(-1, -PH * 0.06 - 0.5, 1, 0, Math.PI * 2); X.fill();
+
+  // 6. Shoulder Pods (if upgrade owned)
+  if(upg.missiles){
+    X.fillStyle = '#141720';
+    X.fillRect(-PW / 2 - 8, -PH * 0.1, 8, 16);
+    X.fillRect(PW / 2, -PH * 0.1, 8, 16);
+    X.fillStyle = '#FFAA00'; X.shadowBlur = 6; X.shadowColor = '#FF7700';
+    X.fillRect(-PW / 2 - 6, -PH * 0.08, 4, 3);
+    X.fillRect(PW / 2 + 2, -PH * 0.08, 4, 3);
+    X.shadowBlur = 0;
+  }
+
+  X.restore();
+}
+
+function drawFloats(){
+  for(const t of ftexts){
+    X.globalAlpha = Math.min(1, t.life); X.shadowBlur = 8; X.shadowColor = t.col; X.fillStyle = t.col;
+    X.font = 'bold 13px "Share Tech Mono",monospace'; X.textAlign = 'center'; X.fillText(t.txt, t.x, t.y);
+    X.textAlign = 'left'; X.shadowBlur = 0;
+  }
+  X.globalAlpha = 1;
+}
+
+function drawHUD(){
+  X.fillStyle = 'rgba(8,10,15,0.88)'; X.fillRect(0, 0, W, 52);
+  X.strokeStyle = 'rgba(255,255,255,0.1)'; X.lineWidth = 1; X.beginPath(); X.moveTo(0, 52); X.lineTo(W, 52); X.stroke();
+
+  // Telemetry Header
+  X.font = '700 ' + (W < 460 ? '12px' : '14px') + ' Orbitron,monospace'; X.fillStyle = '#FFFFFF';
+  X.shadowBlur = 12; X.shadowColor = '#FF7700';
+  X.fillText('BATTLEFRAME // CLASS S', 14, 22);
+  X.shadowBlur = 0;
+
+  X.font = (W < 460 ? '9px' : '10.5px') + ' "Share Tech Mono",monospace'; X.fillStyle = '#FFAA00';
+  X.fillText('SCORE: ' + score.toLocaleString(), 14, 40);
+
+  X.fillStyle = '#9EA5B0'; X.textAlign = 'right';
+  X.fillText('TIME: ' + fmtT(elapsed), W - 14, 22);
+  X.fillText('KILLS: ' + kills, W - 14, 40);
+  X.textAlign = 'left';
+
+  // Shield Cells
+  const shMax = player.shMax, pip = W < 460 ? 11 : 16, gap = W < 460 ? 3 : 5;
+  const totalW = shMax * (pip + gap) - gap, sx = W / 2 - totalW / 2;
+  for(let i = 0; i < shMax; i++){
+    const px = sx + i * (pip + gap), active = i < player.sh;
+    X.shadowBlur = active ? 10 : 0; X.shadowColor = '#FFAA00';
+    X.fillStyle = active ? '#FFAA00' : '#12151D';
+    X.strokeStyle = active ? '#FF7700' : '#252934';
+    X.lineWidth = 1;
+    X.fillRect(px, 18, pip, 8); X.strokeRect(px, 18, pip, 8);
+    X.shadowBlur = 0;
+  }
+  X.font = '8px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.45)';
+  X.textAlign = 'center'; X.fillText('SHIELD CELL', W / 2, 15); X.textAlign = 'left';
+
+  // Bottom XP Progress Bar
+  const by = H - 12, bh = 6;
+  X.fillStyle = '#0E1118'; X.fillRect(0, by, W, bh);
+  const xrat = Math.min(1, xp / xpMax);
+  if(xrat > 0){
+    const xg = X.createLinearGradient(0, 0, W * xrat, 0);
+    xg.addColorStop(0, '#FF4400'); xg.addColorStop(1, '#FFAA00');
+    X.shadowBlur = 10; X.shadowColor = '#FFAA00'; X.fillStyle = xg;
+    X.fillRect(0, by, W * xrat, bh);
+    X.shadowBlur = 0;
+  }
+  X.strokeStyle = 'rgba(255,255,255,0.12)'; X.lineWidth = 1; X.strokeRect(0, by, W, bh);
+
+  X.font = '8.5px "Orbitron",monospace'; X.fillStyle = '#FFAA00'; X.textAlign = 'right';
+  X.fillText('OVERDRIVE LVL ' + odLevel + ' · ' + Math.floor(xrat * 100) + '%', W - 4, by - 3);
+  X.textAlign = 'left';
+
+  // Active Upgrade Glyphs
+  const owned = Object.entries(upg || {}).filter(([k, v]) => v > 0);
+  if(owned.length){
+    let ux = 10; X.font = '9px "Share Tech Mono",monospace';
+    for(const [id, lv] of owned){
+      const def = UDefs.find(u => u.id === id);
+      if(!def) continue;
+      X.fillStyle = def.gc; X.shadowBlur = 6; X.shadowColor = def.gc;
+      X.fillText(def.glyph + lv, ux, H - 17);
+      X.shadowBlur = 0; ux += 28;
+    }
+  }
+}
+
+function drawPause(){
+  X.fillStyle = 'rgba(6,8,12,0.85)'; X.fillRect(0, 0, W, H);
+  X.font = '700 26px Orbitron,monospace'; X.fillStyle = '#FFFFFF';
+  X.shadowBlur = 22; X.shadowColor = '#FF7700'; X.textAlign = 'center';
+  X.fillText('SYSTEM PAUSED', W / 2, H / 2);
+  X.font = '11px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.5)'; X.shadowBlur = 0;
+  X.fillText('PRESS ESC TO RESUME', W / 2, H / 2 + 30);
+  X.textAlign = 'left';
+}
+
+// ═════════════════════════════════════════════════════════════
+// STARTUP
+// ═════════════════════════════════════════════════════════════
 initBG();
 requestAnimationFrame(loop);
 </script>
