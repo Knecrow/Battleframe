@@ -381,7 +381,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   font-size:11.5px;color:var(--text-muted);letter-spacing:1.5px;
   font-family:var(--font-mono);display:flex;justify-content:space-between;
 }
-.gos span{color:#FFFFFF;font-weight:700;font-family:var(--font-ndot);}
+.gos span:first-child{color:var(--text-muted);font-family:var(--font-mono);font-weight:400;}
+.gos span:last-child{color:#FFFFFF;font-weight:700;font-family:var(--font-ndot);}
+.go-hs-row span:last-child{color:var(--nothing-red);text-shadow:0 0 10px rgba(215,25,33,0.5);}
 .go-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;}
 .go-btn{
   font-size:12px;font-weight:700;letter-spacing:1.5px;padding:14px 24px;
@@ -448,6 +450,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
         </h1>
       </div>
       <div class="ht-right">
+        <div class="nothing-pill-widget" id="hangar-best-pill">
+          BEST // <span id="hangar-hs-val">0</span>
+        </div>
         <div class="nothing-pill-widget">
           <span class="red-pip blink">●</span> MECHA ONLINE
         </div>
@@ -496,8 +501,9 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
         <div class="gos"><span>WAVE REACHED</span><span id="gwv">1</span></div>
         <div class="gos"><span>SURVIVAL TIME</span><span id="gt">0s</span></div>
         <div class="gos"><span>FINAL SCORE</span><span id="gs">0</span></div>
+        <div class="gos"><span>PEAK COMBO</span><span id="gcombo">x1</span></div>
         <div class="gos"><span>ALIENS PURGED</span><span id="gk">0</span></div>
-        <div class="gos"><span>OVERDRIVE LEVEL</span><span id="gl">0</span></div>
+        <div class="gos go-hs-row"><span>BEST SCORE</span><span id="ghs">—</span></div>
       </div>
       <div class="go-actions">
         <button class="go-btn restart-btn" id="gr" type="button"><span class="red-pip">●</span> RESTART [R]</button>
@@ -962,6 +968,8 @@ const $gs = document.getElementById('gs');
 const $gk = document.getElementById('gk');
 const $gl = document.getElementById('gl');
 const $gwv = document.getElementById('gwv');
+const $gcombo = document.getElementById('gcombo');
+const $ghs = document.getElementById('ghs');
 const $fs = document.getElementById('fs-btn');
 
 function toggleFS(){
@@ -1008,20 +1016,133 @@ window.addEventListener('keydown', e => {
     if(e.code === 'Digit2') pickCard(1);
     if(e.code === 'Digit3') pickCard(2);
   }
+  if(e.code === 'Space' && GS === 'play') activateOverdrive();
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space'].includes(e.code)) e.preventDefault();
 });
 window.addEventListener('keyup', e => { KEY[e.code] = false; });
 
-document.getElementById('tb').onclick = () => GS === 'title' && startGame();
-document.getElementById('gr').onclick = () => GS === 'over' && restart();
+document.getElementById('tb').onclick = () => { getAudio(); GS === 'title' && startGame(); };
+document.getElementById('gr').onclick = () => { getAudio(); GS === 'over' && restart(); };
 document.getElementById('gh').onclick = () => GS === 'over' && returnToHangar();
 document.getElementById('back-tag-btn').onclick = () => {};
+
+if(C && C.addEventListener){
+  C.addEventListener('pointerdown', e => {
+    getAudio();
+    if(GS === 'play' && glyphCharge >= glyphMax && glyphCooldown <= 0){
+      const rect = C.getBoundingClientRect ? C.getBoundingClientRect() : { left: 0, top: 0 };
+      const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+      if(cx > W - 70 && cy > H * 0.2 && cy < H * 0.8){
+        activateOverdrive();
+      }
+    }
+  });
+}
 
 // State
 let GS = 'title';
 function onEsc(){
   if(GS === 'play') GS = 'pause';
   else if(GS === 'pause') GS = 'play';
+}
+
+// ── Screen Shake ──
+let shakeAmt = 0, shakeX = 0, shakeY = 0;
+function addShake(amt){ shakeAmt = Math.max(shakeAmt, amt); }
+function updateShake(dt){
+  if(shakeAmt > 0){
+    shakeAmt = Math.max(0, shakeAmt - dt * 80);
+    shakeX = (Math.random() - 0.5) * shakeAmt;
+    shakeY = (Math.random() - 0.5) * shakeAmt;
+  } else { shakeX = 0; shakeY = 0; }
+}
+
+// ── Hit Stop ──
+let hitStopFrames = 0;
+function triggerHitStop(frames){ hitStopFrames = Math.max(hitStopFrames, frames); }
+
+// ── Kill Streak Combo ──
+let combo = 1, comboTimer = 0, peakCombo = 1;
+const COMBO_WINDOW = 2.0;
+function sfxCombo(n){
+  const pitch = Math.min(1100, 320 + (n % 10) * 60);
+  playTone(pitch, 'sine', 0.08, 0.12, pitch + 90);
+}
+function addKillToCombo(){
+  combo++;
+  comboTimer = COMBO_WINDOW;
+  if(combo > peakCombo) peakCombo = combo;
+  if(combo >= 2) sfxCombo(combo);
+}
+
+// ── Glyph Overdrive ──
+let glyphCharge = 0, glyphMax = 100, glyphOverdriveActive = 0, glyphCooldown = 0;
+const OVERDRIVE_COOLDOWN = 12;
+function activateOverdrive(){
+  if(glyphCharge < glyphMax || glyphCooldown > 0 || GS !== 'play') return;
+  glyphCharge = 0;
+  glyphCooldown = OVERDRIVE_COOLDOWN;
+  glyphOverdriveActive = 0.7;
+  addShake(18);
+  triggerHitStop(4);
+  for(const e of enemies){
+    if(!e.dead) dmgE(e, e.type === 'boss' ? 60 : 9999, { isThermal: true, isArmorPiercing: true, isAutonomous: true });
+  }
+  burst(W/2, H/2, '#FFFFFF', 60, 400, 6);
+  burst(W/2, H/2, '#D71921', 30, 300, 4);
+  fltxt(W/2, H*0.4, '( ● ) GLYPH OVERDRIVE!', '#FFFFFF');
+  sfxOverdrive();
+}
+
+// ── Web Audio ──
+let audioCtx = null;
+function getAudio(){
+  if(!audioCtx){
+    const AudioCtor = window.AudioContext || window.webkitAudioContext;
+    if(AudioCtor) audioCtx = new AudioCtor();
+  }
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(()=>{});
+  return audioCtx;
+}
+function playTone(freq, type, vol, dur, freqEnd){
+  try {
+    const ac = getAudio();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type || 'square';
+    o.frequency.setValueAtTime(freq, ac.currentTime);
+    if(freqEnd) o.frequency.exponentialRampToValueAtTime(freqEnd, ac.currentTime + dur);
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + dur);
+    o.start(); o.stop(ac.currentTime + dur);
+  } catch(err) {}
+}
+function sfxHit(){ if(Math.random() < 0.3) playTone(900, 'square', 0.05, 0.05, 500); }
+function sfxShieldHit(){ playTone(180, 'square', 0.18, 0.22, 60); }
+function sfxKill(){ playTone(520, 'triangle', 0.09, 0.11, 200); }
+function sfxHeavyKill(){ playTone(200, 'sawtooth', 0.18, 0.22, 50); }
+function sfxOverdrive(){
+  playTone(80, 'sawtooth', 0.3, 0.6, 40);
+  setTimeout(() => playTone(1400, 'square', 0.2, 0.4, 2800), 60);
+}
+
+// ── Highscore ──
+function loadHS(){
+  try {
+    return parseInt((typeof localStorage !== 'undefined' && localStorage.getItem('bf_hs')) || '0', 10) || 0;
+  } catch(e){ return 0; }
+}
+function saveHS(s){
+  try {
+    if(typeof localStorage !== 'undefined' && s > loadHS()){
+      localStorage.setItem('bf_hs', String(s));
+    }
+  } catch(e){}
+}
+function updateHangarStats(){
+  const hs = loadHS();
+  const el = document.getElementById('hangar-hs-val');
+  if(el) el.textContent = hs.toLocaleString();
 }
 
 let score, elapsed, kills, odLevel, upg, xp, xpMax;
@@ -1121,6 +1242,9 @@ function initGame(){
   activeSynergies = {};
 
   bullets = []; enemies = []; missiles = []; parts = []; ftexts = []; cryoRings = [];
+  combo = 1; comboTimer = 0; peakCombo = 1;
+  shakeAmt = 0; shakeX = 0; shakeY = 0; hitStopFrames = 0;
+  glyphCharge = 0; glyphOverdriveActive = 0; glyphCooldown = 0;
 
   player = {
     x: W / 2, vx: 0, tilt: 0,
@@ -1148,16 +1272,23 @@ function returnToHangar(){
   $go.classList.remove('on');
   $ts.classList.remove('gone');
   GS = 'title';
+  updateHangarStats();
 }
 
 function gameOver(){
   GS = 'over';
+  saveHS(score);
+  const hs = loadHS();
+  const isNew = score > 0 && score >= hs;
   $gwv.textContent = currentWave;
   $gt.textContent = fmtT(elapsed);
   $gs.textContent = score.toLocaleString();
+  $gcombo.textContent = 'x' + peakCombo;
   $gk.textContent = kills;
-  $gl.textContent = odLevel;
+  $ghs.textContent = hs.toLocaleString() + (isNew ? ' ★ NEW BEST' : '');
   $go.classList.add('on');
+  addShake(22);
+  sfxShieldHit();
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -1363,6 +1494,7 @@ function dmgE(e, d, opts = {}){
   // Apply damage
   e.hp -= finalD;
   e.flash = 3;
+  if(!opts.isAutonomous) sfxHit();
 
   // Low-Health Culling Bonus
   if(upg.chip_cull && e.type !== 'boss' && e.hp > 0 && (e.hp / e.mhp) <= (0.14 + upg.chip_cull * 0.04)){
@@ -1378,10 +1510,19 @@ function dmgE(e, d, opts = {}){
 function killE(e){
   if(e.dead) return;
   e.dead = true;
-  score += e.sc;
+  const isHeavy = e.type === 'carapace' || e.type === 'boss';
+  score += e.sc * Math.max(1, Math.floor(combo * 0.5 + 0.5));
   kills++;
 
-  if(e.type === 'boss') activeBoss = null;
+  if(e.type === 'boss'){ activeBoss = null; addShake(20); triggerHitStop(6); sfxHeavyKill(); }
+  else if(isHeavy){ addShake(8); triggerHitStop(3); sfxHeavyKill(); }
+  else { addShake(3); sfxKill(); }
+
+  addKillToCombo();
+  // Glyph charge on kill (charges when overdrive is off cooldown)
+  if(glyphCooldown <= 0){
+    glyphCharge = Math.min(glyphMax, glyphCharge + (e.type === 'boss' ? 40 : isHeavy ? 14 : 6));
+  }
 
   gainXP(e.xpv);
 
@@ -1424,6 +1565,9 @@ function hitPlayer(){
   player.flash = 10;
   player.inv = 1.8;
   regenT2 = 0;
+  combo = 1; comboTimer = 0;
+  addShake(14);
+  sfxShieldHit();
   burst(player.x, PY, '#FF0055', 22, 180, 4.5);
   if(player.sh <= 0) gameOver();
 }
@@ -1829,16 +1973,26 @@ function loop(ts){
     return;
   }
   if(GS === 'levelup' || GS === 'over'){
-    drawBG();
-    drawAll();
+    drawScene();
     return;
   }
   if(GS === 'pause'){
-    drawBG();
-    drawAll();
+    drawScene();
     drawPause();
     return;
   }
+
+  // Hit-stop: skip game logic but still render
+  if(hitStopFrames > 0){ hitStopFrames--; updateShake(dt); drawScene(); return; }
+
+  // Combo timer decay
+  if(comboTimer > 0){ comboTimer -= dt; if(comboTimer <= 0) combo = 1; }
+
+  // Overdrive timers
+  if(glyphCooldown > 0) glyphCooldown -= dt;
+  if(glyphOverdriveActive > 0) glyphOverdriveActive -= dt;
+
+  updateShake(dt);
 
   elapsed += dt;
 
@@ -2172,8 +2326,7 @@ function loop(ts){
     if(e.life <= 0 || e.y < -10) embers[i] = mkEmber();
   }
 
-  drawBG();
-  drawAll();
+  drawScene();
 }
 
 // ═════════════════════════════════════════════════════════════
@@ -2368,11 +2521,19 @@ function drawLockReticle(){
   X.shadowBlur = 0;
 }
 
+function drawScene(){
+  X.save();
+  if(shakeX || shakeY) X.translate(shakeX, shakeY);
+  drawBG();
+  drawAll();
+  X.restore();
+}
+
 // CLEAN NOTHING OS DOTTED MATRIX OLED BACKGROUND
 function drawBG(){
   // Pure OLED Pitch Black
   X.fillStyle = '#000000';
-  X.fillRect(0, 0, W, H);
+  X.fillRect(-30, -30, W + 60, H + 60);
 
   // Nothing OS Dotted Matrix Grid (Clean subtle LED dots across screen)
   const dotStep = 48;
@@ -2616,6 +2777,23 @@ function drawPlayer(){
     X.shadowBlur = 30; X.shadowColor = '#D71921'; X.fillStyle = '#D71921';
     X.beginPath(); X.arc(0, 0, PW / 2 + 4, 0, Math.PI * 2); X.fill();
     X.restore(); return;
+  }
+
+  // Pulsing Glyph Overdrive Primed Halo
+  const glyphReady = glyphCharge >= glyphMax && glyphCooldown <= 0;
+  if(glyphReady){
+    const pulse = 0.5 + 0.5 * Math.sin(Date.now() * 0.008);
+    X.save();
+    X.strokeStyle = 'rgba(255, 255, 255, ' + (0.35 + pulse * 0.45) + ')';
+    X.lineWidth = 1.6;
+    X.shadowColor = '#FFFFFF';
+    X.shadowBlur = 12 + pulse * 8;
+    X.setLineDash([4, 6]);
+    X.beginPath();
+    X.arc(0, 0, PW * 0.72, 0, Math.PI * 2);
+    X.stroke();
+    X.setLineDash([]);
+    X.restore();
   }
 
   // A. Trailing Legs & Skirt Armor (Ceramic White & Carbon Black)
@@ -2874,6 +3052,64 @@ function drawHUD(){
     }
   }
 
+  // Glyph Overdrive Bar (right side, vertical strip)
+  {
+    const gbX = W - 22, gbY = H * 0.28, gbH = H * 0.44;
+    X.fillStyle = 'rgba(10,10,10,0.85)';
+    X.fillRect(gbX, gbY, 10, gbH);
+    const gFill = (glyphCharge / glyphMax) * gbH;
+    const glyphFull = glyphCharge >= glyphMax && glyphCooldown <= 0;
+    const glyphCol = glyphFull ? '#FFFFFF' : (glyphCooldown > 0 ? '#2a2a2a' : '#D71921');
+    if(gFill > 0){
+      X.fillStyle = glyphCol;
+      X.shadowColor = glyphFull ? '#FFFFFF' : '#D71921';
+      X.shadowBlur = glyphFull ? 16 : 5;
+      X.fillRect(gbX, gbY + gbH - gFill, 10, gFill);
+      X.shadowBlur = 0;
+    }
+    X.strokeStyle = glyphFull ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.18)';
+    X.lineWidth = 1; X.strokeRect(gbX, gbY, 10, gbH);
+    X.font = '700 7px "Silkscreen",monospace';
+    X.fillStyle = glyphFull ? '#FFFFFF' : 'rgba(255,255,255,0.45)';
+    X.textAlign = 'center';
+    X.fillText('OD', gbX + 5, gbY - 5);
+    if(glyphFull){
+      X.shadowColor = '#FFFFFF'; X.shadowBlur = 10;
+      X.fillText('SPC', gbX + 5, gbY + gbH + 11);
+      X.shadowBlur = 0;
+    }
+    X.textAlign = 'left';
+  }
+
+  // Overdrive white flash overlay
+  if(glyphOverdriveActive > 0){
+    X.save();
+    X.globalAlpha = Math.max(0, glyphOverdriveActive) * 0.6;
+    X.fillStyle = '#FFFFFF';
+    X.fillRect(0, 0, W, H);
+    X.restore();
+  }
+
+  // Kill Streak Combo (center screen, shown when > x1)
+  if(combo > 1 && comboTimer > 0){
+    const ca = Math.min(1, comboTimer / COMBO_WINDOW);
+    X.save();
+    X.globalAlpha = ca;
+    X.textAlign = 'center';
+    const cSize = Math.min(52, 18 + combo * 4);
+    X.font = '700 ' + cSize + 'px "Silkscreen",monospace';
+    X.fillStyle = combo >= 8 ? '#D71921' : '#FFFFFF';
+    X.shadowColor = combo >= 8 ? '#D71921' : '#FFFFFF';
+    X.shadowBlur = 22;
+    X.fillText('x' + combo, W / 2, H * 0.62);
+    X.shadowBlur = 0;
+    X.font = '700 9px "Space Mono",monospace';
+    X.fillStyle = 'rgba(255,255,255,0.65)';
+    X.fillText('KILL STREAK', W / 2, H * 0.62 + 18);
+    X.textAlign = 'left';
+    X.restore();
+  }
+
   // Active Cross-Weapon Synergies (Nothing OS Badges)
   const syns = Object.keys(activeSynergies);
   if(syns.length){
@@ -2929,6 +3165,7 @@ function drawPause(){
 // STARTUP
 // ═════════════════════════════════════════════════════════════
 initBG();
+updateHangarStats();
 requestAnimationFrame(loop);
 </script>
 </body>

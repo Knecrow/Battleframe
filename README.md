@@ -33,10 +33,21 @@ No dependencies or installation required. Simply open `index.html` in any modern
 | **Touch / Drag** | Glide Mecha to Touch Position (Mobile / Tablet) |
 | **Move = Straight Fire** | Fires pure straight twin railgun lasers while maneuvering |
 | **Idle = Auto-Aim** | Automated targeting computer locks onto high-threat runners |
+| **`Space` or Tap OD Gauge** | **( ● ) Glyph Overdrive** screen-clearing pulse (when primed) |
 | **`1`, `2`, `3` or Tap** | Select Overdrive Module Upgrade |
 | **`F` Key or Button** | Toggle Fullscreen Mode |
 | **`ESC`** | Pause / Resume |
 | **`R` / `H`** | Restart or Return to Hangar after game over |
+
+---
+
+## ⚡ Kinetic Arcade Feel & Systems
+
+* **🔴 ( ● ) Glyph Overdrive**: Eliminate aliens to charge the vertical Nothing OS Glyph LED gauge. When primed, your mecha activates a pulsating white Glyph halo—press `Space` or tap the gauge to unleash a catastrophic screen-clearing shockwave.
+* **🔢 Kill Streak Multiplier**: Chaining kills within 2.0 seconds stacks a `x2`, `x3`... `x8+` combo multiplier with rising melodic sine chimes and boosted scoring. Taking shield damage resets the streak.
+* **⚡ Kinetic Hit-Stop & Camera Shake**: Heavy kills (Carapaces, Bosses) trigger multi-frame freeze stops and crisp directional camera jolts for tactile, crunchy arcade impact.
+* **🔊 Procedural Web Audio API SFX**: Zero external audio assets—pure procedural oscillator sound effects for laser clicks, crunchy heavy kills, shield impact thuds, rising combo pings, and sub-bass Overdrive detonation sweeps.
+* **🏆 Persistent Local Highscores**: Best score and peak kill streak are stored via `localStorage`, displayed in the top Hangar telemetry bar (`BEST // ...`) and on the Game Over diagnostic summary card.
 
 ---
 
