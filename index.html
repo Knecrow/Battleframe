@@ -2082,29 +2082,50 @@ function loop(ts){
     }
     if(e.resVulnerable > 0) e.resVulnerable -= dt;
 
+    const dx = player.x - e.x;
+    const dy = PY - e.y;
+    const distToPlayer = Math.hypot(dx, dy);
+
+    // Track visual facing rotation towards player robot
+    if(e.type !== 'boss' && distToPlayer > 10){
+      e.rot = -Math.atan2(dx, dy);
+    }
+
     if(e.type === 'crasher'){
       if(!e.sprinting && e.y > H * 0.38){
         e.sprinting = true;
-        e.vy = 160;
+        const normX = dx / (distToPlayer || 1);
+        const normY = Math.max(0.25, dy / (distToPlayer || 1));
+        e.vx = normX * 165;
+        e.vy = normY * 165;
         burst(e.x, e.y, '#FF3344', 8, 80, 2);
+      } else if(!e.sprinting){
+        e.vx = Math.sign(dx) * Math.min(Math.abs(dx) * 1.5, 45);
       }
     } else if(e.type === 'boss'){
       if(e.y < H * 0.18){
         e.y += e.vy * spdMult * dt;
       } else {
+        const bdx = player.x - e.x;
+        e.vx = Math.sign(bdx) * Math.min(Math.abs(bdx), 42);
         e.x += e.vx * dt;
-        if(e.x < e.w / 2 + 20 || e.x > W - e.w / 2 - 20) e.vx = -e.vx;
       }
       e.shootT -= dt;
       if(e.shootT <= 0){
         e.shootT = 2.4;
         burst(e.x, e.y + e.h / 2, '#FF3300', 8, 70, 3);
       }
+    } else {
+      // Swarm enemies dynamically steer towards player.x
+      const maxSteer = (e.type === 'scout' || e.type === 'micro') ? 60 : (e.type === 'carapace' ? 28 : 42);
+      const steer = Math.sign(dx) * Math.min(Math.abs(dx) * 1.8, maxSteer + Math.min(25, currentWave * 2));
+      e.vx = steer;
     }
 
     if(e.type !== 'boss'){
       e.y += e.vy * spdMult * dt;
-      e.x += (e.vx || 0) * dt;
+      e.x += (e.vx || 0) * spdMult * dt;
+      e.x = Math.max(e.w / 2, Math.min(W - e.w / 2, e.x));
     }
 
     if(e.flash > 0) e.flash--;
@@ -2212,6 +2233,9 @@ function drawEnemies(){
     X.translate(e.x, e.y);
     const fl = e.flash > 0;
 
+    X.save();
+    if(e.rot) X.rotate(e.rot);
+
     if(e.shieldTether && e.type !== 'shielder'){
       X.strokeStyle = 'rgba(255, 255, 255, 0.7)';
       X.lineWidth = 1.5;
@@ -2297,6 +2321,9 @@ function drawEnemies(){
       X.shadowBlur = 0;
     }
 
+    X.restore(); // restore rotation
+
+    // Health Bar remains horizontal
     if(e.mhp > 4 && !fl && e.type !== 'boss'){
       const bw = e.w + 4, rat = Math.max(0, e.hp / e.mhp);
       X.fillStyle = 'rgba(255, 255, 255, 0.12)'; X.fillRect(-bw / 2, e.h / 2 + 3, bw, 3);
