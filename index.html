@@ -121,10 +121,18 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
 /* Main 3-Column Hangar Workspace */
 .hangar-body{
-  flex:1;display:grid;grid-template-columns:310px 1fr 320px;
-  padding:20px 32px 28px;position:relative;min-height:0;
-  max-width:1440px;margin:0 auto;width:100%;align-items:center;
-  gap:24px;
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:20px;position:relative;min-height:0;
+  max-width:800px;margin:0 auto;width:100%;gap:16px;
+}
+.hangar-center{
+  width:100%;max-width:540px;height:480px;display:flex;align-items:center;justify-content:center;
+}
+.hero-canvas-wrap{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+}
+.hero-canvas-wrap canvas{
+  max-width:100%;max-height:100%;object-fit:contain;
 }
 
 /* Left Column: Systems Readouts */
@@ -457,137 +465,26 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
     <!-- 3-Column Body -->
     <div class="hangar-body">
-      <!-- Left Column: Loadout -->
-      <aside class="hangar-left">
-        <div class="panel-section-tag"><span class="red-pip">●</span> ( 01 ) CORE SYSTEMS</div>
-        
-        <div class="sys-card active">
-          <div class="sys-icon">⚡</div>
-          <div class="sys-meta">
-            <div class="sys-name">TWIN PULSE RAILGUNS</div>
-            <div class="sys-desc">Gauntlet cannons · White laser bloom & auto-lock</div>
-          </div>
-        </div>
-
-        <div class="sys-card">
-          <div class="sys-icon">◈</div>
-          <div class="sys-meta">
-            <div class="sys-name">GLYPH BARRIER PERIMETER</div>
-            <div class="sys-desc">Segmented LED shield · Prevents perimeter breaches</div>
-          </div>
-        </div>
-
-        <div class="sys-card">
-          <div class="sys-icon">▶▶</div>
-          <div class="sys-meta">
-            <div class="sys-name">VERNIER JUMP THRUSTERS</div>
-            <div class="sys-desc">High-output twin thrusters · Roll banking maneuvers</div>
-          </div>
-        </div>
-
-        <div class="sys-card">
-          <div class="sys-icon">◎</div>
-          <div class="sys-meta">
-            <div class="sys-name">TELEMETRY WAVE RADAR</div>
-            <div class="sys-desc">Wave tracking matrix · Target prioritization</div>
-          </div>
-        </div>
-
-        <div class="hangar-instructions">
-          <span>( STEER )</span> A / D, ARROWS, or TOUCH / DRAG<br>
-          <span>( AIM )</span> MOVING = STRAIGHT | IDLE = AUTO-AIM<br>
-          <span>( MISSION )</span> PREVENT BREACHES OF GLYPH PERIMETER
-        </div>
-      </aside>
-
-      <!-- Center Column: Top-Down Mecha on Platform -->
+      <!-- Center: Mecha Inspection Platform -->
       <main class="hangar-center">
         <div class="hero-canvas-wrap">
           <canvas id="hero-canvas" width="600" height="600"></canvas>
         </div>
       </main>
 
-      <!-- Right Column: Specs & Launch -->
-      <aside class="hangar-right">
-        <div class="panel-section-tag"><span class="red-pip">●</span> ( 02 ) SPECIFICATIONS</div>
-
-        <div class="unit-widget">
-          <div class="level-header">
-            <div class="level-box">
-              <div class="level-val">78</div>
-              <div class="level-tag">FRAME LEVEL</div>
-            </div>
-            <div class="unit-title-box">
-              <h2 class="unit-name">BATTLEFRAME</h2>
-              <div class="unit-class"><span class="nothing-pill-tag red-bg">CLASS S</span></div>
-            </div>
-          </div>
-
-          <!-- Stat Rows -->
-          <div class="stats-card">
-            <div class="stat-row">
-              <div class="stat-meta">
-                <span class="stat-lbl">ATTACK</span>
-                <span class="stat-num">120</span>
-              </div>
-              <div class="stat-track"><div class="stat-fill" style="width: 80%;"></div></div>
-            </div>
-            <div class="stat-row">
-              <div class="stat-meta">
-                <span class="stat-lbl">DEFENSE</span>
-                <span class="stat-num">30</span>
-              </div>
-              <div class="stat-track"><div class="stat-fill" style="width: 30%;"></div></div>
-            </div>
-            <div class="stat-row">
-              <div class="stat-meta">
-                <span class="stat-lbl">ACCURACY</span>
-                <span class="stat-num">28</span>
-              </div>
-              <div class="stat-track"><div class="stat-fill" style="width: 56%;"></div></div>
-            </div>
-            <div class="stat-row">
-              <div class="stat-meta">
-                <span class="stat-lbl">DEXTERITY</span>
-                <span class="stat-num">220</span>
-              </div>
-              <div class="stat-track"><div class="stat-fill" style="width: 73%;"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Skills Badges -->
-        <div class="skills-section">
-          <div class="skills-title">HARDWARE SLOTS</div>
-          <div class="skills-row">
-            <div class="skill-box" title="Tesla Matrix Arc">
-              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
-            </div>
-            <div class="skill-box" title="Prism Pulse Lance">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-            </div>
-            <div class="skill-box" title="Skyfire Missile Array">
-              <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="7" cy="17" r="3.5"/></svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tactical Launch Button -->
-        <div class="launch-wrap">
-          <button class="tactical-start-btn" id="tb" type="button">
-            <span class="red-pip">●</span>
-            <span>DEPLOY SORTIE</span>
-          </button>
-          <div class="launch-hint">PRESS ENTER OR TAP TO LAUNCH</div>
-        </div>
-      </aside>
+      <!-- Minimal Deploy Button -->
+      <div class="launch-wrap">
+        <button class="tactical-start-btn" id="tb" type="button">
+          <span class="red-pip">●</span>
+          <span>DEPLOY</span>
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- Level-Up Modal -->
   <div id="lu">
-    <div id="lu-t"><span class="red-pip">●</span> MODULE UPGRADE <span class="red-pip">●</span></div>
-    <div id="lu-s">SELECT TACTICAL HARDWARE MODULE</div>
+    <div id="lu-t"><span class="red-pip">●</span> UPGRADE</div>
     <div id="cr"></div>
   </div>
 
@@ -1298,9 +1195,8 @@ function triggerLU(){
       <div class="ctg" style="${isWep ? 'border-color:var(--nothing-red);' : 'border-color:rgba(255,255,255,0.25);'}">${catHtml}</div>
       <div class="cgl">${def.glyph}</div>
       <div class="cnm">${def.name}</div>
-      <div class="clv">( LVL ${l} → ${l + 1} ) · ${def.tier(l)}</div>
+      <div class="clv">LVL ${l + 1} · ${def.tier(l)}</div>
       <div class="cds">${def.desc(l).replace(/\n/g, '<br>')}</div>
-      <div class="cnx">▲ NEXT: ${def.next(l).replace(/\n/g, '<br>')}</div>
     `;
     d.onclick = () => pickCard(i);
     $cr.appendChild(d);
@@ -2292,10 +2188,6 @@ function drawPerimeterLine(){
   X.beginPath(); X.moveTo(0, y); X.lineTo(W, y); X.stroke();
   X.setLineDash([]);
   X.shadowBlur = 0;
-
-  X.font = '700 8.5px "Silkscreen",monospace';
-  X.fillStyle = threatClose ? '#D71921' : 'rgba(255, 255, 255, 0.7)';
-  X.fillText('( ● ) GLYPH PERIMETER BARRIER // RESTRICTED SECTOR', 14, y + 14);
   X.restore();
 }
 
@@ -2863,21 +2755,21 @@ function drawHUD(){
   X.fillText(`WAVE ${String(currentWave).padStart(2, '0')}`, 26, 26);
 
   X.font = '700 ' + (W < 460 ? '9.5px' : '11px') + ' "Silkscreen",monospace'; X.fillStyle = '#FFFFFF';
-  X.fillText('SCORE // ' + String(score).padStart(6, '0'), 14, 42);
+  X.fillText(String(score).padStart(6, '0'), 26, 42);
 
   X.fillStyle = '#737373'; X.textAlign = 'right';
   X.font = (W < 460 ? '9px' : '10.5px') + ' "Space Mono",monospace';
   X.fillText('T+ ' + fmtT(elapsed), W - 14, 22);
   const remaining = waveEnemiesToSpawn + enemies.length;
   if(remaining > 0){
-    X.fillText(`REMAINING // ${String(remaining).padStart(2, '0')}`, W - 14, 40);
+    X.fillText(`${remaining} LEFT`, W - 14, 40);
   } else {
     X.fillStyle = '#FFFFFF';
-    X.fillText('SECTOR SECURED', W - 14, 40);
+    X.fillText('CLEAR', W - 14, 40);
   }
   X.textAlign = 'left';
 
-  // Fortress Barrier Shield Cells (Nothing Pill Capsules)
+  // Fortress Barrier Shield Cells (Minimal Nothing Pill Capsules, no text label)
   const shMax = player.shMax, pip = W < 460 ? 12 : 18, gap = W < 460 ? 3 : 5;
   const totalW = shMax * (pip + gap) - gap, sx = W / 2 - totalW / 2;
   const isCritical = player.sh <= 1;
@@ -2894,14 +2786,12 @@ function drawHUD(){
     X.strokeStyle = active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.18)';
     X.lineWidth = 1;
     if(X.roundRect){
-      X.beginPath(); X.roundRect(px, 18, pip, 8, 4); X.fill(); X.stroke();
+      X.beginPath(); X.roundRect(px, 22, pip, 8, 4); X.fill(); X.stroke();
     } else {
-      X.fillRect(px, 18, pip, 8); X.strokeRect(px, 18, pip, 8);
+      X.fillRect(px, 22, pip, 8); X.strokeRect(px, 22, pip, 8);
     }
     X.shadowBlur = 0;
   }
-  X.font = '8px "Space Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.6)';
-  X.textAlign = 'center'; X.fillText('( ● ) GLYPH FORTRESS BARRIER', W / 2, 14); X.textAlign = 'left';
 
   // Boss Health Bar (Nothing OS Squircle Bar)
   if(activeBoss && !activeBoss.dead){
@@ -2913,12 +2803,12 @@ function drawHUD(){
     X.fillRect(bx, by, bw * rat, 14);
     X.shadowBlur = 0;
     X.font = '700 9px "Silkscreen",monospace'; X.fillStyle = '#FFFFFF'; X.textAlign = 'center';
-    X.fillText(`( ● ) TITAN BEHEMOTH // ${Math.floor(rat * 100)}%`, W / 2, by + 10.5);
+    X.fillText(`TITAN // ${Math.floor(rat * 100)}%`, W / 2, by + 10.5);
     X.textAlign = 'left';
   }
 
   // Bottom XP Progress Bar (Nothing OS Segmented Pill)
-  const by = H - 12, bh = 5;
+  const by = H - 10, bh = 4;
   X.fillStyle = '#0A0A0A'; X.fillRect(0, by, W, bh);
   const xrat = Math.min(1, xp / xpMax);
   if(xrat > 0){
@@ -2929,7 +2819,7 @@ function drawHUD(){
   X.strokeStyle = 'rgba(255,255,255,0.14)'; X.lineWidth = 1; X.strokeRect(0, by, W, bh);
 
   X.font = '700 8.5px "Silkscreen",monospace'; X.fillStyle = '#FFFFFF'; X.textAlign = 'right';
-  X.fillText('OVERDRIVE // LVL ' + odLevel + ' · ' + Math.floor(xrat * 100) + '%', W - 6, by - 4);
+  X.fillText('LVL ' + odLevel, W - 6, by - 4);
   X.textAlign = 'left';
 
   // Active Upgrade Glyphs
@@ -2940,13 +2830,13 @@ function drawHUD(){
       const def = UDefs.find(u => u.id === id);
       if(!def) continue;
       X.fillStyle = '#FFFFFF';
-      X.fillText(def.glyph + ' ' + lv, ux, H - 17);
-      ux += 38;
+      X.fillText(def.glyph + ' ' + lv, ux, H - 14);
+      ux += 36;
       if(ux > W - 180) break;
     }
   }
 
-  // Active Cross-Weapon Synergies (Nothing OS Squircle Badges)
+  // Active Cross-Weapon Synergies (Nothing OS Badges)
   const syns = Object.keys(activeSynergies);
   if(syns.length){
     let sx = 14;
@@ -2955,16 +2845,16 @@ function drawHUD(){
       const syn = SYNERGY_DEFS.find(s => s.id === sid);
       if(!syn) continue;
       X.fillStyle = 'rgba(18, 18, 18, 0.88)';
-      X.fillRect(sx, 56, 134, 18);
+      X.fillRect(sx, 56, 120, 18);
       X.strokeStyle = 'rgba(255, 255, 255, 0.25)'; X.lineWidth = 1;
-      X.strokeRect(sx, 56, 134, 18);
+      X.strokeRect(sx, 56, 120, 18);
       // Red pip
       X.fillStyle = '#D71921';
       X.beginPath(); X.arc(sx + 7, 65, 2.5, 0, Math.PI * 2); X.fill();
       X.fillStyle = '#FFFFFF';
       X.fillText(syn.name, sx + 14, 69);
-      sx += 142;
-      if(sx > W - 150) break;
+      sx += 128;
+      if(sx > W - 140) break;
     }
   }
 }
