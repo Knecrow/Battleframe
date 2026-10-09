@@ -2086,28 +2086,39 @@ function loop(ts){
     const dy = PY - e.y;
     const distToPlayer = Math.hypot(dx, dy);
 
-    // Track visual facing rotation towards player robot
+    // Track visual facing rotation towards player robot smoothly
     if(e.type !== 'boss' && distToPlayer > 10){
       e.rot = -Math.atan2(dx, dy);
+    }
+
+    // Gradual distance-based convergence factor (keep lanes spread at top)
+    const homingRamp = Math.max(0, Math.min(1, (e.y - H * 0.28) / (H * 0.45)));
+
+    // Subtle lateral separation to prevent enemies from bunching into a single line
+    let repel = 0;
+    for(const o of enemies){
+      if(o !== e && !o.dead && Math.abs(e.y - o.y) < 26 && Math.abs(e.x - o.x) < 32){
+        repel += Math.sign(e.x - o.x || (e.x > W / 2 ? 1 : -1)) * 14;
+      }
     }
 
     if(e.type === 'crasher'){
       if(!e.sprinting && e.y > H * 0.38){
         e.sprinting = true;
         const normX = dx / (distToPlayer || 1);
-        const normY = Math.max(0.25, dy / (distToPlayer || 1));
-        e.vx = normX * 165;
-        e.vy = normY * 165;
+        const normY = Math.max(0.4, dy / (distToPlayer || 1));
+        e.vx = normX * 135;
+        e.vy = normY * 135;
         burst(e.x, e.y, '#FF3344', 8, 80, 2);
       } else if(!e.sprinting){
-        e.vx = Math.sign(dx) * Math.min(Math.abs(dx) * 1.5, 45);
+        e.vx = (Math.sign(dx) * Math.min(Math.abs(dx) * 0.35, 18) * homingRamp) + repel;
       }
     } else if(e.type === 'boss'){
       if(e.y < H * 0.18){
         e.y += e.vy * spdMult * dt;
       } else {
         const bdx = player.x - e.x;
-        e.vx = Math.sign(bdx) * Math.min(Math.abs(bdx), 42);
+        e.vx = Math.sign(bdx) * Math.min(Math.abs(bdx), 32);
         e.x += e.vx * dt;
       }
       e.shootT -= dt;
@@ -2116,10 +2127,10 @@ function loop(ts){
         burst(e.x, e.y + e.h / 2, '#FF3300', 8, 70, 3);
       }
     } else {
-      // Swarm enemies dynamically steer towards player.x
-      const maxSteer = (e.type === 'scout' || e.type === 'micro') ? 60 : (e.type === 'carapace' ? 28 : 42);
-      const steer = Math.sign(dx) * Math.min(Math.abs(dx) * 1.8, maxSteer + Math.min(25, currentWave * 2));
-      e.vx = steer;
+      // Swarm enemies: gentle, natural diagonal approach as they descend
+      const maxSteer = (e.type === 'scout' || e.type === 'micro') ? 22 : (e.type === 'carapace' ? 12 : 16);
+      const steer = Math.sign(dx) * Math.min(Math.abs(dx) * 0.35, maxSteer + Math.min(8, currentWave * 0.6)) * homingRamp;
+      e.vx = steer + repel;
     }
 
     if(e.type !== 'boss'){
