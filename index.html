@@ -6,111 +6,125 @@
 <title>BATTLEFRAME — Tactical Mecha Combat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Silkscreen:wght@400;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg-deep:#06080D;
-  --bg-card:rgba(18,22,31,0.75);
-  --bg-card-border:rgba(255,255,255,0.12);
+  --bg-deep:#000000;
+  --bg-surface:#0A0A0A;
+  --bg-card:rgba(18,18,18,0.86);
+  --bg-card-border:rgba(255,255,255,0.14);
+  --bg-card-hover:rgba(26,26,26,0.96);
   --text-primary:#FFFFFF;
-  --text-muted:#8F98A8;
-  --accent-amber:#FFAA00;
-  --accent-orange:#FF6600;
-  --accent-cyan:#00E5FF;
-  --accent-purple:#C084FC;
-  --accent-ice:#67E8F9;
-  --accent-red:#FF3300;
-  --accent-green:#10B981;
-  --accent-gold:#FACC15;
-  --accent-blue:#3B82F6;
-  --ceramic-white:#F0F4FA;
-  --carbon-dark:#0D1017;
+  --text-secondary:#D4D4D4;
+  --text-muted:#737373;
+  --nothing-red:#D71921;
+  --nothing-red-glow:rgba(215,25,33,0.5);
+  --glyph-white:#FFFFFF;
+  --glyph-white-glow:rgba(255,255,255,0.6);
+  --glyph-dim:rgba(255,255,255,0.18);
+  --ceramic-white:#F5F5F7;
+  --carbon-dark:#0A0A0A;
+  --squircle-radius:20px;
+  --pill-radius:9999px;
+  --font-ndot:'Silkscreen',monospace;
+  --font-mono:'Space Mono',monospace;
+  --font-sans:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
 }
 html,body{
   width:100%;height:100%;overflow:hidden;
   background:var(--bg-deep);color:var(--text-primary);
-  font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  font-family:var(--font-sans);
   user-select:none;-webkit-user-select:none;touch-action:none;
 }
 #gw{position:absolute;inset:0;width:100vw;height:100vh;overflow:hidden;}
 canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
+/* Nothing OS Indicator Dot & Pill Utilities */
+.red-pip{
+  display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:var(--nothing-red);box-shadow:0 0 8px var(--nothing-red);
+  flex-shrink:0;vertical-align:middle;
+}
+.red-pip.blink{
+  animation:nothing-blink 1.8s infinite ease-in-out;
+}
+@keyframes nothing-blink{
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:0.35;transform:scale(0.85);}
+}
+.nothing-pill-tag{
+  display:inline-flex;align-items:center;gap:6px;padding:3px 10px;
+  border-radius:var(--pill-radius);font-family:var(--font-mono);font-size:10px;
+  letter-spacing:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.16);
+  color:#FFFFFF;text-transform:uppercase;font-weight:700;
+}
+.nothing-pill-tag.red-bg{
+  background:var(--nothing-red);border-color:var(--nothing-red);color:#FFFFFF;
+}
+
 /* Fullscreen Toggle */
 #fs-btn{
   position:absolute;top:16px;right:18px;z-index:45;cursor:pointer;
-  color:#DDE3ED;font-family:'Share Tech Mono',monospace;font-size:11px;
-  padding:6px 12px;border:1px solid rgba(255,255,255,0.18);border-radius:4px;
-  background:rgba(15,19,26,0.85);backdrop-filter:blur(8px);
-  letter-spacing:1px;transition:all .2s;font-weight:700;
+  color:#FFFFFF;font-family:var(--font-mono);font-size:10px;
+  padding:6px 14px;border:1px solid rgba(255,255,255,0.18);border-radius:var(--pill-radius);
+  background:rgba(14,14,14,0.85);backdrop-filter:blur(10px);
+  letter-spacing:1.5px;transition:all .2s;font-weight:700;
+  display:flex;align-items:center;gap:6px;
 }
-#fs-btn:hover{color:#FFAA00;border-color:#FF7700;box-shadow:0 0 16px rgba(255,119,0,0.35);}
+#fs-btn:hover{
+  background:#FFFFFF;color:#000000;border-color:#FFFFFF;
+  box-shadow:0 0 20px rgba(255,255,255,0.4);
+}
 
 /* ═════════════════════════════════════════════════════════════
-   TACTICAL HANGAR DASHBOARD (DARK THEME, NO GRID/GRAPH LINES)
+   NOTHING OS HANGAR DASHBOARD (OLED BLACK, SQUIRCLES, GLYPH)
    ═════════════════════════════════════════════════════════════ */
 #ts{
   position:absolute;inset:0;z-index:35;display:flex;flex-direction:column;
-  background:radial-gradient(ellipse 90% 80% at 50% 32%, #111520 0%, #080A10 55%, #040508 100%);
+  background:radial-gradient(circle at 50% 36%, #121212 0%, #060606 60%, #000000 100%);
   color:var(--text-primary);overflow-y:auto;overflow-x:hidden;
   transition:opacity .25s ease,visibility .25s;
 }
 #ts.gone{opacity:0;visibility:hidden;pointer-events:none;}
 
-/* Top Telemetry Bar */
+/* Top Nothing OS Navigation Bar */
 .hangar-top{
-  height:68px;width:100%;display:flex;align-items:center;
-  justify-content:space-between;padding:0 28px;z-index:10;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  background:rgba(12,15,22,0.75);backdrop-filter:blur(12px);flex-shrink:0;
+  height:72px;width:100%;display:flex;align-items:center;
+  justify-content:space-between;padding:0 32px;z-index:10;
+  border-bottom:1px solid rgba(255,255,255,0.1);
+  background:rgba(10,10,10,0.82);backdrop-filter:blur(20px);flex-shrink:0;
 }
-.ht-left{display:flex;align-items:center;gap:18px;}
-.back-tag{
-  background:#1A202C;color:#FFFFFF;width:38px;height:34px;
+.ht-left{display:flex;align-items:center;gap:16px;}
+.nothing-icon-btn{
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);
   display:flex;align-items:center;justify-content:center;
-  clip-path:polygon(10px 0%, 100% 0%, 100% 100%, 10px 100%, 0% 50%);
-  padding-left:6px;cursor:pointer;transition:transform .15s,background .15s;
+  color:#FFFFFF;cursor:pointer;transition:all .2s;
 }
-.back-tag:hover{transform:translateX(-2px);background:#FFAA00;color:#000;}
-.back-tag .arrow{font-size:13px;font-weight:900;}
-.ht-title{font-size:22px;font-weight:800;letter-spacing:1px;color:#FFFFFF;font-family:'Orbitron',sans-serif;}
-.ht-sub{font-size:13px;color:#FFAA00;font-weight:600;font-family:'Share Tech Mono',monospace;margin-left:8px;}
-
-.ht-right{display:flex;align-items:center;gap:14px;}
-.ht-badge{display:flex;align-items:center;height:34px;color:#FFFFFF;}
-.gear-badge{
-  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;
+.nothing-icon-btn:hover{
+  background:#FFFFFF;color:#000000;border-color:#FFFFFF;
+  transform:scale(1.05);
 }
-.gear-badge svg{width:18px;height:18px;stroke:#DDE3ED;}
-.credit-badge{
-  background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.16);
-  border-radius:20px;padding:0 14px 0 16px;gap:8px;font-weight:700;font-size:14px;
-  letter-spacing:0.5px;
+.nothing-icon-btn .arrow{font-size:12px;font-weight:900;}
+.ht-title{
+  font-size:22px;font-weight:700;letter-spacing:2px;color:#FFFFFF;
+  font-family:var(--font-ndot);display:flex;align-items:center;gap:12px;
 }
-.cred-plus{color:#FFAA00;font-size:16px;font-weight:800;margin-left:2px;}
-.signal-badge{gap:3.5px;align-items:flex-end;height:16px;padding:0 4px;}
-.sig-bar{width:3.5px;background:#FFAA00;border-radius:1px;}
-.sig-bar.s1{height:5px;}
-.sig-bar.s2{height:8px;}
-.sig-bar.s3{height:12px;}
-.sig-bar.s4{height:16px;}
-.batt-badge{align-items:center;}
-.batt-shell{
-  width:22px;height:12px;border:2px solid #DDE3ED;border-radius:2.5px;
-  position:relative;padding:1px;display:flex;align-items:center;
+.ht-right{display:flex;align-items:center;gap:12px;}
+.nothing-pill-widget{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 14px;
+  border-radius:var(--pill-radius);background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.14);font-family:var(--font-mono);
+  font-size:11px;font-weight:700;letter-spacing:1px;color:#FFFFFF;
 }
-.batt-shell::after{
-  content:'';position:absolute;right:-4px;top:2.5px;width:2.5px;height:5px;
-  background:#DDE3ED;border-radius:0 1px 1px 0;
-}
-.batt-fill{width:80%;height:100%;background:#FFAA00;border-radius:1px;}
 
 /* Main 3-Column Hangar Workspace */
 .hangar-body{
-  flex:1;display:grid;grid-template-columns:300px 1fr 310px;
-  padding:16px 28px 24px;position:relative;min-height:0;
+  flex:1;display:grid;grid-template-columns:310px 1fr 320px;
+  padding:20px 32px 28px;position:relative;min-height:0;
   max-width:1440px;margin:0 auto;width:100%;align-items:center;
+  gap:24px;
 }
 
 /* Left Column: Systems Readouts */
@@ -119,42 +133,43 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   height:100%;justify-content:center;max-height:640px;
 }
 .panel-section-tag{
-  font-family:'Share Tech Mono',monospace;font-size:12px;font-weight:700;
-  letter-spacing:2.5px;color:#FFAA00;margin-bottom:6px;
-  display:flex;align-items:center;gap:8px;
-}
-.panel-section-tag::before{
-  content:'';width:8px;height:8px;background:#FFAA00;border-radius:2px;
+  font-family:var(--font-mono);font-size:11px;font-weight:700;
+  letter-spacing:2px;color:var(--text-muted);margin-bottom:4px;
+  display:flex;align-items:center;gap:8px;text-transform:uppercase;
 }
 .sys-card{
-  display:flex;align-items:center;gap:14px;padding:12px 14px;
-  border-radius:6px;background:var(--bg-card);
+  display:flex;align-items:center;gap:14px;padding:14px 16px;
+  border-radius:var(--squircle-radius);background:var(--bg-card);
   border:1px solid var(--bg-card-border);transition:all .2s ease;
-  backdrop-filter:blur(8px);
+  backdrop-filter:blur(16px);position:relative;overflow:hidden;
 }
 .sys-card:hover{
-  background:rgba(25,31,44,0.9);border-color:rgba(255,170,0,0.4);
-  transform:translateX(3px);
+  background:var(--bg-card-hover);border-color:rgba(255,255,255,0.3);
+  transform:translateX(3px);box-shadow:0 10px 30px rgba(0,0,0,0.5);
 }
 .sys-card.active{
-  border-color:#FFAA00;box-shadow:0 0 20px rgba(255,170,0,0.15);
+  border-color:#FFFFFF;box-shadow:0 0 24px rgba(255,255,255,0.15);
+}
+.sys-card.active::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:var(--nothing-red);box-shadow:0 0 8px var(--nothing-red);
 }
 .sys-icon{
-  width:42px;height:42px;background:#0D1017;border:1px solid rgba(255,255,255,0.15);
-  border-radius:5px;display:flex;align-items:center;justify-content:center;
-  font-size:18px;color:#FFAA00;flex-shrink:0;
+  width:42px;height:42px;background:#050505;border:1px solid rgba(255,255,255,0.16);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#FFFFFF;flex-shrink:0;
 }
 .sys-meta{display:flex;flex-direction:column;}
-.sys-name{font-size:13px;font-weight:800;letter-spacing:1px;color:#FFFFFF;font-family:'Orbitron',sans-serif;}
-.sys-desc{font-size:11px;color:#8F98A8;margin-top:3px;line-height:1.3;}
+.sys-name{font-size:11px;font-weight:700;letter-spacing:1px;color:#FFFFFF;font-family:var(--font-ndot);}
+.sys-desc{font-size:10.5px;color:var(--text-muted);margin-top:3px;line-height:1.35;font-family:var(--font-mono);}
 
 .hangar-instructions{
-  margin-top:8px;padding:12px 14px;border-radius:6px;
-  background:rgba(12,15,22,0.6);border:1px solid rgba(255,255,255,0.06);
-  font-family:'Share Tech Mono',monospace;font-size:10.5px;
-  color:#9AA2B0;line-height:1.7;letter-spacing:1px;
+  margin-top:4px;padding:14px 16px;border-radius:var(--squircle-radius);
+  background:rgba(12,12,12,0.7);border:1px dashed rgba(255,255,255,0.14);
+  font-family:var(--font-mono);font-size:10px;
+  color:#A3A3A3;line-height:1.75;letter-spacing:1px;
 }
-.hangar-instructions span{color:#FFAA00;font-weight:700;}
+.hangar-instructions span{color:#FFFFFF;font-weight:700;}
 
 /* Center Column: Top-Down Mecha on Platform */
 .hangar-center{
@@ -167,177 +182,220 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 }
 #hero-canvas{
   width:100%;height:100%;object-fit:contain;
-  filter:drop-shadow(0 14px 28px rgba(0,0,0,0.6));
+  filter:drop-shadow(0 14px 28px rgba(0,0,0,0.8));
 }
 
 /* Right Column: Telemetry & Start */
 .hangar-right{
-  display:flex;flex-direction:column;gap:18px;z-index:5;
-  height:100%;justify-content:center;max-height:640px;padding-left:14px;
+  display:flex;flex-direction:column;gap:16px;z-index:5;
+  height:100%;justify-content:center;max-height:640px;
 }
-.level-header{display:flex;align-items:flex-start;gap:18px;}
-.level-box{display:flex;flex-direction:column;align-items:center;min-width:70px;}
+.unit-widget{
+  background:var(--bg-card);border:1px solid var(--bg-card-border);
+  border-radius:var(--squircle-radius);padding:18px 20px;backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;gap:14px;
+}
+.level-header{display:flex;align-items:flex-start;justify-content:space-between;}
+.level-box{display:flex;flex-direction:column;}
 .level-val{
-  font-size:62px;font-weight:900;line-height:0.95;
-  color:#FFFFFF;font-family:'Inter',sans-serif;letter-spacing:-1.5px;
-  text-shadow:0 0 25px rgba(255,170,0,0.3);
+  font-size:52px;font-weight:700;line-height:0.95;
+  color:#FFFFFF;font-family:var(--font-ndot);letter-spacing:1px;
 }
 .level-tag{
-  background:#FFAA00;color:#090C12;font-size:10.5px;font-weight:900;
-  letter-spacing:2.5px;padding:3px 8px;border-radius:2px;margin-top:4px;
+  color:var(--text-muted);font-size:10px;font-weight:700;
+  letter-spacing:2px;font-family:var(--font-mono);margin-top:4px;
 }
-.unit-title-box{display:flex;flex-direction:column;padding-top:6px;}
+.unit-title-box{display:flex;flex-direction:column;align-items:flex-end;}
 .unit-name{
-  font-size:24px;font-weight:900;letter-spacing:2px;
-  color:#FFFFFF;font-family:'Orbitron',sans-serif;line-height:1.1;
+  font-size:18px;font-weight:700;letter-spacing:1.5px;
+  color:#FFFFFF;font-family:var(--font-ndot);line-height:1.1;
 }
-.unit-class{font-size:13px;font-weight:600;color:#8F98A8;margin-top:4px;}
-.unit-class b{color:#FFAA00;font-weight:800;}
+.unit-class{
+  font-size:11px;font-weight:600;color:var(--text-muted);margin-top:4px;
+  font-family:var(--font-mono);
+}
 
 /* Stat Telemetry Bars */
-.stats-card{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
+.stats-card{display:flex;flex-direction:column;gap:11px;}
 .stat-row{display:flex;flex-direction:column;gap:5px;}
 .stat-meta{
   display:flex;justify-content:space-between;align-items:center;
-  font-size:12px;font-weight:700;letter-spacing:1px;color:#D8DEE9;
+  font-size:11px;font-weight:700;letter-spacing:1px;color:#D4D4D4;
+  font-family:var(--font-mono);
 }
-.stat-lbl{color:#B0B8C8;}
-.stat-num{font-family:'Share Tech Mono',monospace;font-size:14px;color:#FFAA00;font-weight:700;}
+.stat-lbl{color:var(--text-muted);}
+.stat-num{font-family:var(--font-ndot);font-size:11px;color:#FFFFFF;font-weight:700;}
 .stat-track{
   width:100%;height:6px;background:rgba(255,255,255,0.08);
-  border-radius:3px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.05);
+  border-radius:var(--pill-radius);overflow:hidden;position:relative;
 }
 .stat-fill{
-  height:100%;background:linear-gradient(90deg, #FF7700 0%, #FFAA00 100%);
-  border-radius:3px;box-shadow:0 0 10px rgba(255,170,0,0.5);
+  height:100%;background:#FFFFFF;border-radius:var(--pill-radius);
+  box-shadow:0 0 10px rgba(255,255,255,0.5);
 }
 
 /* Skills Section */
-.skills-section{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.skills-section{display:flex;flex-direction:column;gap:8px;}
 .skills-title{
-  font-size:12px;font-weight:800;letter-spacing:2px;
-  color:#8F98A8;font-family:'Inter',sans-serif;
+  font-size:10.5px;font-weight:700;letter-spacing:2px;
+  color:var(--text-muted);font-family:var(--font-mono);
 }
 .skills-row{display:flex;gap:12px;}
 .skill-box{
-  width:44px;height:44px;background:#181D28;border:1px solid rgba(255,255,255,0.14);
-  border-radius:4px;display:flex;align-items:center;justify-content:center;
-  color:#DDE3ED;box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  width:44px;height:44px;background:#050505;border:1px solid rgba(255,255,255,0.16);
+  border-radius:14px;display:flex;align-items:center;justify-content:center;
+  color:#FFFFFF;box-shadow:0 2px 6px rgba(0,0,0,0.5);
   transition:all .15s;cursor:pointer;
 }
 .skill-box:hover{
-  background:#232A3B;border-color:#FFAA00;color:#FFAA00;
-  transform:translateY(-2px);box-shadow:0 0 15px rgba(255,170,0,0.3);
+  background:#FFFFFF;border-color:#FFFFFF;color:#000000;
+  transform:translateY(-2px);box-shadow:0 0 20px rgba(255,255,255,0.4);
 }
-.skill-box svg{width:22px;height:22px;}
+.skill-box svg{width:20px;height:20px;}
 
-/* Tactical Launch Button */
-.launch-wrap{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+/* Nothing OS Deploy Pill Button */
+.launch-wrap{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
 .tactical-start-btn{
-  position:relative;width:100%;background:#0E121B;color:#FFFFFF;
-  border:1px solid rgba(255,255,255,0.25);border-radius:3px;padding:16px 24px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;font-weight:900;letter-spacing:5px;font-family:'Orbitron',sans-serif;
-  box-shadow:0 6px 20px rgba(0,0,0,0.5);transition:all .2s ease;
+  position:relative;width:100%;background:#FFFFFF;color:#000000;
+  border:1px solid #FFFFFF;border-radius:var(--pill-radius);padding:18px 24px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-size:14px;font-weight:700;letter-spacing:2px;font-family:var(--font-ndot);
+  box-shadow:0 6px 24px rgba(255,255,255,0.25);transition:all .2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .tactical-start-btn:hover{
-  background:#FFAA00;color:#07080C;border-color:#FFAA00;
-  box-shadow:0 0 30px rgba(255,170,0,0.6);transform:translateY(-2px);
+  background:#000000;color:#FFFFFF;border-color:#FFFFFF;
+  box-shadow:0 0 35px rgba(255,255,255,0.5),0 0 15px var(--nothing-red);
+  transform:translateY(-2px);
 }
-.tactical-start-btn:hover .bracket{border-color:#07080C;}
 .tactical-start-btn:active{transform:translateY(0);}
-.bracket{
-  position:absolute;width:9px;height:9px;border-color:#FFFFFF;
-  border-style:solid;pointer-events:none;transition:border-color .2s;
-}
-.b-tl{top:6px;left:6px;border-width:2px 0 0 2px;}
-.b-tr{top:6px;right:6px;border-width:2px 2px 0 0;}
-.b-bl{bottom:6px;left:6px;border-width:0 0 2px 2px;}
-.b-br{bottom:6px;right:6px;border-width:0 2px 2px 0;}
 .launch-hint{
-  font-size:10px;color:#8F98A8;text-align:center;
-  letter-spacing:1.5px;font-family:'Share Tech Mono',monospace;
+  font-size:10px;color:var(--text-muted);text-align:center;
+  letter-spacing:1.5px;font-family:var(--font-mono);
 }
 
 /* ═════════════════════════════════════════════════════════════
-   OVERDRIVE LEVEL-UP MODAL
+   NOTHING OS LEVEL-UP MODAL (SQUIRCLE CARDS)
    ═════════════════════════════════════════════════════════════ */
 #lu{
   position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
-  align-items:center;justify-content:center;background:rgba(7,9,14,0.94);
-  backdrop-filter:blur(14px);pointer-events:all;padding:20px;
+  align-items:center;justify-content:center;background:rgba(0,0,0,0.95);
+  backdrop-filter:blur(24px);pointer-events:all;padding:24px;
 }
 #lu.on{display:flex;}
 #lu-t{
-  font-family:'Orbitron',monospace;font-size:clamp(22px, 4.5vw, 28px);font-weight:900;
-  color:#FFFFFF;letter-spacing:clamp(4px, 1.5vw, 8px);
-  text-shadow:0 0 24px rgba(255,119,0,0.9),0 0 50px rgba(255,119,0,0.5);
-  margin-bottom:6px;text-align:center;
+  font-family:var(--font-ndot);font-size:clamp(18px, 4vw, 24px);font-weight:700;
+  color:#FFFFFF;letter-spacing:clamp(2px, 1vw, 4px);
+  text-shadow:0 0 20px rgba(255,255,255,0.4);
+  margin-bottom:6px;text-align:center;display:flex;align-items:center;gap:10px;
 }
-#lu-s{font-size:clamp(10px, 2vw, 12px);color:#8F98A8;letter-spacing:4px;margin-bottom:28px;text-align:center;}
-#cr{display:flex;gap:clamp(10px, 2vw, 18px);max-width:96vw;justify-content:center;flex-wrap:wrap;}
+#lu-s{
+  font-family:var(--font-mono);font-size:clamp(10px, 1.8vw, 11px);
+  color:var(--text-muted);letter-spacing:3px;margin-bottom:28px;text-align:center;
+}
+#cr{display:flex;gap:clamp(12px, 2vw, 20px);max-width:96vw;justify-content:center;flex-wrap:wrap;}
 
-.card .ctg{
-  font-family:'Share Tech Mono',monospace;font-size:7.5px;font-weight:700;
-  letter-spacing:1px;padding:2px 6px;border-radius:2px;margin-bottom:6px;
-  text-transform:uppercase;border:1px solid rgba(255,255,255,0.15);
-}
 .card{
-  width:clamp(120px, 28vw, 160px);min-height:215px;
-  background:linear-gradient(160deg, #161B26 0%, #0E121A 100%);
-  color:#FFFFFF;border-radius:6px;padding:14px 10px 12px;
+  width:clamp(130px, 28vw, 175px);min-height:225px;
+  background:rgba(14,14,14,0.92);color:#FFFFFF;
+  border-radius:var(--squircle-radius);padding:18px 14px 16px;
   cursor:pointer;pointer-events:all;position:relative;overflow:hidden;
-  transition:transform .15s,box-shadow .15s,border-color .15s;
+  transition:transform .18s cubic-bezier(0.16, 1, 0.3, 1),box-shadow .18s,border-color .18s;
   display:flex;flex-direction:column;align-items:center;
-  box-shadow:0 12px 36px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.16);
+  box-shadow:0 14px 36px rgba(0,0,0,0.8);border:1px solid rgba(255,255,255,0.16);
+  backdrop-filter:blur(16px);
 }
 .card:hover{
-  transform:translateY(-6px);
-  box-shadow:0 16px 40px rgba(0,0,0,0.8);
+  transform:translateY(-8px);
+  border-color:#FFFFFF;
+  box-shadow:0 20px 48px rgba(255,255,255,0.12),0 0 25px rgba(215,25,33,0.25);
 }
-.chk{position:absolute;top:7px;right:9px;font-size:10px;font-weight:800;color:rgba(255,255,255,0.4);letter-spacing:1px;}
+.chk{
+  position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;
+  color:rgba(255,255,255,0.4);letter-spacing:1px;font-family:var(--font-mono);
+}
+.card .ctg{
+  font-family:var(--font-mono);font-size:7.5px;font-weight:700;
+  letter-spacing:1px;padding:3px 8px;border-radius:var(--pill-radius);margin-bottom:10px;
+  text-transform:uppercase;border:1px solid rgba(255,255,255,0.18);
+  background:rgba(255,255,255,0.06);display:flex;align-items:center;gap:4px;
+}
 .cgl{
-  width:46px;height:46px;background:#0A0D14;border:1px solid rgba(255,255,255,0.15);
-  border-radius:6px;display:flex;align-items:center;justify-content:center;
+  width:50px;height:50px;background:#050505;border:1px solid rgba(255,255,255,0.18);
+  border-radius:16px;display:flex;align-items:center;justify-content:center;
   font-size:24px;margin-bottom:10px;line-height:1;
-  box-shadow:inset 0 0 10px rgba(0,0,0,0.6);
+  box-shadow:inset 0 0 10px rgba(0,0,0,0.8);
 }
 .cnm{
-  font-family:'Orbitron',monospace;font-size:9.5px;font-weight:800;
-  color:#FFFFFF;letter-spacing:1px;text-align:center;margin-bottom:4px;line-height:1.2;
+  font-family:var(--font-ndot);font-size:10px;font-weight:700;
+  color:#FFFFFF;letter-spacing:0.8px;text-align:center;margin-bottom:5px;line-height:1.25;
 }
-.clv{font-size:9.5px;text-align:center;margin-bottom:6px;letter-spacing:1px;font-weight:800;}
-.cds{font-size:9.5px;color:#9EA5B0;text-align:center;line-height:1.45;flex:1;}
+.clv{
+  font-size:9.5px;text-align:center;margin-bottom:6px;letter-spacing:1px;
+  font-weight:700;font-family:var(--font-mono);color:#FFFFFF;
+}
+.cds{
+  font-size:9.5px;color:var(--text-muted);text-align:center;line-height:1.45;
+  flex:1;font-family:var(--font-sans);
+}
 .cnx{
-  font-size:8.5px;color:#E2E6EC;font-weight:700;text-align:center;line-height:1.35;
-  border-top:1px solid rgba(255,255,255,0.1);padding-top:6px;margin-top:6px;width:100%;
+  font-size:8.5px;color:var(--text-secondary);font-weight:600;text-align:center;
+  line-height:1.35;border-top:1px dotted rgba(255,255,255,0.15);padding-top:7px;
+  margin-top:7px;width:100%;font-family:var(--font-mono);
 }
 
 /* ═════════════════════════════════════════════════════════════
-   GAME OVER MODAL
+   NOTHING OS GAME OVER MODAL (DIAGNOSTIC CARD)
    ═════════════════════════════════════════════════════════════ */
 #go{
   position:absolute;inset:0;z-index:40;display:none;flex-direction:column;
-  align-items:center;justify-content:center;background:rgba(6,8,12,0.96);
-  backdrop-filter:blur(14px);pointer-events:all;padding:24px;
+  align-items:center;justify-content:center;background:rgba(0,0,0,0.96);
+  backdrop-filter:blur(24px);pointer-events:all;padding:24px;
 }
 #go.on{display:flex;}
+.go-card{
+  background:rgba(12,12,12,0.9);border:1px solid rgba(255,255,255,0.16);
+  border-radius:var(--squircle-radius);padding:28px 36px;backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;align-items:center;max-width:440px;width:100%;
+  box-shadow:0 24px 60px rgba(0,0,0,0.8);
+}
 .got{
-  font-family:'Orbitron',monospace;font-size:clamp(24px, 5.5vw, 36px);font-weight:900;
-  color:#FF3344;letter-spacing:clamp(4px, 1.5vw, 8px);
-  text-shadow:0 0 30px #FF3344,0 0 60px rgba(255,51,68,0.6);margin-bottom:24px;text-align:center;
+  font-family:var(--font-ndot);font-size:clamp(18px, 4.5vw, 24px);font-weight:700;
+  color:var(--nothing-red);letter-spacing:clamp(2px, 1vw, 3px);
+  text-shadow:0 0 25px var(--nothing-red);margin-bottom:20px;text-align:center;
+  display:flex;align-items:center;gap:8px;
 }
-.gos{font-size:clamp(11px, 2.2vw, 14px);color:#9EA5B0;letter-spacing:2px;margin-bottom:10px;text-align:center;}
-.gos span{color:#FFAA00;font-weight:700;}
-.go-actions{display:flex;gap:14px;margin-top:30px;flex-wrap:wrap;justify-content:center;}
+.go-stats{
+  width:100%;display:flex;flex-direction:column;gap:8px;margin-bottom:24px;
+  border-top:1px dotted rgba(255,255,255,0.12);border-bottom:1px dotted rgba(255,255,255,0.12);
+  padding:14px 0;
+}
+.gos{
+  font-size:11.5px;color:var(--text-muted);letter-spacing:1.5px;
+  font-family:var(--font-mono);display:flex;justify-content:space-between;
+}
+.gos span{color:#FFFFFF;font-weight:700;font-family:var(--font-ndot);}
+.go-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;width:100%;}
 .go-btn{
-  font-size:13px;font-weight:800;letter-spacing:2.5px;padding:12px 28px;
-  border-radius:4px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:1.5px;padding:14px 24px;
+  border-radius:var(--pill-radius);cursor:pointer;transition:all .2s;
+  font-family:var(--font-ndot);display:inline-flex;align-items:center;gap:8px;
 }
-.restart-btn{background:#FFAA00;color:#141720;border:none;box-shadow:0 0 20px rgba(255,170,0,0.35);}
-.restart-btn:hover{background:#FFB726;transform:scale(1.04);}
-.hangar-btn{background:rgba(255,255,255,0.1);color:#FFFFFF;border:1px solid rgba(255,255,255,0.25);}
-.hangar-btn:hover{background:rgba(255,255,255,0.2);border-color:#FFFFFF;}
+.restart-btn{
+  background:#FFFFFF;color:#000000;border:1px solid #FFFFFF;
+  box-shadow:0 0 20px rgba(255,255,255,0.3);
+}
+.restart-btn:hover{
+  background:var(--nothing-red);color:#FFFFFF;border-color:var(--nothing-red);
+  box-shadow:0 0 30px var(--nothing-red);transform:scale(1.03);
+}
+.hangar-btn{
+  background:rgba(255,255,255,0.06);color:#FFFFFF;
+  border:1px solid rgba(255,255,255,0.2);
+}
+.hangar-btn:hover{
+  background:#FFFFFF;color:#000000;border-color:#FFFFFF;
+  transform:scale(1.03);
+}
 
 /* ═════════════════════════════════════════════════════════════
    RESPONSIVENESS
@@ -345,7 +403,7 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 @media(max-width:960px){
   .hangar-body{
     grid-template-columns:1fr;grid-template-rows:auto auto auto;
-    overflow-y:auto;gap:20px;padding:14px 18px 30px;align-items:start;
+    overflow-y:auto;gap:20px;padding:14px 20px 30px;align-items:start;
   }
   .hangar-left{order:2;max-height:none;}
   .hangar-center{order:1;height:280px;}
@@ -353,11 +411,10 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   .hangar-right{order:3;max-height:none;padding-left:0;}
 }
 @media(max-width:540px){
-  .hangar-top{padding:0 16px;height:58px;}
-  .ht-title{font-size:18px;}
-  .credit-badge{padding:0 10px;font-size:12px;}
-  .level-val{font-size:48px;}
-  .unit-name{font-size:20px;}
+  .hangar-top{padding:0 16px;height:62px;}
+  .ht-title{font-size:16px;}
+  .level-val{font-size:42px;}
+  .unit-name{font-size:16px;}
 }
 </style>
 </head>
@@ -367,34 +424,33 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
   <canvas id="c"></canvas>
 
   <!-- Fullscreen Toggle -->
-  <button id="fs-btn" type="button">[ ⛶ FULLSCREEN ]</button>
+  <button id="fs-btn" type="button"><span class="red-pip">●</span> FULLSCREEN</button>
 
   <!-- ═════════════════════════════════════════════════════════════
-       TACTICAL HANGAR DASHBOARD
+       NOTHING OS TACTICAL HANGAR DASHBOARD
        ═════════════════════════════════════════════════════════════ -->
   <div id="ts">
     <!-- Top Telemetry Bar -->
     <header class="hangar-top">
       <div class="ht-left">
-        <div class="back-tag" id="back-tag-btn" title="Back"><span class="arrow">◀</span></div>
-        <h1 class="ht-title">BATTLEFRAME <span class="ht-sub">// TACTICAL HANGAR</span></h1>
+        <div class="nothing-icon-btn" id="back-tag-btn" title="Back"><span class="arrow">◀</span></div>
+        <h1 class="ht-title">
+          BATTLEFRAME
+          <span class="nothing-pill-tag"><span class="red-pip blink">●</span> OS 3.0</span>
+        </h1>
       </div>
       <div class="ht-right">
-        <div class="ht-badge gear-badge" title="Settings">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="nothing-pill-widget">
+          <span class="red-pip blink">●</span> MECHA ONLINE
+        </div>
+        <div class="nothing-pill-widget">
+          SYS // B-01
+        </div>
+        <div class="nothing-icon-btn" title="Settings">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
-        </div>
-        <div class="ht-badge credit-badge">
-          <span class="cred-num">2523</span>
-          <span class="cred-plus">+</span>
-        </div>
-        <div class="ht-badge signal-badge" title="Signal: Full">
-          <div class="sig-bar s1"></div><div class="sig-bar s2"></div><div class="sig-bar s3"></div><div class="sig-bar s4"></div>
-        </div>
-        <div class="ht-badge batt-badge" title="Power: 85%">
-          <div class="batt-shell"><div class="batt-fill"></div></div>
         </div>
       </div>
     </header>
@@ -403,44 +459,44 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
     <div class="hangar-body">
       <!-- Left Column: Loadout -->
       <aside class="hangar-left">
-        <div class="panel-section-tag">MECHA SYSTEMS // CLASS S</div>
+        <div class="panel-section-tag"><span class="red-pip">●</span> ( 01 ) CORE SYSTEMS</div>
         
         <div class="sys-card active">
           <div class="sys-icon">⚡</div>
           <div class="sys-meta">
             <div class="sys-name">TWIN PULSE RAILGUNS</div>
-            <div class="sys-desc">Gauntlet-mounted cannons · Steady fire & auto-lock</div>
+            <div class="sys-desc">Gauntlet cannons · White laser bloom & auto-lock</div>
           </div>
         </div>
 
         <div class="sys-card">
           <div class="sys-icon">◈</div>
           <div class="sys-meta">
-            <div class="sys-name">FORTRESS BARRIER PERIMETER</div>
-            <div class="sys-desc">Shield defense line · Prevents alien swarm breaches</div>
+            <div class="sys-name">GLYPH BARRIER PERIMETER</div>
+            <div class="sys-desc">Segmented LED shield · Prevents perimeter breaches</div>
           </div>
         </div>
 
         <div class="sys-card">
           <div class="sys-icon">▶▶</div>
           <div class="sys-meta">
-            <div class="sys-name">BACKPACK JUMP THRUSTERS</div>
-            <div class="sys-desc">High-output twin verniers · Combat roll banking</div>
+            <div class="sys-name">VERNIER JUMP THRUSTERS</div>
+            <div class="sys-desc">High-output twin thrusters · Roll banking maneuvers</div>
           </div>
         </div>
 
         <div class="sys-card">
           <div class="sys-icon">◎</div>
           <div class="sys-meta">
-            <div class="sys-name">GALAXY DEFENSE SENSORS</div>
-            <div class="sys-desc">Wave radar tracking · Prioritizes high-threat runners</div>
+            <div class="sys-name">TELEMETRY WAVE RADAR</div>
+            <div class="sys-desc">Wave tracking matrix · Target prioritization</div>
           </div>
         </div>
 
         <div class="hangar-instructions">
-          <span>NAVIGATION:</span> A / D, ARROWS, or TOUCH / DRAG<br>
-          <span>BALLISTICS:</span> MOVING = STRAIGHT | IDLE = AUTO-AIM<br>
-          <span>DEFENSE:</span> PREVENT ENEMIES FROM BREACHING PERIMETER
+          <span>( STEER )</span> A / D, ARROWS, or TOUCH / DRAG<br>
+          <span>( AIM )</span> MOVING = STRAIGHT | IDLE = AUTO-AIM<br>
+          <span>( MISSION )</span> PREVENT BREACHES OF GLYPH PERIMETER
         </div>
       </aside>
 
@@ -453,60 +509,64 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
       <!-- Right Column: Specs & Launch -->
       <aside class="hangar-right">
-        <div class="level-header">
-          <div class="level-box">
-            <div class="level-val">78</div>
-            <div class="level-tag">LEVEL</div>
-          </div>
-          <div class="unit-title-box">
-            <h2 class="unit-name">BATTLEFRAME</h2>
-            <div class="unit-class">Class <b>S</b> // READY</div>
-          </div>
-        </div>
+        <div class="panel-section-tag"><span class="red-pip">●</span> ( 02 ) SPECIFICATIONS</div>
 
-        <!-- Stat Rows -->
-        <div class="stats-card">
-          <div class="stat-row">
-            <div class="stat-meta">
-              <span class="stat-lbl">ATTACK</span>
-              <span class="stat-num">120</span>
+        <div class="unit-widget">
+          <div class="level-header">
+            <div class="level-box">
+              <div class="level-val">78</div>
+              <div class="level-tag">FRAME LEVEL</div>
             </div>
-            <div class="stat-track"><div class="stat-fill" style="width: 80%;"></div></div>
+            <div class="unit-title-box">
+              <h2 class="unit-name">BATTLEFRAME</h2>
+              <div class="unit-class"><span class="nothing-pill-tag red-bg">CLASS S</span></div>
+            </div>
           </div>
-          <div class="stat-row">
-            <div class="stat-meta">
-              <span class="stat-lbl">DEFENSE</span>
-              <span class="stat-num">30</span>
+
+          <!-- Stat Rows -->
+          <div class="stats-card">
+            <div class="stat-row">
+              <div class="stat-meta">
+                <span class="stat-lbl">ATTACK</span>
+                <span class="stat-num">120</span>
+              </div>
+              <div class="stat-track"><div class="stat-fill" style="width: 80%;"></div></div>
             </div>
-            <div class="stat-track"><div class="stat-fill" style="width: 30%;"></div></div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-meta">
-              <span class="stat-lbl">ACCURACY</span>
-              <span class="stat-num">28</span>
+            <div class="stat-row">
+              <div class="stat-meta">
+                <span class="stat-lbl">DEFENSE</span>
+                <span class="stat-num">30</span>
+              </div>
+              <div class="stat-track"><div class="stat-fill" style="width: 30%;"></div></div>
             </div>
-            <div class="stat-track"><div class="stat-fill" style="width: 56%;"></div></div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-meta">
-              <span class="stat-lbl">DEXTRETY</span>
-              <span class="stat-num">220</span>
+            <div class="stat-row">
+              <div class="stat-meta">
+                <span class="stat-lbl">ACCURACY</span>
+                <span class="stat-num">28</span>
+              </div>
+              <div class="stat-track"><div class="stat-fill" style="width: 56%;"></div></div>
             </div>
-            <div class="stat-track"><div class="stat-fill" style="width: 73%;"></div></div>
+            <div class="stat-row">
+              <div class="stat-meta">
+                <span class="stat-lbl">DEXTERITY</span>
+                <span class="stat-num">220</span>
+              </div>
+              <div class="stat-track"><div class="stat-fill" style="width: 73%;"></div></div>
+            </div>
           </div>
         </div>
 
         <!-- Skills Badges -->
         <div class="skills-section">
-          <div class="skills-title">SKILLS</div>
+          <div class="skills-title">HARDWARE SLOTS</div>
           <div class="skills-row">
-            <div class="skill-box" title="Tesla Matrix Arc" style="color:var(--accent-cyan)">
+            <div class="skill-box" title="Tesla Matrix Arc">
               <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/></svg>
             </div>
-            <div class="skill-box" title="Inferno Thermal Beam" style="color:var(--accent-red)">
+            <div class="skill-box" title="Prism Pulse Lance">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
             </div>
-            <div class="skill-box" title="Hive Swarm Missiles" style="color:var(--accent-purple)">
+            <div class="skill-box" title="Skyfire Missile Array">
               <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/><circle cx="17" cy="7" r="3.5"/><circle cx="7" cy="17" r="3.5"/></svg>
             </div>
           </div>
@@ -515,11 +575,8 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
         <!-- Tactical Launch Button -->
         <div class="launch-wrap">
           <button class="tactical-start-btn" id="tb" type="button">
-            <span class="bracket b-tl"></span>
-            <span class="bracket b-tr"></span>
-            <span class="bracket b-bl"></span>
-            <span class="bracket b-br"></span>
-            <span>START</span>
+            <span class="red-pip">●</span>
+            <span>DEPLOY SORTIE</span>
           </button>
           <div class="launch-hint">PRESS ENTER OR TAP TO LAUNCH</div>
         </div>
@@ -529,22 +586,26 @@ canvas#c{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
   <!-- Level-Up Modal -->
   <div id="lu">
-    <div id="lu-t">⚡ MODULE UPGRADE ⚡</div>
-    <div id="lu-s">SELECT TACTICAL COMBAT MODULE</div>
+    <div id="lu-t"><span class="red-pip">●</span> MODULE UPGRADE <span class="red-pip">●</span></div>
+    <div id="lu-s">SELECT TACTICAL HARDWARE MODULE</div>
     <div id="cr"></div>
   </div>
 
   <!-- Unit Destroyed Modal -->
   <div id="go">
-    <div class="got">PERIMETER OVERRUN</div>
-    <div class="gos">WAVE REACHED &nbsp;·&nbsp; <span id="gwv">1</span></div>
-    <div class="gos">SURVIVAL TIME &nbsp;·&nbsp; <span id="gt">0s</span></div>
-    <div class="gos">FINAL SCORE &nbsp;·&nbsp; <span id="gs">0</span></div>
-    <div class="gos">ALIENS PURGED &nbsp;·&nbsp; <span id="gk">0</span></div>
-    <div class="gos">OVERDRIVE LEVEL &nbsp;·&nbsp; <span id="gl">0</span></div>
-    <div class="go-actions">
-      <button class="go-btn restart-btn" id="gr" type="button">[ RESTART (R) ]</button>
-      <button class="go-btn hangar-btn" id="gh" type="button">[ HANGAR (H) ]</button>
+    <div class="go-card">
+      <div class="got"><span class="red-pip">●</span> PERIMETER OVERRUN</div>
+      <div class="go-stats">
+        <div class="gos"><span>WAVE REACHED</span><span id="gwv">1</span></div>
+        <div class="gos"><span>SURVIVAL TIME</span><span id="gt">0s</span></div>
+        <div class="gos"><span>FINAL SCORE</span><span id="gs">0</span></div>
+        <div class="gos"><span>ALIENS PURGED</span><span id="gk">0</span></div>
+        <div class="gos"><span>OVERDRIVE LEVEL</span><span id="gl">0</span></div>
+      </div>
+      <div class="go-actions">
+        <button class="go-btn restart-btn" id="gr" type="button"><span class="red-pip">●</span> RESTART [R]</button>
+        <button class="go-btn hangar-btn" id="gh" type="button">HANGAR [H]</button>
+      </div>
     </div>
   </div>
 </div>
@@ -571,43 +632,67 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   const cx = w * 0.5, cy = h * 0.48;
   const s = Math.min(w, h) * 0.38;
 
-  // 1. Launch Platform Base (Clean circular pedestal, NO graph/grid lines)
+  // 1. Nothing Glyph Interface Platform Base (Circular LED Matrix)
   ctx.save();
   ctx.translate(cx, cy);
-  ctx.strokeStyle = 'rgba(255, 170, 0, 0.35)';
-  ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.arc(0, 0, s * 1.22, 0, Math.PI * 2); ctx.stroke();
 
-  ctx.strokeStyle = 'rgba(255, 170, 0, 0.12)';
-  ctx.beginPath(); ctx.arc(0, 0, s * 0.85, 0, Math.PI * 2); ctx.stroke();
+  // Outer segmented Glyph LED arc
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.lineWidth = 2.5;
+  ctx.shadowColor = 'rgba(255, 255, 255, 0.7)';
+  ctx.shadowBlur = 14;
+  ctx.setLineDash([32, 14, 8, 14]);
+  ctx.beginPath(); ctx.arc(0, 0, s * 1.25, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.shadowBlur = 0;
 
-  // Subtle rotating telemetry arcs
+  // Inner subtle dotted concentric track
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+  ctx.lineWidth = 1.2;
+  ctx.setLineDash([3, 7]);
+  ctx.beginPath(); ctx.arc(0, 0, s * 0.90, 0, Math.PI * 2); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Cardinal Nothing Red Status Pips (N, S, E, W)
+  const pipR = s * 1.25;
+  const pips = [
+    [0, -pipR], [pipR, 0], [0, pipR], [-pipR, 0]
+  ];
+  ctx.fillStyle = '#D71921';
+  ctx.shadowColor = '#D71921';
+  ctx.shadowBlur = 10;
+  for(const [px, py] of pips){
+    ctx.beginPath(); ctx.arc(px, py, 3.5, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.shadowBlur = 0;
+
+  // Rotating outer telemetry index
   ctx.save();
-  ctx.rotate(time * 0.12);
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([12, 18]);
-  ctx.beginPath(); ctx.arc(0, 0, s * 1.35, 0, Math.PI * 2); ctx.stroke();
+  ctx.rotate(time * 0.08);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([14, 22]);
+  ctx.beginPath(); ctx.arc(0, 0, s * 1.38, 0, Math.PI * 2); ctx.stroke();
   ctx.setLineDash([]);
   ctx.restore();
   ctx.restore();
 
-  // 2. Humanoid Armored Mecha Body (Top-Down View)
+  // 2. Humanoid Armored Mecha Body (Ceramic White & Carbon Black)
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(tilt);
 
-  // A. Backpack Booster Exhaust Plumes (Pulsing Flames)
+  // A. Vernier Booster Exhaust (Stark White Core + Crimson Corona)
   const pulse = 0.85 + 0.15 * Math.sin(time * 18);
   const exL = s * 0.44 * pulse;
   const flCol = ctx.createLinearGradient(0, s * 0.45, 0, s * 0.45 + exL);
   flCol.addColorStop(0, '#FFFFFF');
-  flCol.addColorStop(0.2, '#FFAA00');
-  flCol.addColorStop(0.7, '#FF4400');
+  flCol.addColorStop(0.25, '#FFFFFF');
+  flCol.addColorStop(0.7, '#D71921');
   flCol.addColorStop(1, 'transparent');
   ctx.fillStyle = flCol;
-  ctx.shadowColor = '#FF6600';
-  ctx.shadowBlur = 24;
+  ctx.shadowColor = '#D71921';
+  ctx.shadowBlur = 20;
   // Left booster flare
   ctx.beginPath();
   ctx.moveTo(-s * 0.26, s * 0.42); ctx.lineTo(-s * 0.14, s * 0.42); ctx.lineTo(-s * 0.20, s * 0.42 + exL);
@@ -619,68 +704,95 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.shadowBlur = 0;
 
   // B. Trailing Armored Legs & Skirt Armor (Zero-g flight stance)
-  ctx.fillStyle = '#11141D';
+  ctx.fillStyle = '#0A0A0A';
   // Waist frame & hip skirt
   ctx.fillRect(-s * 0.24, s * 0.18, s * 0.48, s * 0.18);
   // Left armored leg
-  ctx.fillStyle = '#CBD2DE';
+  ctx.fillStyle = '#222222';
   ctx.fillRect(-s * 0.26, s * 0.25, s * 0.18, s * 0.38);
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(-s * 0.24, s * 0.28, s * 0.14, s * 0.25);
   // Right armored leg
-  ctx.fillStyle = '#CBD2DE';
+  ctx.fillStyle = '#222222';
   ctx.fillRect(s * 0.08, s * 0.25, s * 0.18, s * 0.38);
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(s * 0.10, s * 0.28, s * 0.14, s * 0.25);
 
   // C. Heavy Backpack Booster Unit (Mounted behind spine)
-  ctx.fillStyle = '#161A24';
+  ctx.fillStyle = '#121212';
   ctx.fillRect(-s * 0.30, s * 0.05, s * 0.60, s * 0.32);
   // Twin rocket nozzle housings
-  ctx.fillStyle = '#222836';
+  ctx.fillStyle = '#1C1C1C';
   ctx.fillRect(-s * 0.28, s * 0.32, s * 0.16, s * 0.12);
   ctx.fillRect(s * 0.12, s * 0.32, s * 0.16, s * 0.12);
+  // Vertical white Glyph LED strips on backpack
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = '#FFFFFF';
+  ctx.shadowBlur = 8;
+  ctx.fillRect(-s * 0.22, s * 0.08, s * 0.03, s * 0.22);
+  ctx.fillRect(s * 0.19, s * 0.08, s * 0.03, s * 0.22);
+  ctx.shadowBlur = 0;
 
-  // D. Broad Armored Shoulder Pauldrons (Left & Right - Chunky Robot Shoulders)
+  // D. Broad Armored Shoulder Pauldrons (Ceramic White + White Glyph LED Bars)
   // Left Shoulder Pauldron Block
-  ctx.fillStyle = '#181C26';
+  ctx.fillStyle = '#141414';
   ctx.fillRect(-s * 0.58, -s * 0.18, s * 0.26, s * 0.40);
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(-s * 0.56, -s * 0.16, s * 0.22, s * 0.36);
-  ctx.fillStyle = '#E2E7F0';
+  ctx.fillStyle = '#F0F0F2';
   ctx.fillRect(-s * 0.54, -s * 0.12, s * 0.18, s * 0.28);
-  ctx.strokeStyle = '#141720'; ctx.lineWidth = 1.8;
+  ctx.strokeStyle = '#0A0A0A'; ctx.lineWidth = 1.8;
   ctx.strokeRect(-s * 0.56, -s * 0.16, s * 0.22, s * 0.36);
+  // Glowing White Glyph LED strip along left shoulder
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = '#FFFFFF'; ctx.shadowBlur = 10;
+  ctx.fillRect(-s * 0.57, -s * 0.14, s * 0.03, s * 0.30);
+  ctx.shadowBlur = 0;
 
   // Right Shoulder Pauldron Block
-  ctx.fillStyle = '#181C26';
+  ctx.fillStyle = '#141414';
   ctx.fillRect(s * 0.32, -s * 0.18, s * 0.26, s * 0.40);
   ctx.fillStyle = '#FFFFFF';
   ctx.fillRect(s * 0.34, -s * 0.16, s * 0.22, s * 0.36);
-  ctx.fillStyle = '#E2E7F0';
+  ctx.fillStyle = '#F0F0F2';
   ctx.fillRect(s * 0.36, -s * 0.12, s * 0.18, s * 0.28);
   ctx.strokeRect(s * 0.34, -s * 0.16, s * 0.22, s * 0.36);
+  // Glowing White Glyph LED strip along right shoulder
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = '#FFFFFF'; ctx.shadowBlur = 10;
+  ctx.fillRect(s * 0.54, -s * 0.14, s * 0.03, s * 0.30);
+  ctx.shadowBlur = 0;
 
   // E. Robotic Arms & Forward Weapon Gauntlets
   // Left arm & cannon
-  ctx.fillStyle = '#181C26';
+  ctx.fillStyle = '#141414';
   ctx.fillRect(-s * 0.52, -s * 0.48, s * 0.14, s * 0.35); // Forearm
-  ctx.fillStyle = '#12151E';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(-s * 0.50, -s * 0.46, s * 0.10, s * 0.28);
+  ctx.fillStyle = '#0A0A0A';
   ctx.fillRect(-s * 0.48, -s * 0.90, s * 0.08, s * 0.65); // Railgun barrel
-  ctx.fillStyle = '#FFAA00'; // Amber coils
-  ctx.fillRect(-s * 0.49, -s * 0.92, s * 0.10, s * 0.06);
-  ctx.fillRect(-s * 0.49, -s * 0.72, s * 0.10, s * 0.04);
+  // White muzzle cap with red targeting aperture
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(-s * 0.49, -s * 0.92, s * 0.10, s * 0.04);
+  ctx.fillStyle = '#D71921'; ctx.shadowColor = '#D71921'; ctx.shadowBlur = 6;
+  ctx.fillRect(-s * 0.46, -s * 0.82, s * 0.04, s * 0.04);
+  ctx.shadowBlur = 0;
 
   // Right arm & cannon
-  ctx.fillStyle = '#181C26';
+  ctx.fillStyle = '#141414';
   ctx.fillRect(s * 0.38, -s * 0.48, s * 0.14, s * 0.35); // Forearm
-  ctx.fillStyle = '#12151E';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(s * 0.40, -s * 0.46, s * 0.10, s * 0.28);
+  ctx.fillStyle = '#0A0A0A';
   ctx.fillRect(s * 0.40, -s * 0.90, s * 0.08, s * 0.65); // Railgun barrel
-  ctx.fillStyle = '#FFAA00'; // Amber coils
-  ctx.fillRect(s * 0.39, -s * 0.92, s * 0.10, s * 0.06);
-  ctx.fillRect(s * 0.39, -s * 0.72, s * 0.10, s * 0.04);
+  // White muzzle cap with red targeting aperture
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(s * 0.39, -s * 0.92, s * 0.10, s * 0.04);
+  ctx.fillStyle = '#D71921'; ctx.shadowColor = '#D71921'; ctx.shadowBlur = 6;
+  ctx.fillRect(s * 0.42, -s * 0.82, s * 0.04, s * 0.04);
+  ctx.shadowBlur = 0;
 
-  // F. Central Chest Chassis & Cockpit Armor
+  // F. Central Chest Chassis & Cockpit Armor (Ceramic White)
   ctx.fillStyle = '#FFFFFF';
   ctx.beginPath();
   ctx.moveTo(-s * 0.24, -s * 0.12);
@@ -689,17 +801,20 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.lineTo(-s * 0.20, s * 0.22);
   ctx.closePath(); ctx.fill();
 
-  // Chest Vents & Panel Seams
-  ctx.fillStyle = '#141720';
+  // Chest Vents & Carbon Panel Seams
+  ctx.fillStyle = '#0A0A0A';
   ctx.fillRect(-s * 0.18, -s * 0.06, s * 0.10, s * 0.04);
   ctx.fillRect(s * 0.08, -s * 0.06, s * 0.10, s * 0.04);
   ctx.fillRect(-s * 0.18, s * 0.02, s * 0.10, s * 0.04);
   ctx.fillRect(s * 0.08, s * 0.02, s * 0.10, s * 0.04);
-  ctx.strokeStyle = '#141720'; ctx.lineWidth = 1.8;
-  ctx.beginPath(); ctx.moveTo(0, -s * 0.12); ctx.lineTo(0, s * 0.20); ctx.stroke();
+  // Vertical white Glyph LED strip down center seam
+  ctx.fillStyle = '#FFFFFF';
+  ctx.shadowColor = '#FFFFFF'; ctx.shadowBlur = 10;
+  ctx.fillRect(-s * 0.015, -s * 0.10, s * 0.03, s * 0.28);
+  ctx.shadowBlur = 0;
 
-  // G. Robotic Helmet & Antenna Crest (Centered between Shoulders)
-  ctx.fillStyle = '#0E1118';
+  // G. Robotic Helmet (Ceramic White Dome + Nothing Red Visor)
+  ctx.fillStyle = '#0A0A0A';
   ctx.fillRect(-s * 0.14, -s * 0.32, s * 0.28, s * 0.22);
 
   // Helmet Dome
@@ -713,7 +828,7 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.closePath(); ctx.fill();
 
   // Helmet side antenna fins
-  ctx.fillStyle = '#CBD2DE';
+  ctx.fillStyle = '#D4D4D4';
   ctx.beginPath();
   ctx.moveTo(-s * 0.12, -s * 0.22); ctx.lineTo(-s * 0.22, -s * 0.36); ctx.lineTo(-s * 0.10, -s * 0.28);
   ctx.closePath(); ctx.fill();
@@ -721,21 +836,18 @@ function drawHeroMecha(ctx, w, h, tilt, time){
   ctx.moveTo(s * 0.12, -s * 0.22); ctx.lineTo(s * 0.22, -s * 0.36); ctx.lineTo(s * 0.10, -s * 0.28);
   ctx.closePath(); ctx.fill();
 
-  // Visor Socket & Glowing Amber Ocular Visor
-  ctx.fillStyle = '#080A0F';
-  ctx.fillRect(-s * 0.09, -s * 0.26, s * 0.18, s * 0.09);
+  // Visor Socket & Signature Nothing Red Visor
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(-s * 0.10, -s * 0.26, s * 0.20, s * 0.08);
 
-  ctx.fillStyle = '#FFAA00';
-  ctx.shadowColor = '#FF6600'; ctx.shadowBlur = 12;
-  ctx.beginPath();
-  ctx.ellipse(-s * 0.045, -s * 0.22, s * 0.03, s * 0.018, -0.2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(s * 0.045, -s * 0.22, s * 0.03, s * 0.018, 0.2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#FFFFFF'; ctx.shadowBlur = 0;
-  ctx.fillRect(-s * 0.05, -s * 0.23, s * 0.018, s * 0.01);
-  ctx.fillRect(s * 0.032, -s * 0.23, s * 0.018, s * 0.01);
+  // Glowing Nothing Red Visor Slit
+  ctx.fillStyle = '#D71921';
+  ctx.shadowColor = '#D71921'; ctx.shadowBlur = 14;
+  ctx.fillRect(-s * 0.08, -s * 0.24, s * 0.16, s * 0.04);
+  // Pure white center sensor pupil
+  ctx.fillStyle = '#FFFFFF'; ctx.shadowBlur = 4; ctx.shadowColor = '#FFFFFF';
+  ctx.fillRect(-s * 0.02, -s * 0.24, s * 0.04, s * 0.04);
+  ctx.shadowBlur = 0;
 
   ctx.restore();
 }
@@ -1177,14 +1289,16 @@ function triggerLU(){
     const l = upg[def.id] || 0;
     const d = document.createElement('div');
     d.className = 'card';
-    d.style.borderColor = def.gc;
-    const catColor = def.category === 'CORE WEAPON' ? '#00E5FF' : (def.category === 'VANGUARD SYSTEM' ? '#FACC15' : '#10B981');
+    const isWep = def.category === 'CORE WEAPON';
+    const catHtml = isWep
+      ? `<span class="red-pip">●</span> <span style="color:var(--nothing-red);">${def.category}</span>`
+      : `<span style="color:#FFFFFF;">${def.category}</span>`;
     d.innerHTML = `
-      <div class="chk">[${i + 1}]</div>
-      <div class="ctg" style="background:rgba(255,255,255,0.08);color:${catColor};border-color:${catColor}">${def.category}</div>
-      <div class="cgl" style="color:${def.gc};filter:drop-shadow(0 0 8px ${def.glow})">${def.glyph}</div>
+      <div class="chk">( ${i + 1} )</div>
+      <div class="ctg" style="${isWep ? 'border-color:var(--nothing-red);' : 'border-color:rgba(255,255,255,0.25);'}">${catHtml}</div>
+      <div class="cgl">${def.glyph}</div>
       <div class="cnm">${def.name}</div>
-      <div class="clv" style="color:${def.gc}">LVL ${l} → ${l + 1} · ${def.tier(l)}</div>
+      <div class="clv">( LVL ${l} → ${l + 1} ) · ${def.tier(l)}</div>
       <div class="cds">${def.desc(l).replace(/\n/g, '<br>')}</div>
       <div class="cnx">▲ NEXT: ${def.next(l).replace(/\n/g, '<br>')}</div>
     `;
@@ -2160,26 +2274,40 @@ function drawAll(){
 
 function drawPerimeterLine(){
   const y = PY + PH / 2 + 6;
+  const threatClose = enemies.some(e => !e.dead && e.y > y - 130);
   X.save();
-  X.strokeStyle = 'rgba(255, 170, 0, 0.4)';
-  X.lineWidth = 1.5;
-  X.setLineDash([10, 6]);
+  if(threatClose || (player.flash > 0)){
+    X.strokeStyle = '#D71921';
+    X.lineWidth = 2.5;
+    X.shadowColor = '#D71921';
+    X.shadowBlur = 14;
+    X.setLineDash([20, 10, 6, 10]);
+  } else {
+    X.strokeStyle = '#FFFFFF';
+    X.lineWidth = 2;
+    X.shadowColor = '#FFFFFF';
+    X.shadowBlur = 10;
+    X.setLineDash([24, 12, 6, 12]);
+  }
   X.beginPath(); X.moveTo(0, y); X.lineTo(W, y); X.stroke();
   X.setLineDash([]);
-  X.font = '8px "Share Tech Mono",monospace';
-  X.fillStyle = 'rgba(255, 170, 0, 0.5)';
-  X.fillText('FORTRESS DEFENSE PERIMETER // DO NOT ALLOW BREACH', 14, y + 12);
+  X.shadowBlur = 0;
+
+  X.font = '700 8.5px "Silkscreen",monospace';
+  X.fillStyle = threatClose ? '#D71921' : 'rgba(255, 255, 255, 0.7)';
+  X.fillText('( ● ) GLYPH PERIMETER BARRIER // RESTRICTED SECTOR', 14, y + 14);
   X.restore();
 }
 
 function drawCryoRings(){
   for(const cr of cryoRings){
     X.save();
-    X.strokeStyle = '#67E8F9';
-    X.lineWidth = 2.5;
-    X.globalAlpha = cr.life * 0.7;
-    X.shadowColor = '#38BDF8';
-    X.shadowBlur = 12;
+    X.strokeStyle = '#FFFFFF';
+    X.lineWidth = 2;
+    X.setLineDash([6, 6]);
+    X.globalAlpha = cr.life * 0.8;
+    X.shadowColor = '#FFFFFF';
+    X.shadowBlur = 10;
     X.beginPath(); X.arc(cr.x, cr.y, cr.r, 0, Math.PI * 2); X.stroke();
     X.restore();
   }
@@ -2193,81 +2321,95 @@ function drawEnemies(){
     const fl = e.flash > 0;
 
     if(e.shieldTether && e.type !== 'shielder'){
-      X.strokeStyle = 'rgba(0, 229, 255, 0.6)';
+      X.strokeStyle = 'rgba(255, 255, 255, 0.7)';
       X.lineWidth = 1.5;
+      X.setLineDash([4, 4]);
       X.beginPath(); X.arc(0, 0, Math.max(e.w, e.h) * 0.65, 0, Math.PI * 2); X.stroke();
+      X.setLineDash([]);
     }
 
     if(e.slowTimer > 0){
-      X.strokeStyle = 'rgba(103, 232, 249, 0.8)';
-      X.lineWidth = 2;
+      X.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      X.lineWidth = 1.8;
       X.strokeRect(-e.w / 2 - 2, -e.h / 2 - 2, e.w + 4, e.h + 4);
     }
 
     if(e.type === 'scout'){
-      X.fillStyle = fl ? '#fff' : '#141822';
+      // Stealth obsidian wing with stark white spine & red optic
+      X.fillStyle = fl ? '#FFFFFF' : '#111114';
       X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
-      X.fillStyle = fl ? '#fff' : '#8F98A8';
+      X.fillStyle = fl ? '#FFFFFF' : '#FFFFFF';
       X.fillRect(-e.w / 2 - 4, -e.h / 4, 4, e.h * 0.6);
       X.fillRect(e.w / 2, -e.h / 4, 4, e.h * 0.6);
       if(!fl){
-        X.fillStyle = '#FFAA00'; X.shadowColor = '#FF7700'; X.shadowBlur = 10;
+        X.fillStyle = '#D71921'; X.shadowColor = '#D71921'; X.shadowBlur = 8;
         X.beginPath(); X.arc(0, 0, 3, 0, Math.PI * 2); X.fill();
         X.shadowBlur = 0;
       }
     } else if(e.type === 'crasher'){
-      X.fillStyle = fl ? '#fff' : '#2A0B10';
+      // High-contrast white wedge dart with red sensor
+      X.fillStyle = fl ? '#FFFFFF' : '#141416';
       X.beginPath();
       X.moveTo(0, e.h / 2); X.lineTo(e.w / 2, -e.h / 2); X.lineTo(-e.w / 2, -e.h / 2);
       X.closePath(); X.fill();
-      X.fillStyle = fl ? '#fff' : '#FF3344';
-      X.fillRect(-e.w / 2 + 2, -e.h / 2, e.w - 4, 5);
+      X.fillStyle = fl ? '#FFFFFF' : '#FFFFFF';
+      X.fillRect(-e.w / 2 + 2, -e.h / 2, e.w - 4, 4);
       if(!fl){
-        X.fillStyle = e.sprinting ? '#FFAA00' : '#FF3344';
-        X.shadowColor = '#FF3344'; X.shadowBlur = 12;
+        X.fillStyle = '#D71921';
+        X.shadowColor = '#D71921'; X.shadowBlur = 12;
         X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
         X.shadowBlur = 0;
       }
     } else if(e.type === 'shielder'){
-      X.fillStyle = fl ? '#fff' : '#0B1422';
+      // Matte carbon dome with white Glyph ring
+      X.fillStyle = fl ? '#FFFFFF' : '#0D0D10';
       X.beginPath(); X.ellipse(0, 0, e.w / 2, e.h / 2, 0, 0, Math.PI * 2); X.fill();
-      X.fillStyle = '#00E5FF';
-      X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
-      X.strokeStyle = '#00E5FF'; X.lineWidth = 2; X.shadowColor = '#00E5FF'; X.shadowBlur = 14;
+      X.fillStyle = '#D71921';
+      X.beginPath(); X.arc(0, 0, 3.5, 0, Math.PI * 2); X.fill();
+      X.strokeStyle = '#FFFFFF'; X.lineWidth = 2; X.shadowColor = '#FFFFFF'; X.shadowBlur = 12;
       X.beginPath(); X.arc(0, 0, e.w / 2 + 6, 0, Math.PI * 2); X.stroke();
       X.shadowBlur = 0;
     } else if(e.type === 'carapace'){
-      X.fillStyle = fl ? '#fff' : '#181E2B';
+      // Heavy ceramic white armor over carbon frame
+      X.fillStyle = fl ? '#FFFFFF' : '#141418';
       X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
-      X.fillStyle = fl ? '#fff' : '#E2E8F0';
+      X.fillStyle = fl ? '#FFFFFF' : '#FFFFFF';
       X.fillRect(-e.w / 2 - 6, -e.h / 2, 6, e.h);
       X.fillRect(e.w / 2, -e.h / 2, 6, e.h);
-      X.fillStyle = '#FF4400';
-      X.fillRect(-e.w / 4, -4, e.w / 2, 8);
+      X.fillStyle = '#D71921';
+      X.shadowColor = '#D71921'; X.shadowBlur = 8;
+      X.fillRect(-e.w / 4, -3, e.w / 2, 6);
+      X.shadowBlur = 0;
     } else if(e.type === 'splitter' || e.type === 'micro'){
-      X.fillStyle = fl ? '#fff' : '#0D1E16';
+      // Faceted white/black diamond with red core
+      X.fillStyle = fl ? '#FFFFFF' : '#16161A';
       X.beginPath();
       X.moveTo(0, -e.h / 2); X.lineTo(e.w / 2, 0); X.lineTo(0, e.h / 2); X.lineTo(-e.w / 2, 0);
       X.closePath(); X.fill();
-      X.fillStyle = '#10B981';
-      X.beginPath(); X.arc(0, 0, e.type === 'micro' ? 2 : 3.5, 0, Math.PI * 2); X.fill();
+      X.fillStyle = '#FFFFFF';
+      X.strokeRect(-e.w / 4, -e.h / 4, e.w / 2, e.h / 2);
+      X.fillStyle = '#D71921';
+      X.beginPath(); X.arc(0, 0, e.type === 'micro' ? 2 : 3, 0, Math.PI * 2); X.fill();
     } else if(e.type === 'boss'){
-      X.fillStyle = fl ? '#fff' : '#141824';
+      // Massive Titan Mecha in Ceramic White with triple red optics
+      X.fillStyle = fl ? '#FFFFFF' : '#121216';
       X.fillRect(-e.w / 2, -e.h / 2, e.w, e.h);
-      X.fillStyle = '#E2E8F0';
-      X.fillRect(-e.w / 2 - 8, -e.h / 2, 8, e.h * 0.8);
-      X.fillRect(e.w / 2, -e.h / 2, 8, e.h * 0.8);
-      X.fillStyle = '#FF3300'; X.shadowColor = '#FF3300'; X.shadowBlur = 12;
-      X.fillRect(-e.w * 0.35, e.h / 2 - 4, 8, 8);
-      X.fillRect(e.w * 0.35 - 8, e.h / 2 - 4, 8, 8);
+      X.fillStyle = '#FFFFFF';
+      X.fillRect(-e.w / 2 - 8, -e.h / 2, 8, e.h * 0.85);
+      X.fillRect(e.w / 2, -e.h / 2, 8, e.h * 0.85);
+      // Triple Nothing Red sensors
+      X.fillStyle = '#D71921'; X.shadowColor = '#D71921'; X.shadowBlur = 14;
+      X.fillRect(-e.w * 0.35, e.h / 2 - 4, 7, 7);
+      X.fillRect(-3.5, e.h / 2 - 4, 7, 7);
+      X.fillRect(e.w * 0.35 - 7, e.h / 2 - 4, 7, 7);
       X.shadowBlur = 0;
     }
 
     if(e.mhp > 4 && !fl && e.type !== 'boss'){
       const bw = e.w + 4, rat = Math.max(0, e.hp / e.mhp);
-      X.fillStyle = '#0C0E14'; X.fillRect(-bw / 2, e.h / 2 + 3, bw, 3.5);
-      X.fillStyle = rat > 0.5 ? '#FFAA00' : '#FF3300';
-      X.fillRect(-bw / 2, e.h / 2 + 3, bw * rat, 3.5);
+      X.fillStyle = 'rgba(255, 255, 255, 0.12)'; X.fillRect(-bw / 2, e.h / 2 + 3, bw, 3);
+      X.fillStyle = rat > 0.4 ? '#FFFFFF' : '#D71921';
+      X.fillRect(-bw / 2, e.h / 2 + 3, bw * rat, 3);
     }
 
     X.restore();
@@ -2281,7 +2423,7 @@ function drawLockReticle(){
   const r = Math.max(tgt.w, tgt.h) / 2 + 8;
   X.save();
   X.translate(tgt.x, tgt.y);
-  X.strokeStyle = tgt.sprinting ? '#FF3344' : '#FFAA00';
+  X.strokeStyle = tgt.sprinting ? '#D71921' : '#FFFFFF';
   X.lineWidth = 1.5;
   X.shadowBlur = 10;
   X.shadowColor = X.strokeStyle;
@@ -2290,34 +2432,41 @@ function drawLockReticle(){
   X.beginPath();X.moveTo(s-d,-s);X.lineTo(s,-s);X.lineTo(s,-s+d);X.stroke();
   X.beginPath();X.moveTo(-s+d,s);X.lineTo(-s,s);X.lineTo(-s,s-d);X.stroke();
   X.beginPath();X.moveTo(s-d,s);X.lineTo(s,s);X.lineTo(s,s-d);X.stroke();
-  X.fillStyle = X.strokeStyle;
-  X.beginPath();X.arc(0, 0, 1.8, 0, Math.PI * 2);X.fill();
+  X.fillStyle = '#D71921';
+  X.beginPath();X.arc(0, 0, 2.5, 0, Math.PI * 2);X.fill();
   X.restore();
   X.shadowBlur = 0;
 }
 
-// CLEAN DEEP SPACE BACKGROUND (NO GRAPH / GRID LINES)
+// CLEAN NOTHING OS DOTTED MATRIX OLED BACKGROUND
 function drawBG(){
-  const g = X.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, '#05070B');
-  g.addColorStop(.5, '#090C12');
-  g.addColorStop(1, '#0F121A');
-  X.fillStyle = g;
+  // Pure OLED Pitch Black
+  X.fillStyle = '#000000';
   X.fillRect(0, 0, W, H);
 
-  // Multi-depth Starfield
+  // Nothing OS Dotted Matrix Grid (Clean subtle LED dots across screen)
+  const dotStep = 48;
+  X.fillStyle = 'rgba(255, 255, 255, 0.08)';
+  const offX = (W % dotStep) / 2, offY = (H % dotStep) / 2;
+  for(let gx = offX; gx < W; gx += dotStep){
+    for(let gy = offY; gy < H; gy += dotStep){
+      X.fillRect(gx, gy, 1.2, 1.2);
+    }
+  }
+
+  // Multi-depth Starfield (Stark pure white)
   const t = Date.now() * .001;
   for(const s of stars){
     X.globalAlpha = s.a * (0.5 + 0.5 * Math.sin(t * .8 + s.tw));
-    X.fillStyle = '#E2E8F0';
+    X.fillStyle = '#FFFFFF';
     X.beginPath(); X.arc(s.x, s.y, s.r, 0, Math.PI * 2); X.fill();
   }
   X.globalAlpha = 1;
 
-  // Drifting Amber Embers
+  // Drifting Crimson Motes (Nothing Red sparks)
   for(const e of embers){
-    X.globalAlpha = e.life * .75;
-    X.shadowBlur = 8; X.shadowColor = e.col; X.fillStyle = e.col;
+    X.globalAlpha = e.life * .7;
+    X.shadowBlur = 6; X.shadowColor = '#D71921'; X.fillStyle = '#D71921';
     X.beginPath(); X.arc(e.x, e.y, e.r, 0, Math.PI * 2); X.fill();
     X.shadowBlur = 0;
   }
@@ -2325,7 +2474,7 @@ function drawBG(){
 
   const bg = X.createLinearGradient(0, PY - 12, 0, H);
   bg.addColorStop(0, 'transparent');
-  bg.addColorStop(1, '#090C12');
+  bg.addColorStop(1, 'rgba(10, 10, 10, 0.95)');
   X.fillStyle = bg;
   X.fillRect(0, PY - 12, W, H - (PY - 12));
 }
@@ -2338,31 +2487,34 @@ function drawPrism(){
   // 1. Pre-fire targeting tracer line while charging (0.35s before firing)
   if(prismActiveTimer <= 0 && prismTimer <= 0.35 && prismTimer > 0){
     X.save();
-    X.strokeStyle = 'rgba(244, 63, 94, 0.45)';
+    X.strokeStyle = 'rgba(255, 255, 255, 0.5)';
     X.lineWidth = 1.5;
-    X.setLineDash([8, 4]);
+    X.setLineDash([8, 6]);
     X.beginPath(); X.moveTo(bx, PY - PH / 2); X.lineTo(bx, 0); X.stroke();
     X.restore();
     return;
   }
 
-  // 2. Active Pulse Beam
+  // 2. Active Pulse Beam: Stark White Lance with Nothing Red Core Channel
   if(prismActiveTimer > 0){
     const alpha = Math.min(1, prismActiveTimer / 0.15);
-    const bg = X.createLinearGradient(0, PY, 0, 0);
-    bg.addColorStop(0, 'rgba(244,63,94,0.95)');
-    bg.addColorStop(0.4, 'rgba(244,63,94,0.65)');
-    bg.addColorStop(1, 'rgba(244,63,94,0.1)');
-
     X.save();
     X.globalAlpha = alpha;
-    X.shadowBlur = 35; X.shadowColor = '#F43F5E';
-    X.fillStyle = bg;
+
+    // Outer stark white laser glow
+    X.shadowBlur = 28; X.shadowColor = '#FFFFFF';
+    X.fillStyle = 'rgba(255, 255, 255, 0.85)';
     X.fillRect(bx - bw / 2, 0, bw, PY);
 
-    // Core white laser column
+    // Signature Nothing Red central core channel
+    X.shadowBlur = 12; X.shadowColor = '#D71921';
+    X.fillStyle = '#D71921';
+    X.fillRect(bx - bw * 0.18, 0, bw * 0.36, PY);
+
+    // Ultra-bright core white filament
     X.fillStyle = '#FFFFFF';
-    X.fillRect(bx - bw * 0.22, 0, bw * 0.44, PY);
+    X.fillRect(bx - 1.5, 0, 3, PY);
+
     X.restore();
   }
 }
@@ -2378,21 +2530,23 @@ function drawDrones(){
     X.save();
     X.translate(dx, dy);
     X.rotate(ang + Math.PI / 2);
-    X.fillStyle = '#182030';
+    // Ceramic white circular housing
+    X.fillStyle = '#0A0A0A';
     X.fillRect(-6, -6, 12, 12);
-    X.fillStyle = '#38BDF8';
-    X.shadowColor = '#38BDF8'; X.shadowBlur = 10;
-    X.beginPath(); X.arc(0, 0, 3.5, 0, Math.PI * 2); X.fill();
     X.fillStyle = '#FFFFFF';
-    X.beginPath(); X.arc(0, 0, 1.5, 0, Math.PI * 2); X.fill();
+    X.fillRect(-5, -5, 10, 10);
+    // Nothing Red central sensor pip
+    X.fillStyle = '#D71921';
+    X.shadowColor = '#D71921'; X.shadowBlur = 8;
+    X.beginPath(); X.arc(0, 0, 2.5, 0, Math.PI * 2); X.fill();
     X.restore();
   }
 }
 
 function drawDroneProjectiles(){
   for(const dp of droneProjectiles){
-    X.shadowBlur = 10; X.shadowColor = '#38BDF8'; X.fillStyle = '#38BDF8';
-    X.beginPath(); X.arc(dp.x, dp.y, 2.5, 0, Math.PI * 2); X.fill();
+    X.shadowBlur = 8; X.shadowColor = '#FFFFFF'; X.fillStyle = '#FFFFFF';
+    X.beginPath(); X.arc(dp.x, dp.y, 2.2, 0, Math.PI * 2); X.fill();
     X.shadowBlur = 0;
   }
 }
@@ -2409,19 +2563,19 @@ function drawInfernoWheels(){
     X.save();
     X.translate(wx, wy);
     X.rotate(wheelAngle * 4);
-    X.strokeStyle = '#FF5500'; X.lineWidth = 3;
-    X.shadowColor = '#FF5500'; X.shadowBlur = 14;
-    X.strokeRect(-9, -9, 18, 18);
-    X.fillStyle = '#FFAA00';
-    X.beginPath(); X.arc(0, 0, 4, 0, Math.PI * 2); X.fill();
+    X.strokeStyle = '#FFFFFF'; X.lineWidth = 2.5;
+    X.shadowColor = '#FFFFFF'; X.shadowBlur = 12;
+    X.strokeRect(-8, -8, 16, 16);
+    X.fillStyle = '#D71921';
+    X.beginPath(); X.arc(0, 0, 3.5, 0, Math.PI * 2); X.fill();
     X.restore();
   }
 }
 
 function drawScatterPellets(){
   for(const sp of scatterPellets){
-    X.shadowBlur = 8; X.shadowColor = sp.col || '#F59E0B'; X.fillStyle = sp.col || '#F59E0B';
-    X.beginPath(); X.arc(sp.x, sp.y, 3, 0, Math.PI * 2); X.fill();
+    X.shadowBlur = 8; X.shadowColor = '#FFFFFF'; X.fillStyle = '#FFFFFF';
+    X.beginPath(); X.arc(sp.x, sp.y, 2.8, 0, Math.PI * 2); X.fill();
     X.shadowBlur = 0;
   }
 }
@@ -2432,25 +2586,31 @@ function drawSingularities(){
     X.save();
     X.translate(s.x, s.y);
 
-    // Outer gravity ripple
-    X.strokeStyle = 'rgba(168, 85, 247, ' + (0.4 + 0.3 * Math.sin(Date.now() * 0.01)) + ')';
-    X.lineWidth = 2;
+    // Outer gravity ripple: segmented white dotted rings
+    X.strokeStyle = 'rgba(255, 255, 255, ' + (0.35 + 0.3 * Math.sin(Date.now() * 0.01)) + ')';
+    X.lineWidth = 1.8;
+    X.setLineDash([4, 6]);
     X.beginPath(); X.arc(0, 0, s.rad * rat, 0, Math.PI * 2); X.stroke();
+    X.setLineDash([]);
 
-    // Dark void center
-    X.fillStyle = '#06080F';
+    // Pure OLED black void center with white rim
+    X.fillStyle = '#000000';
     X.beginPath(); X.arc(0, 0, 22, 0, Math.PI * 2); X.fill();
-    X.strokeStyle = '#A855F7'; X.shadowColor = '#A855F7'; X.shadowBlur = 18;
-    X.lineWidth = 3;
+    X.strokeStyle = '#FFFFFF'; X.shadowColor = '#FFFFFF'; X.shadowBlur = 18;
+    X.lineWidth = 2.5;
     X.stroke();
+
+    // Red center accretion dot
+    X.fillStyle = '#D71921';
+    X.beginPath(); X.arc(0, 0, 3, 0, Math.PI * 2); X.fill();
     X.restore();
   }
 }
 
 function drawFirePatches(){
   for(const fp of firePatches){
-    X.fillStyle = 'rgba(255, 69, 0, ' + Math.min(0.6, fp.life * 0.3) + ')';
-    X.shadowColor = '#FF4500'; X.shadowBlur = 12;
+    X.fillStyle = 'rgba(215, 25, 33, ' + Math.min(0.5, fp.life * 0.25) + ')';
+    X.shadowColor = '#D71921'; X.shadowBlur = 10;
     X.beginPath(); X.arc(fp.x, fp.y, fp.r, 0, Math.PI * 2); X.fill();
     X.shadowBlur = 0;
   }
@@ -2459,13 +2619,11 @@ function drawFirePatches(){
 function drawBullets(){
   for(const b of bullets){
     if(b.dead) continue;
-    const strokeCol = b.isRic ? '#10B981' : (b.isAcc ? '#FACC15' : '#FFAA00');
-    const glowCol = b.isRic ? '#059669' : (b.isAcc ? '#EAB308' : '#FF7700');
-
-    X.shadowBlur = 16; X.shadowColor = glowCol; X.strokeStyle = strokeCol;
-    X.lineWidth = 3.8; X.globalAlpha = .75;
+    // Stark white high-contrast railgun bolts
+    X.shadowBlur = 14; X.shadowColor = '#FFFFFF'; X.strokeStyle = '#FFFFFF';
+    X.lineWidth = 3.2; X.globalAlpha = .8;
     X.beginPath(); X.moveTo(b.x, b.y); X.lineTo(b.x - b.vx * .018, b.y - b.vy * .018); X.stroke();
-    X.strokeStyle = '#FFFFFF'; X.lineWidth = 1.8; X.globalAlpha = 1;
+    X.strokeStyle = '#FFFFFF'; X.lineWidth = 1.6; X.globalAlpha = 1;
     X.beginPath(); X.moveTo(b.x, b.y); X.lineTo(b.x - b.vx * .012, b.y - b.vy * .012); X.stroke();
     X.shadowBlur = 0;
   }
@@ -2476,15 +2634,18 @@ function drawMissiles(){
   for(const m of missiles){
     if(m.dead) continue;
     for(let i = 0; i < m.trail.length; i++){
-      const t = m.trail[i]; X.globalAlpha = (1 - i / m.trail.length) * .6;
-      X.fillStyle = '#C084FC';
-      X.beginPath(); X.arc(t.x, t.y, Math.max(.5, 2.4 - i * .2), 0, Math.PI * 2); X.fill();
+      const t = m.trail[i]; X.globalAlpha = (1 - i / m.trail.length) * .5;
+      X.fillStyle = '#FFFFFF';
+      X.beginPath(); X.arc(t.x, t.y, Math.max(.5, 2.2 - i * .2), 0, Math.PI * 2); X.fill();
     }
-    X.globalAlpha = 1; X.shadowBlur = 12; X.shadowColor = '#C084FC'; X.fillStyle = '#A855F7';
+    X.globalAlpha = 1;
     const a = Math.atan2(m.vy, m.vx);
     X.save(); X.translate(m.x, m.y); X.rotate(a + Math.PI / 2);
-    X.fillStyle = '#F3E8FF'; X.fillRect(-2.5, -8, 5, 11);
-    X.fillStyle = '#C084FC'; X.fillRect(-2, -10, 4, 3);
+    // Ceramic white missile body
+    X.fillStyle = '#FFFFFF'; X.fillRect(-2.5, -8, 5, 11);
+    // Nothing Red guidance tip
+    X.fillStyle = '#D71921'; X.shadowColor = '#D71921'; X.shadowBlur = 8;
+    X.fillRect(-2, -10, 4, 3);
     X.restore(); X.shadowBlur = 0;
   }
 }
@@ -2492,25 +2653,25 @@ function drawMissiles(){
 function drawParts(){
   for(const p of parts){
     if(p.type === 'bolt'){
-      X.globalAlpha = p.life * .9; X.strokeStyle = p.col || '#00E5FF';
-      X.shadowBlur = 14; X.shadowColor = p.col || '#00E5FF'; X.lineWidth = 1.8;
+      X.globalAlpha = p.life * .9; X.strokeStyle = '#FFFFFF';
+      X.shadowBlur = 14; X.shadowColor = '#FFFFFF'; X.lineWidth = 2.0;
       X.beginPath(); X.moveTo(p.x1, p.y1);
       const steps = 5, dx = (p.x2 - p.x1) / steps, dy = (p.y2 - p.y1) / steps;
       for(let i = 1; i < steps; i++) X.lineTo(p.x1 + dx * i + (Math.random() - .5) * 20, p.y1 + dy * i + (Math.random() - .5) * 20);
       X.lineTo(p.x2, p.y2); X.stroke(); X.shadowBlur = 0; X.globalAlpha = 1; continue;
     }
-    X.globalAlpha = Math.max(0, p.life); X.shadowBlur = 6; X.shadowColor = p.col; X.fillStyle = p.col;
+    X.globalAlpha = Math.max(0, p.life); X.shadowBlur = 6; X.shadowColor = p.col || '#FFFFFF'; X.fillStyle = p.col || '#FFFFFF';
     X.beginPath(); X.arc(p.x, p.y, Math.max(.1, p.r), 0, Math.PI * 2); X.fill(); X.shadowBlur = 0;
   }
   X.globalAlpha = 1;
 }
 
 // ═════════════════════════════════════════════════════════════
-// IN-COMBAT TOP-DOWN HUMANOID ROBOT MECHA (MATCHING INSPECTION)
+// IN-COMBAT TOP-DOWN HUMANOID ROBOT MECHA (NOTHING OS CERAMIC WHITE)
 // ═════════════════════════════════════════════════════════════
 function drawPlayer(){
   for(const p of player.thrust){
-    X.globalAlpha = Math.max(0, p.life * .8); X.fillStyle = p.col; X.shadowBlur = 10; X.shadowColor = p.col;
+    X.globalAlpha = Math.max(0, p.life * .8); X.fillStyle = '#FFFFFF'; X.shadowBlur = 8; X.shadowColor = '#FFFFFF';
     X.beginPath(); X.arc(p.x, p.y, Math.max(.1, p.r), 0, Math.PI * 2); X.fill(); X.shadowBlur = 0;
   }
   X.globalAlpha = 1;
@@ -2522,72 +2683,94 @@ function drawPlayer(){
 
   const fl = player.flash > 0;
   if(fl){
-    X.shadowBlur = 35; X.shadowColor = '#FF3344'; X.fillStyle = '#FF4455';
+    X.shadowBlur = 30; X.shadowColor = '#D71921'; X.fillStyle = '#D71921';
     X.beginPath(); X.arc(0, 0, PW / 2 + 4, 0, Math.PI * 2); X.fill();
     X.restore(); return;
   }
 
-  // A. Trailing Legs & Skirt Armor (Humanoid Flight Posture)
-  X.fillStyle = '#11141D';
+  // A. Trailing Legs & Skirt Armor (Ceramic White & Carbon Black)
+  X.fillStyle = '#0A0A0A';
   X.fillRect(-12, 8, 24, 10);
   // Left leg
-  X.fillStyle = '#CBD2DE';
+  X.fillStyle = '#222222';
   X.fillRect(-14, 12, 9, 18);
   X.fillStyle = '#FFFFFF';
   X.fillRect(-13, 14, 7, 12);
   // Right leg
-  X.fillStyle = '#CBD2DE';
+  X.fillStyle = '#222222';
   X.fillRect(5, 12, 9, 18);
   X.fillStyle = '#FFFFFF';
   X.fillRect(6, 14, 7, 12);
 
   // B. Backpack Thruster Unit (Mounted Behind Torso)
-  X.fillStyle = '#161A24';
+  X.fillStyle = '#121212';
   X.fillRect(-16, 2, 32, 16);
   // Rocket nozzles
-  X.fillStyle = '#222836';
+  X.fillStyle = '#1C1C1C';
   X.fillRect(-15, 16, 8, 7);
   X.fillRect(7, 16, 8, 7);
+  // Vertical white Glyph LED strips
+  X.fillStyle = '#FFFFFF'; X.shadowColor = '#FFFFFF'; X.shadowBlur = 6;
+  X.fillRect(-12, 4, 2, 10);
+  X.fillRect(10, 4, 2, 10);
+  X.shadowBlur = 0;
 
-  // C. Broad Armored Shoulder Pauldrons (Left & Right - Chunky Robot Shoulders)
+  // C. Broad Armored Shoulder Pauldrons (Ceramic White + White Glyph LED Bars)
   // Left Shoulder
-  X.fillStyle = '#181C26';
+  X.fillStyle = '#141414';
   X.fillRect(-27, -8, 14, 20);
   X.fillStyle = '#FFFFFF';
   X.fillRect(-26, -7, 12, 18);
-  X.fillStyle = '#E2E7F0';
+  X.fillStyle = '#F0F0F2';
   X.fillRect(-25, -5, 10, 14);
-  X.strokeStyle = '#141720'; X.lineWidth = 1.2;
+  X.strokeStyle = '#0A0A0A'; X.lineWidth = 1.2;
   X.strokeRect(-26, -7, 12, 18);
+  // Glowing White Glyph LED strip along left shoulder
+  X.fillStyle = '#FFFFFF'; X.shadowColor = '#FFFFFF'; X.shadowBlur = 8;
+  X.fillRect(-27, -6, 2, 16);
+  X.shadowBlur = 0;
 
   // Right Shoulder
-  X.fillStyle = '#181C26';
+  X.fillStyle = '#141414';
   X.fillRect(13, -8, 14, 20);
   X.fillStyle = '#FFFFFF';
   X.fillRect(14, -7, 12, 18);
-  X.fillStyle = '#E2E7F0';
+  X.fillStyle = '#F0F0F2';
   X.fillRect(15, -5, 10, 14);
   X.strokeRect(14, -7, 12, 18);
+  // Glowing White Glyph LED strip along right shoulder
+  X.fillStyle = '#FFFFFF'; X.shadowColor = '#FFFFFF'; X.shadowBlur = 8;
+  X.fillRect(25, -6, 2, 16);
+  X.shadowBlur = 0;
 
   // D. Robotic Arms & Weapon Gauntlets with Twin Railguns
-  const isOverclocked = (upg.vanguard_trigger || 0) > 0 || (upg.vanguard_barrel || 0) > 0;
   // Left arm & cannon
-  X.fillStyle = '#181C26';
+  X.fillStyle = '#141414';
   X.fillRect(-24, -22, 7, 16);
-  X.fillStyle = '#12151E';
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(-23, -20, 5, 12);
+  X.fillStyle = '#0A0A0A';
   X.fillRect(-22, -36, 4, 28);
-  X.fillStyle = isOverclocked ? '#FACC15' : '#FFAA00';
+  // White muzzle & red aim pip
+  X.fillStyle = '#FFFFFF';
   X.fillRect(-23, -37, 6, 3);
+  X.fillStyle = '#D71921';
+  X.fillRect(-21.5, -31, 3, 2);
 
   // Right arm & cannon
-  X.fillStyle = '#181C26';
+  X.fillStyle = '#141414';
   X.fillRect(17, -22, 7, 16);
-  X.fillStyle = '#12151E';
+  X.fillStyle = '#FFFFFF';
+  X.fillRect(18, -20, 5, 12);
+  X.fillStyle = '#0A0A0A';
   X.fillRect(18, -36, 4, 28);
-  X.fillStyle = isOverclocked ? '#FACC15' : '#FFAA00';
+  // White muzzle & red aim pip
+  X.fillStyle = '#FFFFFF';
   X.fillRect(17, -37, 6, 3);
+  X.fillStyle = '#D71921';
+  X.fillRect(18.5, -31, 3, 2);
 
-  // E. Central Chest Chassis & Cockpit Armor
+  // E. Central Chest Chassis & Cockpit Armor (Ceramic White)
   X.fillStyle = '#FFFFFF';
   X.beginPath();
   X.moveTo(-11, -6);
@@ -2596,17 +2779,19 @@ function drawPlayer(){
   X.lineTo(-9, 11);
   X.closePath(); X.fill();
 
-  // Chest vents & seam line
-  X.fillStyle = '#141720';
+  // Chest vents & vertical white Glyph strip
+  X.fillStyle = '#0A0A0A';
   X.fillRect(-8, -3, 5, 2.5);
   X.fillRect(3, -3, 5, 2.5);
   X.fillRect(-8, 1, 5, 2.5);
   X.fillRect(3, 1, 5, 2.5);
-  X.strokeStyle = '#141720'; X.lineWidth = 1.2;
-  X.beginPath(); X.moveTo(0, -6); X.lineTo(0, 10); X.stroke();
+  // Center Glyph strip
+  X.fillStyle = '#FFFFFF'; X.shadowColor = '#FFFFFF'; X.shadowBlur = 8;
+  X.fillRect(-1, -5, 2, 14);
+  X.shadowBlur = 0;
 
-  // F. Robotic Helmet (Nestled between Shoulders)
-  X.fillStyle = '#0E1118';
+  // F. Robotic Helmet (Ceramic White Dome + Nothing Red Visor)
+  X.fillStyle = '#0A0A0A';
   X.fillRect(-7, -16, 14, 11);
 
   // Helmet Dome
@@ -2620,7 +2805,7 @@ function drawPlayer(){
   X.closePath(); X.fill();
 
   // Antenna fins
-  X.fillStyle = '#CBD2DE';
+  X.fillStyle = '#D4D4D4';
   X.beginPath();
   X.moveTo(-6, -11); X.lineTo(-11, -17); X.lineTo(-5, -14);
   X.closePath(); X.fill();
@@ -2628,21 +2813,24 @@ function drawPlayer(){
   X.moveTo(6, -11); X.lineTo(11, -17); X.lineTo(5, -14);
   X.closePath(); X.fill();
 
-  // Glowing Amber Ocular Visor
-  X.fillStyle = '#080A0F';
+  // Glowing Nothing Red Visor Slit
+  X.fillStyle = '#000000';
   X.fillRect(-4.5, -13, 9, 4.5);
-  X.fillStyle = '#FFAA00';
-  X.shadowColor = '#FF7700'; X.shadowBlur = 8;
+  X.fillStyle = '#D71921';
+  X.shadowColor = '#D71921'; X.shadowBlur = 10;
   X.fillRect(-3.5, -12, 7, 2.5);
   X.fillStyle = '#FFFFFF'; X.shadowBlur = 0;
-  X.fillRect(-1.5, -12, 2, 1);
+  X.fillRect(-1, -12, 2, 1);
 
   // G. Missile Pods (if upgrade owned)
   if(upg.skyfire){
-    X.fillStyle = '#141720';
+    X.fillStyle = '#0A0A0A';
     X.fillRect(-30, -12, 8, 14);
     X.fillRect(22, -12, 8, 14);
-    X.fillStyle = '#C084FC'; X.shadowBlur = 6; X.shadowColor = '#A855F7';
+    X.fillStyle = '#FFFFFF';
+    X.fillRect(-29, -11, 6, 12);
+    X.fillRect(23, -11, 6, 12);
+    X.fillStyle = '#D71921'; X.shadowBlur = 6; X.shadowColor = '#D71921';
     X.fillRect(-28, -10, 4, 3);
     X.fillRect(24, -10, 4, 3);
     X.shadowBlur = 0;
@@ -2653,112 +2841,130 @@ function drawPlayer(){
 
 function drawFloats(){
   for(const t of ftexts){
-    X.globalAlpha = Math.min(1, t.life); X.shadowBlur = 8; X.shadowColor = t.col; X.fillStyle = t.col;
-    X.font = 'bold 13px "Share Tech Mono",monospace'; X.textAlign = 'center'; X.fillText(t.txt, t.x, t.y);
+    X.globalAlpha = Math.min(1, t.life);
+    X.shadowBlur = 6; X.shadowColor = t.col; X.fillStyle = t.col;
+    X.font = '700 12px "Space Mono",monospace'; X.textAlign = 'center'; X.fillText(t.txt, t.x, t.y);
     X.textAlign = 'left'; X.shadowBlur = 0;
   }
   X.globalAlpha = 1;
 }
 
 function drawHUD(){
-  X.fillStyle = 'rgba(8,10,15,0.92)'; X.fillRect(0, 0, W, 52);
-  X.strokeStyle = 'rgba(255,255,255,0.1)'; X.lineWidth = 1; X.beginPath(); X.moveTo(0, 52); X.lineTo(W, 52); X.stroke();
+  X.fillStyle = 'rgba(0,0,0,0.92)'; X.fillRect(0, 0, W, 52);
+  X.strokeStyle = 'rgba(255,255,255,0.12)'; X.lineWidth = 1; X.beginPath(); X.moveTo(0, 52); X.lineTo(W, 52); X.stroke();
 
-  // Wave & Telemetry Header
-  X.font = '700 ' + (W < 460 ? '12px' : '14px') + ' Orbitron,monospace'; X.fillStyle = '#FFFFFF';
-  X.shadowBlur = 12; X.shadowColor = '#FF7700';
-  X.fillText(`WAVE ${currentWave} // BATTLEFRAME`, 14, 22);
+  // Wave & Red Dot Indicator
+  X.fillStyle = '#D71921';
+  X.shadowColor = '#D71921'; X.shadowBlur = 8;
+  X.beginPath(); X.arc(16, 22, 3.5, 0, Math.PI * 2); X.fill();
   X.shadowBlur = 0;
 
-  X.font = (W < 460 ? '9px' : '10.5px') + ' "Share Tech Mono",monospace'; X.fillStyle = '#FFAA00';
-  X.fillText('SCORE: ' + score.toLocaleString(), 14, 40);
+  X.font = '700 ' + (W < 460 ? '11px' : '13px') + ' "Silkscreen",monospace'; X.fillStyle = '#FFFFFF';
+  X.fillText(`WAVE ${String(currentWave).padStart(2, '0')}`, 26, 26);
 
-  X.fillStyle = '#9EA5B0'; X.textAlign = 'right';
-  X.fillText('TIME: ' + fmtT(elapsed), W - 14, 22);
+  X.font = '700 ' + (W < 460 ? '9.5px' : '11px') + ' "Silkscreen",monospace'; X.fillStyle = '#FFFFFF';
+  X.fillText('SCORE // ' + String(score).padStart(6, '0'), 14, 42);
+
+  X.fillStyle = '#737373'; X.textAlign = 'right';
+  X.font = (W < 460 ? '9px' : '10.5px') + ' "Space Mono",monospace';
+  X.fillText('T+ ' + fmtT(elapsed), W - 14, 22);
   const remaining = waveEnemiesToSpawn + enemies.length;
   if(remaining > 0){
-    X.fillText(`ENEMIES: ${remaining} REMAINING`, W - 14, 40);
+    X.fillText(`REMAINING // ${String(remaining).padStart(2, '0')}`, W - 14, 40);
   } else {
-    X.fillStyle = '#10B981';
-    X.fillText('WAVE CLEARED · PREPARING NEXT WAVE...', W - 14, 40);
+    X.fillStyle = '#FFFFFF';
+    X.fillText('SECTOR SECURED', W - 14, 40);
   }
   X.textAlign = 'left';
 
-  // Shield Cells
-  const shMax = player.shMax, pip = W < 460 ? 11 : 16, gap = W < 460 ? 3 : 5;
+  // Fortress Barrier Shield Cells (Nothing Pill Capsules)
+  const shMax = player.shMax, pip = W < 460 ? 12 : 18, gap = W < 460 ? 3 : 5;
   const totalW = shMax * (pip + gap) - gap, sx = W / 2 - totalW / 2;
+  const isCritical = player.sh <= 1;
   for(let i = 0; i < shMax; i++){
     const px = sx + i * (pip + gap), active = i < player.sh;
-    X.shadowBlur = active ? 10 : 0; X.shadowColor = '#3B82F6';
-    X.fillStyle = active ? '#3B82F6' : '#101522';
-    X.strokeStyle = active ? '#60A5FA' : '#1D2538';
+    if(active){
+      X.fillStyle = isCritical ? '#D71921' : '#FFFFFF';
+      X.shadowBlur = 10;
+      X.shadowColor = isCritical ? '#D71921' : '#FFFFFF';
+    } else {
+      X.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      X.shadowBlur = 0;
+    }
+    X.strokeStyle = active ? '#FFFFFF' : 'rgba(255, 255, 255, 0.18)';
     X.lineWidth = 1;
-    X.fillRect(px, 18, pip, 8); X.strokeRect(px, 18, pip, 8);
+    if(X.roundRect){
+      X.beginPath(); X.roundRect(px, 18, pip, 8, 4); X.fill(); X.stroke();
+    } else {
+      X.fillRect(px, 18, pip, 8); X.strokeRect(px, 18, pip, 8);
+    }
     X.shadowBlur = 0;
   }
-  X.font = '8px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.5)';
-  X.textAlign = 'center'; X.fillText('FORTRESS BARRIER SHIELD', W / 2, 15); X.textAlign = 'left';
+  X.font = '8px "Space Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.6)';
+  X.textAlign = 'center'; X.fillText('( ● ) GLYPH FORTRESS BARRIER', W / 2, 14); X.textAlign = 'left';
 
-  // Boss Health Bar
+  // Boss Health Bar (Nothing OS Squircle Bar)
   if(activeBoss && !activeBoss.dead){
     const bw = Math.min(360, W * 0.7), bx = W / 2 - bw / 2, by = 60;
     const rat = Math.max(0, activeBoss.hp / activeBoss.mhp);
-    X.fillStyle = 'rgba(12,16,24,0.85)'; X.fillRect(bx, by, bw, 14);
-    X.strokeStyle = '#FF3300'; X.strokeRect(bx, by, bw, 14);
-    X.fillStyle = '#FF3300'; X.fillRect(bx, by, bw * rat, 14);
-    X.font = '9px "Orbitron",monospace'; X.fillStyle = '#FFFFFF'; X.textAlign = 'center';
-    X.fillText(`⚠ TITAN BEHEMOTH // ${Math.floor(rat * 100)}% ⚠`, W / 2, by + 10.5);
+    X.fillStyle = 'rgba(10,10,10,0.92)'; X.fillRect(bx, by, bw, 14);
+    X.strokeStyle = 'rgba(255,255,255,0.3)'; X.strokeRect(bx, by, bw, 14);
+    X.fillStyle = '#D71921'; X.shadowColor = '#D71921'; X.shadowBlur = 8;
+    X.fillRect(bx, by, bw * rat, 14);
+    X.shadowBlur = 0;
+    X.font = '700 9px "Silkscreen",monospace'; X.fillStyle = '#FFFFFF'; X.textAlign = 'center';
+    X.fillText(`( ● ) TITAN BEHEMOTH // ${Math.floor(rat * 100)}%`, W / 2, by + 10.5);
     X.textAlign = 'left';
   }
 
-  // Bottom XP Progress Bar
-  const by = H - 12, bh = 6;
-  X.fillStyle = '#0E1118'; X.fillRect(0, by, W, bh);
+  // Bottom XP Progress Bar (Nothing OS Segmented Pill)
+  const by = H - 12, bh = 5;
+  X.fillStyle = '#0A0A0A'; X.fillRect(0, by, W, bh);
   const xrat = Math.min(1, xp / xpMax);
   if(xrat > 0){
-    const xg = X.createLinearGradient(0, 0, W * xrat, 0);
-    xg.addColorStop(0, '#FF4400'); xg.addColorStop(1, '#FFAA00');
-    X.shadowBlur = 10; X.shadowColor = '#FFAA00'; X.fillStyle = xg;
+    X.shadowBlur = 10; X.shadowColor = '#FFFFFF'; X.fillStyle = '#FFFFFF';
     X.fillRect(0, by, W * xrat, bh);
     X.shadowBlur = 0;
   }
-  X.strokeStyle = 'rgba(255,255,255,0.12)'; X.lineWidth = 1; X.strokeRect(0, by, W, bh);
+  X.strokeStyle = 'rgba(255,255,255,0.14)'; X.lineWidth = 1; X.strokeRect(0, by, W, bh);
 
-  X.font = '8.5px "Orbitron",monospace'; X.fillStyle = '#FFAA00'; X.textAlign = 'right';
-  X.fillText('OVERDRIVE LVL ' + odLevel + ' · ' + Math.floor(xrat * 100) + '%', W - 4, by - 3);
+  X.font = '700 8.5px "Silkscreen",monospace'; X.fillStyle = '#FFFFFF'; X.textAlign = 'right';
+  X.fillText('OVERDRIVE // LVL ' + odLevel + ' · ' + Math.floor(xrat * 100) + '%', W - 6, by - 4);
   X.textAlign = 'left';
 
   // Active Upgrade Glyphs
   const owned = Object.entries(upg || {}).filter(([k, v]) => v > 0);
   if(owned.length){
-    let ux = 10; X.font = '10px "Share Tech Mono",monospace';
+    let ux = 10; X.font = '9.5px "Space Mono",monospace';
     for(const [id, lv] of owned){
       const def = UDefs.find(u => u.id === id);
       if(!def) continue;
-      X.fillStyle = def.gc; X.shadowBlur = 8; X.shadowColor = def.glow;
+      X.fillStyle = '#FFFFFF';
       X.fillText(def.glyph + ' ' + lv, ux, H - 17);
-      X.shadowBlur = 0; ux += 38;
+      ux += 38;
       if(ux > W - 180) break;
     }
   }
 
-  // Active Cross-Weapon Synergies (Glowing Golden Badges)
+  // Active Cross-Weapon Synergies (Nothing OS Squircle Badges)
   const syns = Object.keys(activeSynergies);
   if(syns.length){
     let sx = 14;
-    X.font = 'bold 9px "Share Tech Mono",monospace';
+    X.font = '700 8.5px "Space Mono",monospace';
     for(const sid of syns){
       const syn = SYNERGY_DEFS.find(s => s.id === sid);
       if(!syn) continue;
-      X.fillStyle = 'rgba(255, 215, 0, 0.18)';
-      X.fillRect(sx, 56, 126, 17);
-      X.strokeStyle = '#FFD700'; X.lineWidth = 1;
-      X.strokeRect(sx, 56, 126, 17);
-      X.fillStyle = '#FFD700'; X.shadowColor = '#FFAA00'; X.shadowBlur = 6;
-      X.fillText(syn.glyph + ' ' + syn.name, sx + 5, 68);
-      X.shadowBlur = 0;
-      sx += 134;
-      if(sx > W - 140) break;
+      X.fillStyle = 'rgba(18, 18, 18, 0.88)';
+      X.fillRect(sx, 56, 134, 18);
+      X.strokeStyle = 'rgba(255, 255, 255, 0.25)'; X.lineWidth = 1;
+      X.strokeRect(sx, 56, 134, 18);
+      // Red pip
+      X.fillStyle = '#D71921';
+      X.beginPath(); X.arc(sx + 7, 65, 2.5, 0, Math.PI * 2); X.fill();
+      X.fillStyle = '#FFFFFF';
+      X.fillText(syn.name, sx + 14, 69);
+      sx += 142;
+      if(sx > W - 150) break;
     }
   }
 }
@@ -2769,29 +2975,28 @@ function drawWaveBanner(){
   X.globalAlpha = Math.min(1, waveBannerAlpha);
   X.textAlign = 'center';
 
-  X.font = '900 clamp(28px, 6vw, 48px) "Orbitron",monospace';
+  X.font = '700 clamp(24px, 5.5vw, 42px) "Silkscreen",monospace';
   X.fillStyle = '#FFFFFF';
-  X.shadowColor = currentWave % 5 === 0 ? '#FF3300' : '#FFAA00';
+  X.shadowColor = currentWave % 5 === 0 ? '#D71921' : '#FFFFFF';
   X.shadowBlur = 24;
   X.fillText(waveBannerText, W / 2, H * 0.35);
 
-  X.font = '600 clamp(11px, 2.5vw, 15px) "Share Tech Mono",monospace';
-  X.fillStyle = currentWave % 5 === 0 ? '#FF4400' : '#FFAA00';
-  X.shadowBlur = 10;
+  X.font = '700 clamp(10px, 2.2vw, 13px) "Space Mono",monospace';
+  X.fillStyle = currentWave % 5 === 0 ? '#D71921' : 'rgba(255,255,255,0.75)';
+  X.shadowBlur = 8;
   X.fillText(waveBannerSub, W / 2, H * 0.35 + 28);
   X.restore();
 }
 
 function drawPause(){
-  X.fillStyle = 'rgba(6,8,12,0.85)'; X.fillRect(0, 0, W, H);
-  X.font = '700 26px Orbitron,monospace'; X.fillStyle = '#FFFFFF';
-  X.shadowBlur = 22; X.shadowColor = '#FF7700'; X.textAlign = 'center';
-  X.fillText('SYSTEM PAUSED', W / 2, H / 2);
-  X.font = '11px "Share Tech Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.5)'; X.shadowBlur = 0;
-  X.fillText('PRESS ESC TO RESUME', W / 2, H / 2 + 30);
+  X.fillStyle = 'rgba(0,0,0,0.88)'; X.fillRect(0, 0, W, H);
+  X.font = '700 24px "Silkscreen",monospace'; X.fillStyle = '#FFFFFF';
+  X.shadowBlur = 20; X.shadowColor = '#FFFFFF'; X.textAlign = 'center';
+  X.fillText('( ● ) SYSTEM PAUSED', W / 2, H / 2);
+  X.font = '11px "Space Mono",monospace'; X.fillStyle = 'rgba(255,255,255,0.6)'; X.shadowBlur = 0;
+  X.fillText('PRESS ESC TO RESUME', W / 2, H / 2 + 32);
   X.textAlign = 'left';
 }
-
 // ═════════════════════════════════════════════════════════════
 // STARTUP
 // ═════════════════════════════════════════════════════════════

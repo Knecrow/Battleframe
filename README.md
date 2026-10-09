@@ -1,12 +1,24 @@
-# BATTLEFRAME ⚡
+# BATTLEFRAME ⚡ (NOTHING OS EDITION)
 
-A tactical top-down sci-fi fortress shooter inspired by **Galaxy Defense: Fortress TD**, built with HTML5 Canvas, modern CSS, and Vanilla JavaScript.
+A tactical top-down sci-fi fortress shooter inspired by **Galaxy Defense: Fortress TD**, redesigned with the signature **Nothing OS / Nothing Phone** industrial aesthetic. Built with HTML5 Canvas, modern CSS, and Vanilla JavaScript.
 
-Defend the **Fortress Defense Perimeter** piloting an advanced Class-S Mecha against escalating waves of alien swarms, sprint crashers, armored carapaces, shield drones, and titan dreadnoughts.
+Defend the **Glyph Defensive Perimeter** piloting an advanced Ceramic-White Class-S Mecha against escalating waves of alien swarms, sprint crashers, armored carapaces, shield drones, and titan dreadnoughts.
 
-![BATTLEFRAME](https://img.shields.io/badge/BATTLEFRAME-CLASS--S-FFAA00?style=for-the-badge)
-![HTML5 Canvas](https://img.shields.io/badge/HTML5-Canvas-FF6600?style=for-the-badge)
-![Vanilla JS](https://img.shields.io/badge/Vanilla-JavaScript-F7DF1E?style=for-the-badge)
+![BATTLEFRAME](https://img.shields.io/badge/BATTLEFRAME-NOTHING%20OS-D71921?style=for-the-badge)
+![HTML5 Canvas](https://img.shields.io/badge/HTML5-Canvas-FFFFFF?style=for-the-badge&logoColor=000000)
+![Vanilla JS](https://img.shields.io/badge/Vanilla-JavaScript-000000?style=for-the-badge)
+
+---
+
+## ⬛ Nothing OS Industrial Design System
+
+Battleframe has been completely transformed to adhere to Carl Pei's **Nothing Tech / Nothing OS** design philosophy:
+
+* **Stark Monochrome Contrast**: Deepest OLED pitch black (`#000000`), ceramic pure white armor (`#FFFFFF`), frosted glass surfaces (`rgba(255,255,255,0.06)`), and carbon matte chassis elements.
+* **Signature Nothing Red (`#D71921`)**: Active sensor dots `( ● )`, pulsing status pips, critical warning strobes, and glowing mecha visor slits.
+* **Authentic Dot-Matrix Typography**: Google Fonts `'Silkscreen'` (authentic NDot dot-matrix style) for tactical headers, wave numbers, scores, and pill badges; alongside `'Space Mono'` for precision flight telemetry.
+* **Glyph Interface Language**: Rounded squircles (`border-radius: 20px`), capsule pill buttons (`border-radius: 9999px`), segmented white Glyph LED light bars, and circular dotted matrix inspection platforms.
+* **High-Contrast Combat Elements**: Pure white railgun laser bolts, white/crimson Prism pulse lance beams, ceramic white orbit drones, and segmented Glyph perimeter lines pulsing red under threat.
 
 ---
 
